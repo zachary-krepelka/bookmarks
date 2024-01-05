@@ -16,7 +16,7 @@ if [[ $# -ne 1 ]]; then
 fi
 
 cat << EOF
-Bookmarks: $(grep '<A'      $1 | wc -l)
-Folders:   $(grep '<DT><H3' $1 | wc -l)
-Total:     $(grep '<DT>'    $1 | wc -l)
+Bookmarks: $(grep '<A'  $1 | wc -l)
+Folders:   $(grep '<H3' $1 | wc -l)
+Total:     $(grep '<DT' $1 | wc -l)
 EOF
