@@ -26,13 +26,14 @@ even thousands of bookmarks will find this repository useful.
 
 Each script works independently.  Here's an overview of what they do:
 
-|  File             | Functionality                              |
-| ----------------- | ------------------------------------------ |
-| bookmarklets.js   | Showcases a few of my [bookmarklets][3]    |
-| bookmarks.sed     | Removes superfluous textual patterns       |
-| count.sh          | Counts the number of bookmarks and folders |
-| duplicates.sh     | Identifies duplicate bookmark entries      |
-| favicon.sh        | Repopulates missing bookmark [favicons][4] |
+|  File                 | Functionality                              |
+| --------------------- | ------------------------------------------ |
+| bookmarklet-parser.pl | Parses JavaScript into a bookmark file     |
+| bookmarklets.js       | Showcases a few of my [bookmarklets][3]    |
+| bookmarks.sed         | Removes superfluous textual patterns       |
+| count.sh              | Counts the number of bookmarks and folders |
+| duplicates.sh         | Identifies duplicate bookmark entries      |
+| favicon.sh            | Repopulates missing bookmark [favicons][4] |
 
 <!-- References -->
 
