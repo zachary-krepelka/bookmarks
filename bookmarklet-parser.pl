@@ -4,182 +4,191 @@
 # AUTHOR: Zachary Krepelka
 # DATE: Friday, January 5th, 2024
 
-# USAGE
+=begin comment
 
-	# perl bookmarklet-parser.pl <input js file> <output html file>
+USAGE
 
-# PURPOSE
+	perl bookmarklet-parser.pl <input js file> <output html file>
 
-	# The purpose of this script is to parse JavaScript code into a Netscape
-	# bookmark file containing bookmarklets that one can then import into a
-	# web browser.  A bookmarklet is a bookmark containing JavaScript code.
+PURPOSE
 
-# FILE FORMAT SPECIFICATION
+	The purpose of this script is to parse JavaScript code into a Netscape
+	bookmark file containing bookmarklets that one can then import into a
+	web browser.  A bookmarklet is a bookmark containing JavaScript code.
 
-	# The input file should adhere to this file format specification.
+FILE FORMAT SPECIFICATION
 
-	# The file contains blocks delimited by BEGIN and END.  The delimiters
-	# are placed at the beginning of a new line.  The blocks are *not*
-	# nested.  Each block contains valid JavaScript code constituting one
-	# bookmarklet.
+	The input file should adhere to this file format specification.
 
-	# All other keywords appear inside blocks.  The following
-	# are keywords if placed at the beginning of a new line:
+	The file contains blocks delimited by BEGIN and END.  The delimiters are
+	placed at the beginning of a new line.  The blocks are *not* nested.
+	Each block contains valid JavaScript code constituting one bookmarklet.
 
-		# BEGIN    [title]                    keyword is required
-		# END                                 keyword is required
-		# ICON     [file path]                keyword is optional
-		# PARAMS   [comma-delimited list]     keyword is optional
-		# ARGS     [comma-delimited list]     keyword is optional
+	All other keywords appear inside blocks.  The following are keywords if
+	placed at the beginning of a new line:
 
-	# Some keywords accept arguments.
+		BEGIN    [title]                    keyword is required
+		END                                 keyword is required
+		ICON     [file path]                keyword is optional
+		PARAMS   [comma-delimited list]     keyword is optional
+		ARGS     [comma-delimited list]     keyword is optional
 
-	# The argument passed to BEGIN is the title of the bookmarklet.  It will
-	# appear as the name of the bookmark when imported into a web browser.
-	# Everything after the keyword up until the end of the line is eaten up.
+	Some keywords accept arguments.
 
-	# The ICON keyword expects the file path of an icon stored on the local
-	# machine.  This will become the favicon of the bookmark when imported
-	# into a web browser.  Everything after the keyword up until the end of
-	# the line is eaten up.  Please only specify one file with the .ico
-	# extension.
+	The argument passed to BEGIN is the title of the bookmarklet.  It will
+	appear as the name of the bookmark when imported into a web browser.
+	Everything after the keyword up until the end of the line is eaten up.
 
-	# Everything within a BEGIN-END block is automatically wrapped in an
-	# immediately invoked function expression.  The keywords PARAMS and ARGS
-	# pertain to this detail.  An IIFE for short looks like this:
+	The ICON keyword expects the file path of an icon stored on the local
+	machine.  This will become the favicon of the bookmark when imported
+	into a web browser.  Everything after the keyword up until the end of
+	the line is eaten up.  Please only specify one file with the .ico
+	extension.
 
-		# (function () { /* ... */ })();
+	Everything within a BEGIN-END block is automatically wrapped in an
+	immediately invoked function expression.  The keywords PARAMS and ARGS
+	pertain to this detail.  An IIFE for short looks like this:
 
-	# Sometimes it's useful to specify parameters and pass arguments.
+		(function () { /* ... */ })();
 
-		# (function (document) { /* ... */ })(document);
+	Sometimes it's useful to specify parameters and pass arguments.
 
-	# That's what PARAMS and ARGS do.  Recall the difference between
-	# parameters and arguments: arguments are values passed into functions
-	# whereas parameters are variables declared in a function's definition.
-	# Arguments are bounded to parameters when a function enters into scope.
+		(function (document) { /* ... */ })(document);
 
-# MINIMAL WORKING EXAMPLE
+	That's what PARAMS and ARGS do.  Recall the difference between
+	parameters and arguments: arguments are values passed into functions
+	whereas parameters are variables declared in a function's definition.
+	Arguments are bounded to parameters when a function enters into scope.
 
-	# Create a file on your machine with the following contents.  Make sure
-	# it's in the same directory as this script.  You might name it
-	# something like 'hello-world.js,' but since our file format isn't truly
-	# valid JavaScript, you might also consider making up your own file
-	# extension like '.bml' for [b]ook[m]ark[l]et.  You can put as many
-	# bookmarklets as you want in a .bml file, but let's stick to just one
-	# for now.
+MINIMAL WORKING EXAMPLE
 
-		#	FILENAME: hello-world.bml
-		#
-		#	1  BEGIN Greeter
-		#	2
-		#	3  // This is a comment.
-		#	4  alert("Hello, World!");
-		#	5
-		#	6  END
+	Create a file on your machine with the following contents.  Make sure
+	it's in the same directory as this script.  You might name it something
+	like 'hello-world.js,' but since our file format isn't truly valid
+	JavaScript, you might also consider making up your own file extension
+	like '.bml' for [b]ook[m]ark[l]et.  You can put as many bookmarklets as
+	you want in a .bml file, but let's stick to just one for now.
 
-	# Now enter this on the command line:
+		FILENAME: hello-world.bml
 
-		# perl bookmarklet-parser.pl hello-world.bml > bookmarklets.html
+		01  BEGIN Greeter
+		02
+		03  // This is an inline comment.
+		04
+		05  alert("Hello, World!");
+		06
+		07  /*
+		08   * This is a block comment.
+		09   * Will it work?
+		10   * Let's find out.
+		11   *
+		12   */
+		13
+		14  END
 
-	# The last step is to import 'bookmarklets.html' into your web browser
-	# just like any other bookmark file.
+	Now enter this on the command line:
 
-# EXTENDED EXAMPLE
+		perl bookmarklet-parser.pl hello-world.bml > bookmarklets.html
 
-	# Wikipedia gives the following example of a bookmarklet.
-	# See here: https://en.wikipedia.org/wiki/Bookmarklet#Example.
+	The last step is to import 'bookmarklets.html' into your web browser
+	just like you would for any other bookmark file.
 
-		# javascript:(function(document) {
-		#
-		# function se(d) {
-		#	return d.selection ?
-		# 		d.selection.createRange(1).text :
-		# 		d.getSelection(1);
-		# };
-		#
-		# let d = se(document);
-		#
-		# for (
-		# 	i = 0;
-		# 	i < frames.length && (d==document || d=='document');
-		# 	i++
-		# )
-		# 	d = se(frames[i].document);
-		#
-		# if (d=='document')
-		# 	d = prompt('Enter%20search%20terms,'');
-		#
-		# open('https://en.wikipedia.org' +
-		# 	(d ? '/w/index.php?title=Special:Search&search=' +
-		# 		encodeURIComponent(d) : '')).focus();
-		#
-		# })(document);
+EXTENDED EXAMPLE
 
-	# We can translate this into our language like this:
+	Wikipedia gives the following example of a bookmarklet.  See here:
+	https://en.wikipedia.org/wiki/Bookmarklet#Example.
 
-		# BEGIN Wikipedia Searcher
-		#
-		# ICON javascript.ico
-		# PARAMS document
-		# ARGS document
-		#
-		# function se(d) {
-		# 	return
-		# 		d.selection ?
-		# 		d.selection.createRange(1).text :
-		# 		d.getSelection(1);
-		# };
-		#
-		# let d = se(document);
-		#
-		# for (
-		# 	i=0;
-		# 	i<frames.length && (d==document || d=='document');
-		# 	i++
-		# )
-		# 	d = se(frames[i].document);
-		#
-		# if (d=='document')
-		# 	d = prompt('Enter%20search%20terms','');
-		#
-		# open('https://en.wikipedia.org' +
-		# 	(d ? '/w/index.php?title=Special:Search&search=' +
-		# 		encodeURIComponent(d) : '')).focus();
-		#
-		# END
+		FILENAME: wiki-search.js
 
-# REMARK
+		01  javascript:(function(document) {
+		02
+		03  function se(d) {
+		04  	return d.selection ?
+		05  		d.selection.createRange(1).text :
+		06  		d.getSelection(1);
+		07  };
+		08
+		09  let d = se(document);
+		10
+		11  for (
+		12  	i = 0;
+		13  	i < frames.length && (d==document || d=='document');
+		14  	i++
+		15  )
+		16  	d = se(frames[i].document);
+		17
+		18  if (d=='document')
+		19  	d = prompt('Enter%20search%20terms,'');
+		20
+		21  open('https://en.wikipedia.org' +
+		22  	(d ? '/w/index.php?title=Special:Search&search=' +
+		23  		encodeURIComponent(d) : '')).focus();
+		24
+		25  })(document);
 
-	# Since bookmarklets are powered by JavaScript, I like to give them a
-	# JavaScript icon.  If you're on the command line, you might try this:
+	We can translate this into our language like this:
 
-		# wget https://raw.githubusercontent.com/edent/SuperTinyIcons
-		#	/master/images/svg/javascript.svg
+		01  BEGIN Wikipedia Searcher
+		02
+		03  ICON javascript.ico
+		04  PARAMS document
+		05  ARGS document
+		06
+		07  function se(d) {
+		08  	return d.selection ?
+		09  		d.selection.createRange(1).text :
+		10  		d.getSelection(1);
+		11  };
+		12
+		13  let d = se(document);
+		14
+		15  for (
+		16  	i=0;
+		17  	i<frames.length && (d==document || d=='document');
+		18  	i++
+		19  )
+		20  	d = se(frames[i].document);
+		21
+		22  if (d=='document')
+		23  	d = prompt('Enter%20search%20terms','');
+		24
+		25  open('https://en.wikipedia.org' +
+		26  	(d ? '/w/index.php?title=Special:Search&search=' +
+		27  		encodeURIComponent(d) : '')).focus();
+		28
+		29  END
 
-		# convert -resize 16x16 javascript.svg javascript.ico
+REMARK
 
-# MOTIVATIONS
+	Since bookmarklets are powered by JavaScript, I like to give them a
+	JavaScript icon.  If you're on the command line, you might try this:
 
-	# Why do we need a tool like this?  Let me explain.  The typical way of
-	# creating a bookmarklet is by copy-and-pasting JavaScript into the URL
-	# box when adding or editing a bookmark.  Internally, the JavaScript
-	# code is stored entirely within the HREF attribute of an HTML anchor.
-	# Accordingly, the browser will automatically compress your code into a
-	# single line.  Additionally, some characters are translated into other
-	# characters.  This looks ugly; the code is unreadable.  This mandates
-	# storing your bookmarklet code in a readable format as a backup.
+		wget https://raw.githubusercontent.com/edent/SuperTinyIcons
+			/master/images/svg/javascript.svg
 
-	# The process of copy-and-pasting is tedious.  Moreover, there are
-	# characters that can break HTML encoding, so you have to be careful.
-	# Many online tools exist to help with these issues, but none of them
-	# really suited my needs.  I wanted a tool that can compile bookmarklets
-	# in bulk.  Moreover, I wanted something that works from the command
-	# line.  I wrote this script to suit my needs.
+		convert -resize 16x16 javascript.svg javascript.ico
 
-# MY FINAL REMARK
+MOTIVATIONS
 
-		# Enjoy the code!
+	Why do we need a tool like this?  Let me explain.  The typical way of
+	creating a bookmarklet is by copy-and-pasting JavaScript into the URL
+	box when adding or editing a bookmark.  Internally, the JavaScript code
+	is stored entirely within the HREF attribute of an HTML anchor.
+	Accordingly, the browser will automatically compress your code into a
+	single line.  Additionally, some characters are translated into other
+	characters.  This looks ugly; the code is unreadable.  This mandates
+	storing your bookmarklet code in a readable format as a backup.
+
+	The process of copy-and-pasting is tedious.  Moreover, there are
+	characters that can break HTML encoding, so you have to be careful.
+	Many online tools exist to help with these issues, but none of them
+	really suited my needs.  I wanted a tool that can compile bookmarklets
+	in bulk.  Moreover, I wanted something that works from the command line.
+	I wrote this script to suit my needs.
+
+=end comment
+
+=cut
 
 
 # |\/| _  _|   | _  _
@@ -243,15 +252,19 @@ sub encode_ico {
 		# https://perldoc.perl.org/variables
 }
 
-# NOTE:
+=begin comment
 
-	# The code inside the following subroutine, including comments, is
-	# entirely accredited to John Gruber, the inventor of Markdown.  It's
-	# his code, not mine.  See the following links for more details.
+	The code inside the following subroutine, including comments, is
+	entirely accredited to John Gruber, the inventor of Markdown.  It's his
+	code, not mine.  See the following links for more details.
 
-	# https://en.wikipedia.org/wiki/John_Gruber
-	# https://daringfireball.net/2007/03/javascript_bookmarklet_builder
-	# https://gist.github.com/gruber/8658935
+	https://en.wikipedia.org/wiki/John_Gruber
+	https://daringfireball.net/2007/03/javascript_bookmarklet_builder
+	https://gist.github.com/gruber/8658935
+
+=end comment
+
+=cut
 
 sub encode_js {
 
@@ -295,7 +308,6 @@ while (my $line = <>) {
 
 		reset_vars();
 		$title = trim $1;
-
 
 	} elsif ($line =~ m/^END/) {
 
