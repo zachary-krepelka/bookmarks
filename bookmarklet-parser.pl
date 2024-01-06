@@ -186,6 +186,16 @@ MOTIVATIONS
 	in bulk.  Moreover, I wanted something that works from the command line.
 	I wrote this script to suit my needs.
 
+TODO
+
+	Add CoffeeScript support
+
+	Do error catching if
+
+		$anchors is empty
+
+		the image file cannot be found
+
 =end comment
 
 =cut
