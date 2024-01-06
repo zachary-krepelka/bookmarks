@@ -20,20 +20,30 @@ PURPOSE
 
 MOTIVATIONS
 
-	A bookmarklet is a bookmark that contatins JavaScript code.  When
-	opened, the code is executed.  Bookmarklets provide small units of
-	functionality to the web browser.
+	A bookmarklet is a bookmark that contatins JavaScript code.  When the
+	bookmark is opened, its code is executed.  Bookmarklets provide small
+	units of functionality to the web browser.
 
 	The typical way of creating a bookmarklet entails copy-and-pasting
-	JavaScript code into a URL box when adding or editing a bookmark.
+	JavaScript code into the URL box when adding or editing a bookmark.
 	Internally, the JavaScript code is stored entirely within the HREF
 	attribute of an HTML anchor.  Accordingly, the browser automatically
 	compresss your code into a single line.  It also translates HTML-invalid
 	characters.  Bottom line, the code is unreadable.  This mandates storing
-	your bookmarklet code in a readable format as a backup.
+	your bookmarklet code in a readable format as a backup.  For
+	copy-and-pasting conveinece, many people share their bookmarklet code in
+	a one-line format. Can anyone tell me what this does at first glance?
 
-	This process of copy-and-pasting is tedious.  Comments have to be
-	removed.  Characters that break HTML encoding can also pose problems.
+		javascript:(function(document){function se(d){return d.selection
+		?d.selection.createRange(1).text:d.getSelection(1);};letd=se(doc
+		ument);for(i=0;i<frames.length&&(d==document||d=='document');i++
+		)d=se(frames[i].document);if(d=='document')d=prompt('Enter%20sea
+		rch%20terms%20for%20Wikipedia','');open('https://en.wikipedia.or
+		g'+(d?'/w/index.php?title=Special:Search&search='+encodeURICompo
+		nent(d):'')).focus();})(document);
+
+	Readability is a must, but copy-and-pasting is tedious.  Comments have
+	to be removed.  Characters that break HTML encoding can pose problems.
 	Many online tools exist to help with these issues, but none of them
 	suited my needs.
 
@@ -409,4 +419,4 @@ EOF
 
 print $document;
 
-# UPDATED: Saturday, January 6th, 2024   1:20 PM
+# UPDATED: Saturday, January 6th, 2024   2:40 PM
