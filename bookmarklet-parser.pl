@@ -8,7 +8,7 @@
 
 USAGE
 
-	perl bookmarklet-parser.pl <input js file> <output html file>
+	perl bookmarklet-parser.pl [input js file] > [output html file]
 
 PURPOSE
 
