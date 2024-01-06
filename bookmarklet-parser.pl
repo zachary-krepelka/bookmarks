@@ -56,9 +56,10 @@ FILE FORMAT SPECIFICATION
 		(function (document) { /* ... */ })(document);
 
 	That's what PARAMS and ARGS do.  Recall the difference between
-	parameters and arguments: arguments are values passed into functions
-	whereas parameters are variables declared in a function's definition.
-	Arguments are bound to parameters when a function enters into scope.
+	parameters and arguments: arguments are values passed into function
+	calls whereas parameters are variables declared in a function's
+	definition.  Arguments are bound to parameters when a function enters
+	into scope.
 
 MINIMAL WORKING EXAMPLE
 
