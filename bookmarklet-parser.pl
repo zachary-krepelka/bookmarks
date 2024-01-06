@@ -58,7 +58,7 @@ FILE FORMAT SPECIFICATION
 	That's what PARAMS and ARGS do.  Recall the difference between
 	parameters and arguments: arguments are values passed into functions
 	whereas parameters are variables declared in a function's definition.
-	Arguments are bounded to parameters when a function enters into scope.
+	Arguments are bound to parameters when a function enters into scope.
 
 MINIMAL WORKING EXAMPLE
 
