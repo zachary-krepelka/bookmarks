@@ -14,24 +14,57 @@ PURPOSE
 
 	The purpose of this script is to parse JavaScript code into a Netscape
 	bookmark file containing bookmarklets that one can then import into a
-	web browser.  A bookmarklet is a bookmark containing JavaScript code.
+	web browser.  This allows the user to store bookmarklet source code in a
+	readable format while still having the ability to quickly compile the
+	source code into an importable file.
+
+MOTIVATIONS
+
+	A bookmarklet is a bookmark that contatins JavaScript code.  When
+	opened, the code is executed.  Bookmarklets provide small units of
+	functionality to the web browser.
+
+	The typical way of creating a bookmarklet entails copy-and-pasting
+	JavaScript code into a URL box when adding or editing a bookmark.
+	Internally, the JavaScript code is stored entirely within the HREF
+	attribute of an HTML anchor.  Accordingly, the browser automatically
+	compresss your code into a single line.  It also translates HTML-invalid
+	characters.  Bottom line, the code is unreadable.  This mandates storing
+	your bookmarklet code in a readable format as a backup.
+
+	This process of copy-and-pasting is tedious.  Comments have to be
+	removed.  Characters that break HTML encoding can also pose problems.
+	Many online tools exist to help with these issues, but none of them
+	suited my needs.
+
+	I wanted a tool that
+
+		* promotes source code readabiltiy.
+		* compiles bookmarklets in bulk.
+		* works from the command line.
+
+	I wrote this script to suit my needs.
 
 FILE FORMAT SPECIFICATION
 
 	The input file should adhere to this file format specification.
 
-	The file contains blocks delimited by BEGIN and END.  The delimiters are
-	placed at the beginning of a new line.  The blocks are *not* nested.
+	The file consists of blocks delimited by BEGIN and END.  The delimiters
+	are placed at the beginning of a new line.  The blocks are *not* nested.
 	Each block contains valid JavaScript code constituting one bookmarklet.
 
-	All other keywords appear inside blocks.  The following are keywords if
-	placed at the beginning of a new line:
+	The following are keywords if placed at the beginning of a new line:
 
-		BEGIN    [title]                    keyword is required
-		END                                 keyword is required
-		ICON     [file path]                keyword is optional
-		PARAMS   [comma-delimited list]     keyword is optional
-		ARGS     [comma-delimited list]     keyword is optional
+		---------------------------------------------------------
+		KEYWORD     ARGUMENTS                SCOPE      CONDITION
+		---------------------------------------------------------
+		BEGIN       bookmark name            n/a        required
+		END         n/a                      n/a        required
+		ICON        file path                local      optional
+		ARGS        comma-delimited list     local      optional
+		PARAMS      comma-delimited list     local      optional
+		NAME        user's name              global     optional
+		---------------------------------------------------------
 
 	Some keywords accept arguments.
 
@@ -44,6 +77,10 @@ FILE FORMAT SPECIFICATION
 	into a web browser.  Everything after the keyword up until the end of
 	the line is eaten up.  Please only specify one file with the .ico
 	extension.
+
+	The NAME keyword injects the user's name into the heading of the HTML
+	file.  This is only noticeable if you open the resulting file as apposed
+	to only importing it.
 
 	Everything within a BEGIN-END block is automatically wrapped in an
 	immediately invoked function expression.  The keywords PARAMS and ARGS
@@ -159,6 +196,9 @@ EXTENDED EXAMPLE
 		28
 		29  END
 
+	Notice that the IIFE is taken care of for us. Its parameters and
+	arguments are addressed with keywords.
+
 REMARK
 
 	Since bookmarklets are powered by JavaScript, I like to give them a
@@ -169,23 +209,7 @@ REMARK
 
 		convert -resize 16x16 javascript.svg javascript.ico
 
-MOTIVATIONS
-
-	Why do we need a tool like this?  Let me explain.  The typical way of
-	creating a bookmarklet is by copy-and-pasting JavaScript into the URL
-	box when adding or editing a bookmark.  Internally, the JavaScript code
-	is stored entirely within the HREF attribute of an HTML anchor.
-	Accordingly, the browser will automatically compress your code into a
-	single line.  Additionally, some characters are translated into other
-	characters.  This looks ugly; the code is unreadable.  This mandates
-	storing your bookmarklet code in a readable format as a backup.
-
-	The process of copy-and-pasting is tedious.  Moreover, there are
-	characters that can break HTML encoding, so you have to be careful.
-	Many online tools exist to help with these issues, but none of them
-	really suited my needs.  I wanted a tool that can compile bookmarklets
-	in bulk.  Moreover, I wanted something that works from the command line.
-	I wrote this script to suit my needs.
+	But you can choose whatever icon you want. Just provide the file path.
 
 TODO
 
@@ -198,10 +222,6 @@ TODO
 		$anchors is empty
 
 		the image file cannot be found
-
-	Add user input for the $user variable
-
-		Maybe do this with CLI options
 
 	Consider writing to a file instead of printing
 
@@ -224,8 +244,7 @@ use URI::Escape qw(uri_escape_utf8); # https://metacpan.org/pod/URI::Escape
 # \  /_.._o _.|_ | _  _
 #  \/(_|| |(_||_)|(/__>
 
-my $user = "Zachary"; # Change this if you're not me!
-
+my $user    = "";
 my $anchors = "";
 my $href    = "";
 my $icon    = "";
@@ -312,7 +331,12 @@ sub encode_js {
 
 while (my $line = <>) {
 
-	if ($line =~ m/^ARGS(.*)$/) {
+	if ($line =~ m/^NAME(.*)$/) {
+
+		next if $1 =~ m/^\s*$/;
+		$user = trim($1) . "'s ";
+
+	} elsif ($line =~ m/^ARGS(.*)$/) {
 
 		$args = trim $1;
 
@@ -372,8 +396,8 @@ my $document = <<"EOF";
 		https://github.com/zachary-krepelka/bookmarks
 -->
 
-<TITLE>${user}'s Bookmarklets</TITLE>
-<H1>${user}'s Bookmarklets</H1>
+<TITLE>${user}Bookmarklets</TITLE>
+<H1>${user}Bookmarklets</H1>
 
 <DL><p>
     <DT><H3>Bookmarklets</H3>
@@ -384,3 +408,5 @@ $anchors
 EOF
 
 print $document;
+
+# UPDATED: Saturday, January 6th, 2024   1:20 PM

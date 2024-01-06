@@ -12,6 +12,8 @@ DESCRIPTION - bookmarklets for the web browser
 
 *******************************************************************************/
 
+NAME Zachary
+
 BEGIN Favicon Grabber
 
 ICON javascript.ico
