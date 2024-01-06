@@ -190,11 +190,19 @@ TODO
 
 	Add CoffeeScript support
 
+		Maybe do this with a LANG keyword
+
 	Do error catching if
 
 		$anchors is empty
 
 		the image file cannot be found
+
+	Add user input for the $user variable
+
+		Maybe do this with CLI options
+
+	Consider writing to a file instead of printing
 
 =end comment
 
