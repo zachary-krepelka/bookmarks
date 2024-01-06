@@ -131,3 +131,7 @@ s/#:~:text=[^"]*//
 
 	# remove ?lang=en from ctan.org urls
 	# remove ?ref=website from Merriam-Webster urls
+
+# QUESTION
+
+	# Does anyone know if sed scripts support block comments?
