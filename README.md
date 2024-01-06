@@ -2,6 +2,12 @@
 
 Scripts for bookmark management
 
+<!--
+	FILENAME: README.md
+	AUTHOR: Zachary Krepelka
+	DATE: Saturday, January 6th, 2024
+-->
+
 # Motivations
 
 I use my [bookmarks][1] to keep track of almost everything in my life.  *They
