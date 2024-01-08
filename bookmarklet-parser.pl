@@ -15,8 +15,8 @@ PURPOSE
 	The purpose of this script is to parse JavaScript code into a Netscape
 	bookmark file containing bookmarklets that one can then import into a
 	web browser.  This allows the user to store bookmarklet source code in a
-	readable format while still having the ability to quickly compile the
-	source code into an importable file.
+	readable format while still having the ability to quickly 'compile' the
+	code into an importable file.
 
 MOTIVATIONS
 
@@ -32,7 +32,7 @@ MOTIVATIONS
 	characters.  Bottom line, the code is unreadable.  This mandates storing
 	your bookmarklet code in a readable format as a backup.  For
 	copy-and-pasting conveinece, many people share their bookmarklet code in
-	a one-line format. Can anyone tell me what this does at first glance?
+	a one-line format.  Can anyone tell me what this does at first glance?
 
 		javascript:(function(document){function se(d){return d.selection
 		?d.selection.createRange(1).text:d.getSelection(1);};letd=se(doc
@@ -50,7 +50,7 @@ MOTIVATIONS
 	I wanted a tool that
 
 		* promotes source code readabiltiy.
-		* compiles bookmarklets in bulk.
+		* packages bookmarklets in bulk.
 		* works from the command line.
 
 	I wrote this script to suit my needs.
@@ -71,9 +71,10 @@ FILE FORMAT SPECIFICATION
 		BEGIN       bookmark name            n/a        required
 		END         n/a                      n/a        required
 		ICON        file path                local      optional
+		LANG        programming language     local      optional
+		NAME        user's name              global     optional
 		ARGS        comma-delimited list     local      optional
 		PARAMS      comma-delimited list     local      optional
-		NAME        user's name              global     optional
 		---------------------------------------------------------
 
 	Some keywords accept arguments.
@@ -88,13 +89,17 @@ FILE FORMAT SPECIFICATION
 	the line is eaten up.  Please only specify one file with the .ico
 	extension.
 
+	The LANG keyword only knows one message, and that's 'CoffeeScript.'  It
+	allows the user to write bookmarklets in CoffeeScript.  If absent, the
+	default language is JavaScript.
+
 	The NAME keyword injects the user's name into the heading of the HTML
 	file.  This is only noticeable if you open the resulting file as apposed
 	to only importing it.
 
-	Everything within a BEGIN-END block is automatically wrapped in an
-	immediately invoked function expression.  The keywords PARAMS and ARGS
-	pertain to this detail.  An IIFE for short looks like this:
+	Everything within a block is automatically wrapped in an immediately
+	invoked function expression.  The keywords PARAMS and ARGS pertain to
+	this detail.  An IIFE for short looks like this:
 
 		(function () { /* ... */ })();
 
@@ -110,12 +115,12 @@ FILE FORMAT SPECIFICATION
 
 MINIMAL WORKING EXAMPLE
 
-	Create a file on your machine with the following contents.  Make sure
+	Create a file on your computer with the following contents.  Make sure
 	it's in the same directory as this script.  You might name it something
 	like 'hello-world.js,' but since our file format isn't truly valid
-	JavaScript, you might also consider making up your own file extension
-	like '.bml' for [b]ook[m]ark[l]et.  You can put as many bookmarklets as
-	you want in a .bml file, but let's stick to just one for now.
+	JavaScript, you might consider making up your own file extension like
+	'.bml' for [b]ook[m]ark[l]et.  You can put as many bookmarklets as you
+	want in a .bml file, but let's stick to just one for now.
 
 		FILENAME: hello-world.bml
 
@@ -123,23 +128,50 @@ MINIMAL WORKING EXAMPLE
 		02
 		03  // This is an inline comment.
 		04
-		05  alert("Hello, World!");
+		05  let person = prompt("What's your name?", "World");
 		06
-		07  /*
-		08   * This is a block comment.
-		09   * Will it work?
-		10   * Let's find out.
-		11   *
-		12   */
-		13
-		14  END
+		07  alert(`Hello, ${person}!`);
+		08
+		09  /*
+		10  * This is a block comment.
+		11  * Will it work?
+		12  * Let's find out.
+		13  *
+		14  */
+		15
+		16  END
 
 	Now enter this on the command line:
 
 		perl bookmarklet-parser.pl hello-world.bml > bookmarklets.html
 
-	The last step is to import 'bookmarklets.html' into your web browser
-	just like you would for any other bookmark file.
+	The last step is to import 'bookmarklets.html' into your web browser.
+
+ANOTHER EXAMPLE
+
+	Here's an example using CoffeeScript.
+
+		01  BEGIN Greatest Common Divisor
+		02
+		03  LANG CoffeeScript
+		04
+		05  # I'm a comment!
+		06
+		07  gcd = (a, b) ->
+		08  	[a, b] = [b, a % b] until b is 0
+		09  	return a
+		10
+		11  input = prompt 'Enter a comma-delimited list of numbers'
+		12
+		13  list = input.split ','
+		14
+		15  result = list[0]
+		16
+		17  result = gcd result, i for i in list
+		18
+		19  alert "gcd(#{input}) = #{result}"
+		20
+		21  END
 
 EXTENDED EXAMPLE
 
@@ -219,23 +251,17 @@ REMARK
 
 		convert -resize 16x16 javascript.svg javascript.ico
 
-	But you can choose whatever icon you want. Just provide the file path.
+	But you can choose whatever icon you want.  Just provide the file path.
 
 TODO
 
-	Add CoffeeScript support
+	Error handling needs addressed.
 
-		Maybe do this with a LANG keyword
-
-	Do error catching if
-
-		$anchors is empty
-
-		the image file cannot be found
-
-	Consider writing to a file instead of printing
-
-	Maybe add a sorting feature
+	I would like to add a FOLDER keyword that allows the user to specify a
+	/path/like/this.  As of now, all the bookmarklets are placed in a single
+	root folder called 'Bookmarklets.'  I would like to implement a tree
+	data structure to accomplish folder nesting.  I'm new to Perl, so this
+	is outside of my abilities at the moment.
 
 =end comment
 
@@ -261,6 +287,7 @@ my $icon    = "";
 my $title   = "";
 my $args    = "";
 my $params  = "";
+my $lang    = "";
 
 
 #  __
@@ -274,7 +301,7 @@ sub reset_vars {
 	$title  = "";
 	$args   = "";
 	$params = "";
-
+	$lang   = "";
 }
 
 sub trim {
@@ -282,7 +309,6 @@ sub trim {
 	my $str = shift;
 	$str =~ s/^\s+|\s+$//g;
 	return $str;
-
 }
 
 sub encode_ico {
@@ -300,6 +326,20 @@ sub encode_ico {
 	# Special variables like $! and $/ are explained here:
 
 		# https://perldoc.perl.org/variables
+}
+
+sub encode_coffee { # shell dependency
+
+	(my $coffee = shift) =~ s/"/\\"/g;
+
+	my $cmd = "echo \"$coffee\" | coffee -csb ";
+
+	open (my $fh, '-|', $cmd) or die "Didn't work: $!";
+
+	my $javascript = do { local $/; <$fh>};
+
+	return "\n" . $javascript . "\n";
+
 }
 
 =begin comment
@@ -341,12 +381,7 @@ sub encode_js {
 
 while (my $line = <>) {
 
-	if ($line =~ m/^NAME(.*)$/) {
-
-		next if $1 =~ m/^\s*$/;
-		$user = trim($1) . "'s ";
-
-	} elsif ($line =~ m/^ARGS(.*)$/) {
+	if ($line =~ m/^ARGS(.*)$/) {
 
 		$args = trim $1;
 
@@ -356,8 +391,18 @@ while (my $line = <>) {
 
 	} elsif ($line =~ m/^ICON(.*)$/) {
 
-		$icon = encode_ico(trim $1);
-		$icon = ' ICON="data:image/png;base64,' . $icon . '"';
+		$icon =
+			' ICON="data:image/png;base64,' .
+			encode_ico(trim $1) . '"';
+
+	} elsif ($line =~ m/^LANG(.*)$/) {
+
+		$lang = $1;
+
+	} elsif ($line =~ m/^NAME(.*)$/) {
+
+		next if $1 =~ m/^\s*$/;
+		$user = trim($1) . "'s ";
 
 	} elsif ($line =~ m/^BEGIN(.*)$/) {
 
@@ -365,6 +410,8 @@ while (my $line = <>) {
 		$title = trim $1;
 
 	} elsif ($line =~ m/^END/) {
+
+		$href = encode_coffee $href if $lang =~ m/CoffeeScript/i;
 
 		$href =
 			' HREF="' .
@@ -419,4 +466,4 @@ EOF
 
 print $document;
 
-# UPDATED: Saturday, January 6th, 2024   2:40 PM
+# UPDATED: Monday, January 8th, 2024   9:14 AM
