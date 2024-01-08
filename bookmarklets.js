@@ -1,16 +1,14 @@
 
-// FILENAME: bookmarklets.js
-// AUTHOR: Zachary Krepelka
-// DATE: Thursday, December 21st, 2023
+FILENAME: bookmarklets.txt
+AUTHOR: Zachary Krepelka
+DATE: Thursday, December 21st, 2023
 
-/*******************************************************************************
+DESCRIPTION
 
-DESCRIPTION - bookmarklets for the web browser
-
-	This is a file full of bookmarklets.  It can be parsed into an
+	Bookmarklets for the web browser.  This file can be packaged into an
 	importable file using my bookmarklet-parsing Perl script.
 
-*******************************************************************************/
+################################################################################
 
 NAME Zachary
 
@@ -27,15 +25,38 @@ ICON javascript.ico
 		get-favicons-from-any-website-using-a-hidden-google-api-3p1e
 */
 
-let url    = "http://www.google.com/s2/favicons?";
-let domain = "domain=" + location.href;
-let size   = "&sz=" + prompt("What size?", "16");
+const url    = "http://www.google.com/s2/favicons?";
+const domain = "domain=" + location.href;
+const size   = "&sz=" + prompt("What size?", "16");
 
 location.href = url + domain + size;
 
 END
 
-/******************************************************************************/
+################################################################################
+
+BEGIN Greatest Common Divisor
+
+LANG CoffeeScript
+ICON javascript.ico
+
+gcd = (a, b) ->
+	[a, b] = [b, a % b] until b is 0
+	return a
+
+input = prompt 'Enter a comma-delimited list of numbers'
+
+list = input.split ','
+
+result = list[0]
+
+result = gcd result, i for i in list
+
+alert "gcd(#{input}) = #{result}"
+
+END
+
+################################################################################
 
 BEGIN Google Chrome Extension List
 
@@ -43,39 +64,59 @@ ICON javascript.ico
 
 /*
 	This bookmarklet helps the user generate a list of installed Google
-	Chrome extensions.  I adapted the code from an answer on Super User into
-	a bookmarklet for ease of use.  See here:
+	Chrome extensions for safekeeping.  I adapted the code from an answer on
+	Super User into a bookmarklet for ease of use.  See here:
 
 		https://superuser.com/a/1691722
 
 	The process involves accessing chrome://extensions.  JavaScript usage is
 	restricted on Chrome webpages, e.g., chrome://path, so some effort is
-	required on the part of the user.  Instructions are provided in a popup.
+	required on the part of the user.  A help page is provided.
 */
 
-var popup = window.open(null, null, 'width=250, height=150');
+const code =
+	"console.log("                                     +
+	"document.querySelector('extensions-manager')."    +
+	"extensions_.map(({id, name, state, webStoreUrl})" +
+	" => (name)).join('\\n'));"                        ;
 
-var content = `
+const content = `
 <html>
 	<body>
-		<p> Instructions:
+		<h1>Google Chrome Extension List</h1>
+
+		<p>
+			This tool helps you generate a list of installed Google
+			Chrome extensions for safekeeping.
+		</p>
+
+		<h2>Instructions</h2>
+
+		<p> User intervention is required.
+
 			<ol>
 				<li>Open <code>chrome://extensions</code>.</li>
 				<li>Press <kbd>F12</kbd> & click 'Console'.</li>
 				<li>Paste your clipboard.</li>
 				<li>Press <kbd>Enter</kbd>.</li>
 			</ol>
+
+		</p>
+
+		<h2>Clipboard</h2>
+
+		<p>
+			It should look like this: <br><br>
+			<code>${code}</code>
 		</p>
 	</body>
 </html>`;
 
-popup.document.write(content);
+// Comment this line out if you know what you're doing.
+window.open().document.write(content);
 
-navigator.clipboard.writeText("console.log(
-document.querySelector('extensions-manager').
-extensions_.map(({id, name, state, webStoreUrl})
-=> (name)).join('\\n'));");
+navigator.clipboard.writeText(code);
 
 END
 
-// UPDATED: Saturday, January 6th, 2024   4:56 AM
+UPDATED: Monday, January 8th, 2024   6:10 PM

@@ -363,12 +363,14 @@ sub encode_js {
 	for ($javascript) {
 		s{(^\s*//.+\n)}{}gm;        # Kill commented lines
 		s{^\s*/\*.+?\*/\n?}{}gms;   # Kill block comments
-		s{\t}{ }gm;                 # Tabs to spaces
-		s{[ ]{2,}}{ }gm;            # Space runs to one space
 		s{^\s+}{}gm;                # Kill line-leading whitespace
 		s{\s+$}{}gm;                # Kill line-ending whitespace
-		s{\n}{}gm;                  # Kill newlines
+		s{\n}{ }gm;                 # Kill newlines
+		s{\t}{ }gm;                 # Tabs to spaces
+		s{[ ]{2,}}{ }gm;            # Space runs to one space
 	}
+
+	# The order is important.
 
 	return 'javascript:' . uri_escape_utf8($javascript);
 }
