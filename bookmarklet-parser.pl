@@ -12,7 +12,7 @@ USAGE
 
 PURPOSE
 
-	The purpose of this script is to parse JavaScript code into a Netscape
+	The purpose of this script is to package JavaScript code into a Netscape
 	bookmark file containing bookmarklets that one can then import into a
 	web browser.  This allows the user to store bookmarklet source code in a
 	readable format while still having the ability to quickly 'compile' the
@@ -29,10 +29,13 @@ MOTIVATIONS
 	Internally, the JavaScript code is stored entirely within the HREF
 	attribute of an HTML anchor.  Accordingly, the browser automatically
 	compresss your code into a single line.  It also translates HTML-invalid
-	characters.  Bottom line, the code is unreadable.  This mandates storing
-	your bookmarklet code in a readable format as a backup.  For
-	copy-and-pasting conveinece, many people share their bookmarklet code in
-	a one-line format.  Can anyone tell me what this does at first glance?
+	characters.
+
+	Bottom line, the code becomes unreadable.  This mandates storing your
+	bookmarklet code in a readable format as a backup.  For copy-and-pasting
+	conveinece, many people share their bookmarklet code in a one-line
+	format.  But there's a problem.  Can anyone tell me what this does at
+	first glance?
 
 		javascript:(function(document){function se(d){return d.selection
 		?d.selection.createRange(1).text:d.getSelection(1);};letd=se(doc
@@ -183,28 +186,29 @@ EXTENDED EXAMPLE
 		01  javascript:(function(document) {
 		02
 		03  function se(d) {
-		04  	return d.selection ?
-		05  		d.selection.createRange(1).text :
-		06  		d.getSelection(1);
-		07  };
-		08
-		09  let d = se(document);
-		10
-		11  for (
-		12  	i = 0;
-		13  	i < frames.length && (d==document || d=='document');
-		14  	i++
-		15  )
-		16  	d = se(frames[i].document);
-		17
-		18  if (d=='document')
-		19  	d = prompt('Enter%20search%20terms,'');
-		20
-		21  open('https://en.wikipedia.org' +
-		22  	(d ? '/w/index.php?title=Special:Search&search=' +
-		23  		encodeURIComponent(d) : '')).focus();
-		24
-		25  })(document);
+		04  	return
+		05  		d.selection ?
+		06  		d.selection.createRange(1).text :
+		07  		d.getSelection(1);
+		08  };
+		09
+		10  let d = se(document);
+		11
+		12  for (
+		13  	i = 0;
+		14  	i < frames.length && (d == document || d == 'document');
+		15  	i++
+		16  )
+		17  	d = se(frames[i].document);
+		18
+		19  if (d == 'document')
+		20  	d = prompt('Enter%20search%20terms, '');
+		21
+		22  open('https://en.wikipedia.org' +
+		23  	(d ? '/w/index.php?title=Special:Search&search=' +
+		24  		encodeURIComponent(d) : '')).focus();
+		25
+		26  })(document);
 
 	We can translate this into our language like this:
 
@@ -215,30 +219,31 @@ EXTENDED EXAMPLE
 		05  ARGS document
 		06
 		07  function se(d) {
-		08  	return d.selection ?
-		09  		d.selection.createRange(1).text :
-		10  		d.getSelection(1);
-		11  };
-		12
-		13  let d = se(document);
-		14
-		15  for (
-		16  	i=0;
-		17  	i<frames.length && (d==document || d=='document');
-		18  	i++
-		19  )
-		20  	d = se(frames[i].document);
-		21
-		22  if (d=='document')
-		23  	d = prompt('Enter%20search%20terms','');
-		24
-		25  open('https://en.wikipedia.org' +
-		26  	(d ? '/w/index.php?title=Special:Search&search=' +
-		27  		encodeURIComponent(d) : '')).focus();
-		28
-		29  END
+		08  	return
+		09  		d.selection ?
+		10  		d.selection.createRange(1).text :
+		11  		d.getSelection(1);
+		12  };
+		13
+		14  let d = se(document);
+		15
+		16  for (
+		17  	i = 0;
+		18  	i < frames.length && (d == document || d == 'document');
+		19  	i++
+		20  )
+		21  	d = se(frames[i].document);
+		22
+		23  if (d == 'document')
+		24  	d = prompt('Enter%20search%20terms', '');
+		25
+		26  open('https://en.wikipedia.org' +
+		27  	(d ? '/w/index.php?title=Special:Search&search=' +
+		28  		encodeURIComponent(d) : '')).focus();
+		29
+		30  END
 
-	Notice that the IIFE is taken care of for us. Its parameters and
+	Notice that the IIFE is taken care of for us.  Its parameters and
 	arguments are addressed with keywords.
 
 REMARK
@@ -468,4 +473,4 @@ EOF
 
 print $document;
 
-# UPDATED: Monday, January 8th, 2024   9:14 AM
+# UPDATED: Monday, January 8th, 2024   7:39 PM
