@@ -5,7 +5,7 @@ Scripts for bookmark management
 <!--
 	FILENAME: README.md
 	AUTHOR: Zachary Krepelka
-	DATE: Saturday, January 6th, 2024
+	DATE: Thursday, January 4th, 2024
 -->
 
 # Motivations
@@ -34,7 +34,7 @@ Each script works independently.  Here's an overview of what they do:
 
 |  File                 | Functionality                              |
 | --------------------- | ------------------------------------------ |
-| bookmarklet-parser.pl | Parses JavaScript into a bookmark file     |
+| bookmarklet-parser.pl | Packages JavaScript into a bookmark file   |
 | bookmarklets.txt      | Showcases a few of my [bookmarklets][3]    |
 | bookmarks.sed         | Removes superfluous textual patterns       |
 | count.sh              | Counts the number of bookmarks and folders |

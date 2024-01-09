@@ -20,7 +20,7 @@ PURPOSE
 
 MOTIVATIONS
 
-	A bookmarklet is a bookmark that contatins JavaScript code.  When the
+	A bookmarklet is a bookmark that contains JavaScript code.  When the
 	bookmark is opened, its code is executed.  Bookmarklets provide small
 	units of functionality to the web browser.
 
@@ -28,12 +28,12 @@ MOTIVATIONS
 	JavaScript code into the URL box when adding or editing a bookmark.
 	Internally, the JavaScript code is stored entirely within the HREF
 	attribute of an HTML anchor.  Accordingly, the browser automatically
-	compresss your code into a single line.  It also translates HTML-invalid
-	characters.
+	compresses your code into a single line.  It also translates
+	HTML-invalid characters.
 
 	Bottom line, the code becomes unreadable.  This mandates storing your
 	bookmarklet code in a readable format as a backup.  For copy-and-pasting
-	conveinece, many people share their bookmarklet code in a one-line
+	convenience, many people share their bookmarklet code in a one-line
 	format.  But there's a problem.  Can anyone tell me what this does at
 	first glance?
 
@@ -52,7 +52,7 @@ MOTIVATIONS
 
 	I wanted a tool that
 
-		* promotes source code readabiltiy.
+		* promotes source code readability.
 		* packages bookmarklets in bulk.
 		* works from the command line.
 
