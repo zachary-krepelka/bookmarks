@@ -1,4 +1,3 @@
-
 FILENAME: bookmarklets.txt
 AUTHOR: Zachary Krepelka
 DATE: Thursday, December 21st, 2023
@@ -62,17 +61,16 @@ BEGIN Google Chrome Extension List
 
 ICON javascript.ico
 
-/*
-	This bookmarklet helps the user generate a list of installed Google
-	Chrome extensions for safekeeping.  I adapted the code from an answer on
-	Super User into a bookmarklet for ease of use.  See here:
-
-		https://superuser.com/a/1691722
-
-	The process involves accessing chrome://extensions.  JavaScript usage is
-	restricted on Chrome webpages, e.g., chrome://path, so some effort is
-	required on the part of the user.  A help page is provided.
-*/
+/* This bookmarklet helps the user generate a list of installed Google Chrome
+ * extensions for safekeeping.  I adapted the code from an answer on Super User
+ * into a bookmarklet for ease of use.  See here:
+ *
+ * 	https://superuser.com/a/1691722
+ *
+ * The process involves accessing chrome://extensions.  JavaScript usage is
+ * restricted on Chrome webpages, e.g., chrome://path, so some effort is
+ * required on the part of the user.  A help page is provided.
+ */
 
 const code =
 	"console.log("                                     +
@@ -86,8 +84,8 @@ const content = `
 		<h1>Google Chrome Extension List</h1>
 
 		<p>
-			This tool helps you generate a list of installed Google
-			Chrome extensions for safekeeping.
+			This tool helps the user generate a list of installed
+			Google Chrome extensions for safekeeping.
 		</p>
 
 		<h2>Instructions</h2>
@@ -119,4 +117,45 @@ navigator.clipboard.writeText(code);
 
 END
 
-UPDATED: Monday, January 8th, 2024   6:10 PM
+################################################################################
+
+BEGIN Center Page
+
+ICON javascript.ico
+
+/* Today I was reading this web page:
+ *
+ * 	https://norvig.com/lispy.html
+ *
+ * It frustrated me that the page was uncentered.
+ * I found two solutions on Stack Overflow:
+ *
+ * 	https://stackoverflow.com/q/15505225
+ * 	https://stackoverflow.com/q/6464592
+ *
+ * I am combining them into a bookmarklet.
+ */
+
+function addStyle(styleString) {
+	const style = document.createElement('style');
+	style.textContent = styleString;
+	document.head.append(style);
+}
+
+addStyle(`
+	html, body {
+		height: 100%;
+	}
+	html {
+		display: table;
+		margin: auto;
+	}
+	body {
+		display: table-cell;
+		vertical-align: middle;
+	}
+`);
+
+END
+
+UPDATED: Saturday, January 13th, 2024   11:04 AM
