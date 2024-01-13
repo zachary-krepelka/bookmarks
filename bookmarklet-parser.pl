@@ -76,6 +76,7 @@ FILE FORMAT SPECIFICATION
 		ICON        file path                local      optional
 		LANG        programming language     local      optional
 		NAME        user's name              global     optional
+		SORT        n/a                      global     optional
 		ARGS        comma-delimited list     local      optional
 		PARAMS      comma-delimited list     local      optional
 		---------------------------------------------------------
@@ -99,6 +100,8 @@ FILE FORMAT SPECIFICATION
 	The NAME keyword injects the user's name into the heading of the HTML
 	file.  This is only noticeable if you open the resulting file as apposed
 	to only importing it.
+
+	The SORT keyword instructs the program to sort the bookmarks by title.
 
 	Everything within a block is automatically wrapped in an immediately
 	invoked function expression.  The keywords PARAMS and ARGS pertain to
@@ -285,14 +288,15 @@ use URI::Escape qw(uri_escape_utf8); # https://metacpan.org/pod/URI::Escape
 # \  /_.._o _.|_ | _  _
 #  \/(_|| |(_||_)|(/__>
 
-my $user    = "";
-my $anchors = "";
-my $href    = "";
-my $icon    = "";
-my $title   = "";
-my $args    = "";
-my $params  = "";
-my $lang    = "";
+my $user      = "";
+my $anchors   = "";
+my $href      = "";
+my $icon      = "";
+my $title     = "";
+my $args      = "";
+my $params    = "";
+my $lang      = "";
+my $sort_flag =  0;
 
 
 #  __
@@ -314,6 +318,19 @@ sub trim {
 	my $str = shift;
 	$str =~ s/^\s+|\s+$//g;
 	return $str;
+}
+
+sub extract_content {
+
+	# Extracts the content of an html element.
+
+	my $element = shift;
+
+	return $1 if $element =~ m|>([^<]*)</|;
+
+	# For a terminology briefing, see the image here:
+	# https://en.wikipedia.org/wiki/HTML_element#Syntax
+
 }
 
 sub encode_ico {
@@ -411,6 +428,10 @@ while (my $line = <>) {
 		next if $1 =~ m/^\s*$/;
 		$user = trim($1) . "'s ";
 
+	} elsif ($line =~ m/^SORT/) {
+
+		$sort_flag = 1;
+
 	} elsif ($line =~ m/^BEGIN(.*)$/) {
 
 		reset_vars();
@@ -446,6 +467,14 @@ chomp $anchors;
 my $pad = " " x 8;
 $anchors =~ s/^/$pad/gm;
 
+$anchors =
+	join("\n",
+		sort(
+			{extract_content($a) cmp extract_content($b)}
+			split("\n", $anchors)
+		)
+	) if $sort_flag;
+
 my $document = <<"EOF";
 <!DOCTYPE NETSCAPE-Bookmark-file-1>
 
@@ -473,4 +502,4 @@ EOF
 
 print $document;
 
-# UPDATED: Monday, January 8th, 2024   7:39 PM
+# UPDATED: Saturday, January 13th, 2024   12:33 PM
