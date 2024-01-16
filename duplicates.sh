@@ -97,7 +97,7 @@ exit 0
 		cat
 	fi |
 	\
-	sort | uniq -cd | cut -c 7- |
+	sort | uniq -cd | sed 's/^\s*//' |
 	\
 	if [ $DISTINCT -eq 0 ]
 	then
