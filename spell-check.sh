@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 # FILENAME: spell-check.sh
 # AUTHOR: Zachary Krepelka
@@ -20,6 +20,8 @@ if [[ $# -ne 1 ]]; then
 	echo 'Exactly one argument is required.' 1>&2
 	exit 1
 fi
+
+set -f # disable globbing
 
 while read line; do
 
