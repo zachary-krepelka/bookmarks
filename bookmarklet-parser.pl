@@ -77,6 +77,7 @@ FILE FORMAT SPECIFICATION
 		LANG        programming language     local      optional
 		NAME        user's name              global     optional
 		SORT        n/a                      global     optional
+		ROOT        folder name              global     optional
 		ARGS        comma-delimited list     local      optional
 		PARAMS      comma-delimited list     local      optional
 		---------------------------------------------------------
@@ -102,6 +103,10 @@ FILE FORMAT SPECIFICATION
 	to only importing it.
 
 	The SORT keyword instructs the program to sort the bookmarks by title.
+
+	The ROOT keyword's argument is the name of the root folder containing
+	the bookmarklets. If the ROOT keyword is unspecified, the name will
+	default to 'Bookmarklets.'
 
 	Everything within a block is automatically wrapped in an immediately
 	invoked function expression.  The keywords PARAMS and ARGS pertain to
@@ -297,6 +302,7 @@ my $args      = "";
 my $params    = "";
 my $lang      = "";
 my $sort_flag =  0;
+my $root      = "Bookmarklets";
 
 
 #  __
@@ -432,6 +438,10 @@ while (my $line = <>) {
 
 		$sort_flag = 1;
 
+	} elsif ($line =~ m/^ROOT(.*)$/) {
+
+		$root = trim $1;
+
 	} elsif ($line =~ m/^BEGIN(.*)$/) {
 
 		reset_vars();
@@ -493,7 +503,7 @@ my $document = <<"EOF";
 <H1>${user}Bookmarklets</H1>
 
 <DL><p>
-    <DT><H3>Bookmarklets</H3>
+    <DT><H3>${root}</H3>
     <DL><p>
 $anchors
     </DL><p>
