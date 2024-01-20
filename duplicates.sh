@@ -20,6 +20,7 @@ Options:
 	-i	enable case insensitivity
 	-d	distinquish between files
 	-s	switch from name to url
+	-c	cut trailing slash
 
 Example:
 	$0 bookmarks.html
@@ -33,6 +34,7 @@ exit 0
 	REGEX='(?<=>)[^<]*(?=</A>)'
 
 	CASE_INSENSITIVE=1
+	REMOVE_TAIL=1
 	DISTINCT=1
 	ARGS=()
 
@@ -44,13 +46,15 @@ exit 0
 
 	while [ $# -gt 0 ]; do
 
-		while getopts hids options; do
+		while getopts hicds options; do
 
 			case $options in
 
 				h) usage;;
 
 				i) CASE_INSENSITIVE=0;;
+
+				c) REMOVE_TAIL=0;;
 
 				d) DISTINCT=0;;
 
@@ -93,6 +97,13 @@ exit 0
 	if [ $CASE_INSENSITIVE -eq 0 ]
 	then
 		tr '[:upper:]' '[:lower:]'
+	else
+		cat
+	fi |
+	\
+	if [ $REMOVE_TAIL -eq 0 ] && [ "$TYPE" = "URL" ]
+	then
+		sed 's/\/$//'
 	else
 		cat
 	fi |
