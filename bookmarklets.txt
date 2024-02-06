@@ -9,6 +9,8 @@ DESCRIPTION
 
 ################################################################################
 
+SORT
+
 NAME Zachary
 
 BEGIN Favicon Grabber
@@ -158,4 +160,14 @@ addStyle(`
 
 END
 
-UPDATED: Saturday, January 13th, 2024   11:04 AM
+################################################################################
+
+BEGIN com2net
+
+ICON javascript.ico
+
+location.href = location.href.replace(/com/, 'net');
+
+END
+
+UPDATED: Monday, February 5th, 2024 at 8:49 PM
