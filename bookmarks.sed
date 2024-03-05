@@ -29,7 +29,7 @@
 
 	#	2) Run this script on the file.
 
-	#	3) Export the file back into your web browser.
+	#	3) Import the file back into your web browser.
 	#	   Remove your previous bookmarks.
 
 # USAGE
