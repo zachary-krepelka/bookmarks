@@ -220,6 +220,8 @@ EXTENDED EXAMPLE
 
 	We can translate this into our language like this:
 
+		FILENAME: wiki-search.bml
+
 		01  BEGIN Wikipedia Searcher
 		02
 		03  ICON javascript.ico
@@ -251,16 +253,23 @@ EXTENDED EXAMPLE
 		29
 		30  END
 
-	Notice that the IIFE is taken care of for us.  Its parameters and
-	arguments are addressed with keywords.
+	We can package this into an importable file like this:
+
+		perl bookmarklet-parser.pl wiki-search.bml > wiki-search.html
 
 REMARK
 
-	Since bookmarklets are powered by JavaScript, I like to give them a
-	JavaScript icon.  If you're on the command line, you might try this:
+	Notice that the IIFE is taken care of for us.  Its parameters and
+	arguments are addressed with keywords.  Compare line 1 of wiki-search.js
+	to line 4 of wiki-search.bml.  Additionally, compare line 26 of
+	wiki-search.js to line 5 of wiki-search.bml.
 
-		wget https://raw.githubusercontent.com/edent/SuperTinyIcons
-			/master/images/svg/javascript.svg
+	Also observe the ICON keyword on line three of wiki-search.bml.  Since
+	bookmarklets are powered by JavaScript, I like to give them a JavaScript
+	icon.  If you're on the command line, you might try this:
+
+		wget https://raw.githubusercontent.com/
+		edent/SuperTinyIcons/master/images/svg/javascript.svg
 
 		convert -resize 16x16 javascript.svg javascript.ico
 
