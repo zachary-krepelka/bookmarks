@@ -8,7 +8,7 @@ Scripts for bookmark management
 	DATE: Thursday, January 4th, 2024
 -->
 
-# Motivations
+## Motivations
 
 I use my [bookmarks][1] to keep track of almost everything in my life.  *They
 are important to me.*  I have a large number of them carefully organized into a
@@ -28,7 +28,7 @@ To help with the management of my bookmarks, I've written a number of computer
 scripts.  I hope that others can benefit from them too.  People with hundreds or
 even thousands of bookmarks will find this repository useful.
 
-# Overview
+## Overview
 
 Each script works independently.  Here's an overview of what they do:
 
