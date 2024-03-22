@@ -5,7 +5,7 @@
 # DATE: Friday, January 5th, 2024
 # ABOUT: a bookmarklet compiler for the command line
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks
-# UPDATED: Friday, March 22nd, 2024 at 5:08 AM
+# UPDATED: Friday, March 22nd, 2024 at 6:37 AM
 
 ################################################################################
 
@@ -559,9 +559,12 @@ I would like to add a FOLDER keyword that allows the user to specify a
 /path/like/this.  As of now, all the bookmarklets are placed in a single root
 folder called 'Bookmarklets.'  I would like to implement a tree data structure
 to accomplish folder nesting.  I'm new to Perl, so this is outside of my
-abilities at the moment.
+abilities at the moment.  Error handling needs addressed too.
 
-Error handling needs addressed too.
+=head1 AUTHOR
+
+Zachary Krepelka L<https://github.com/zachary-krepelka>
 
 =cut
 
+#
