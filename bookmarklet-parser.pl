@@ -339,11 +339,8 @@ sub extract_content {
 
 	# Extracts the content of an html element.
 
-	my $element = shift;
+	return $1 if shift =~ m|>([^<]*)</|;
 
-	return $1 if $element =~ m|>([^<]*)</|;
-
-	# For a terminology briefing, see the image here:
 	# https://en.wikipedia.org/wiki/HTML_element#Syntax
 
 }
