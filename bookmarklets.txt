@@ -97,6 +97,7 @@ const content = `
 			<ol>
 				<li>Open <code>chrome://extensions</code>.</li>
 				<li>Press <kbd>F12</kbd> & click 'Console'.</li>
+				<li>Type 'allow pasting'.</li>
 				<li>Paste your clipboard.</li>
 				<li>Press <kbd>Enter</kbd>.</li>
 			</ol>
