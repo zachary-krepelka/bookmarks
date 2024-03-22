@@ -365,7 +365,7 @@ sub encode_coffee { # shell dependency
 
 	my $cmd = "echo \"$coffee\" | coffee -csb ";
 
-	open (my $fh, '-|', $cmd) or die "Didn't work: $!";
+	open my $fh, '-|', $cmd or die $!;
 
 	my $javascript = do { local $/; <$fh>};
 
