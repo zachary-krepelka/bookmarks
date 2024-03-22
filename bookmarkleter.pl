@@ -240,15 +240,41 @@ bookmarkleter - a bookmarklet compiler for the command line
 
 =head1 SYNOPSIS
 
-perl bookmarkleter.pl [input js file] > [output html file]
+Below I describe the program's input, output, and usage.
+
+=head2 Usage
+
+perl bookmarkleter.pl [input bml file] > [output html file]
+
+=head2 Input
+
+The input is a file having the .bml extension, which holds the source code for
+one or more bookmarklets.  The extension denotes my custom file format, which I
+describe in the section of this document titled 'file format specification.' It
+is a wrapper around JavaScript and other languages that transpile to JavaScript.
+
+=head2 Output
+
+The output is a file in the Netscape Bookmark file format.  This file format was
+originally created to store bookmarks for the Netscape web browser.  All major
+web browsers today use this standard to import and export bookmarks.  These
+files have the html extension with the HTML document type declaration
+
+	<!DOCTYPE NETSCAPE-Bookmark-file-1>.
 
 =head1 DESCRIPTION
 
-The purpose of this script is to package JavaScript code into a Netscape
-bookmark file containing bookmarklets that one can then import into a web
-browser.  This allows the user to store bookmarklet source code in a readable
-format while still having the ability to quickly 'compile' the code into an
-importable file.
+This script is a bookmarklet compiler.  First and foremost, what is a
+bookmarklet? Quoting bookmarklets.org, a bookmarklet is "a special kind of
+bookmark that performs a task when you click it. Bookmarklets are tiny programs
+stored inside bookmarks....A bookmarklet is usually written in the programming
+language called JavaScript," the programming language of the web.
+
+The purpose of this script is to compile source code for bookmarklets into a
+file that one can import into a web browser.  Namely, it packages JavaScript
+Code into a Netscape bookmark file containing bookmarklets.  This allows the
+user to store bookmarklet source code in a readable format while still having
+the ability to quickly 'compile' the code into an importable file.
 
 =head1 MOTIVATIONS
 
@@ -560,6 +586,16 @@ I would like to add a FOLDER keyword that allows the user to specify a
 folder called 'Bookmarklets.'  I would like to implement a tree data structure
 to accomplish folder nesting.  I'm new to Perl, so this is outside of my
 abilities at the moment.  Error handling needs addressed too.
+
+=head1 DEPENDENCIES
+
+The following software should be installed on your system.
+
+=over
+
+=item * Coffeescript. L<https://coffeescript.org/#installation>
+
+=back
 
 =head1 AUTHOR
 
