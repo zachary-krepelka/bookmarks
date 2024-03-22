@@ -482,7 +482,7 @@ $anchors =
 		)
 	) if $sort_flag;
 
-my $document = <<"EOF";
+print <<"EOF";
 <!DOCTYPE NETSCAPE-Bookmark-file-1>
 
 <!--
@@ -493,7 +493,7 @@ my $document = <<"EOF";
 
 	This file was generated with a Perl script written by Zachary Krepelka.
 
-		https://github.com/zachary-krepelka/bookmarks
+		https://github.com/zachary-krepelka/bookmarks.git
 -->
 
 <TITLE>${user}Bookmarklets</TITLE>
@@ -506,5 +506,3 @@ $anchors
     </DL><p>
 </DL>
 EOF
-
-print $document;
