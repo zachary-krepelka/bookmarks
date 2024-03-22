@@ -266,9 +266,10 @@ files have the html extension with the HTML document type declaration
 
 This script is a bookmarklet compiler.  First and foremost, what is a
 bookmarklet? Quoting bookmarklets.org, a bookmarklet is "a special kind of
-bookmark that performs a task when you click it. Bookmarklets are tiny programs
-stored inside bookmarks....A bookmarklet is usually written in the programming
-language called JavaScript," the programming language of the web.
+[digital, web-browser] bookmark that performs a task when you click it.
+Bookmarklets are tiny programs stored inside bookmarks....A bookmarklet is
+usually written in the programming language called JavaScript," the programming
+language of the web.
 
 The purpose of this script is to compile source code for bookmarklets into a
 file that one can import into a web browser.  Namely, it packages JavaScript
