@@ -6,6 +6,8 @@ Scripts for bookmark management
 	FILENAME: README.md
 	AUTHOR: Zachary Krepelka
 	DATE: Thursday, January 4th, 2024
+	ORIGIN: https://github.com/zachary-krepelka/bookmarks
+	UPDATED: Friday, March 22nd, 2024 at 6:31 AM
 -->
 
 ## Motivations
@@ -30,24 +32,22 @@ even thousands of bookmarks will find this repository useful.
 
 ## Overview
 
-Each script works independently.  Here's an overview of what they do:
-
-|  File                 | Functionality                               |
-| --------------------- | ------------------------------------------  |
-| bookmarklet-parser.pl | Packages JavaScript into a bookmark file    |
-| bookmarklets.txt      | Showcases a few of my [bookmarklets][3]     |
-| bookmarks.sed         | Removes superfluous textual patterns        |
-| count.sh              | Counts the number of bookmarks and folders  |
-| duplicates.sh         | Identifies duplicate bookmark entries       |
-| favicon.sh            | Repopulates missing bookmark [favicons][4]  |
-| 80.sh                 | Reports bookmark names over 80 characters   |
-| spell-check.sh        | Reports spelling mistakes in bookmark names |
-
 With a few exceptions, each script operates on a Netscape bookmark file. These
 are the files you get when you export your bookmarks from a web browser. Usually
 called `bookmarks.html`, these files have the HTML document type declaration
 `<!DOCTYPE NETSCAPE-Bookmark-file-1>`, which can be seen by opening the file in
-a text editor.
+a text editor.  Now here's an overview of what each script does.
+
+|  File             | Functionality                               |
+| ----------------- | ------------------------------------------- |
+| bookmarkleter.pl  | Packages JavaScript into a bookmark file    |
+| bookmarklets.txt  | Showcases a few of my [bookmarklets][3]     |
+| bookmarks.sed     | Removes superfluous textual patterns        |
+| count.sh          | Counts the number of bookmarks and folders  |
+| duplicates.sh     | Identifies duplicate bookmark entries       |
+| favicon.sh        | Repopulates missing bookmark [favicons][4]  |
+| 80.sh             | Reports bookmark names over 80 characters   |
+| spell-check.sh    | Reports spelling mistakes in bookmark names |
 
 <!-- References -->
 
