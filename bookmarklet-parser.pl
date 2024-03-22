@@ -3,6 +3,7 @@
 # FILENAME: bookmarklet-parser.pl
 # AUTHOR: Zachary Krepelka
 # DATE: Friday, January 5th, 2024
+# UPDATED: Friday, March 22nd, 2024 at 4:14 AM
 
 =begin comment
 
@@ -356,10 +357,6 @@ sub encode_ico {
 				<IMAGE>;
 			},
 		'');
-
-	# Special variables like $! and $/ are explained here:
-
-		# https://perldoc.perl.org/variables
 }
 
 sub encode_coffee { # shell dependency
@@ -376,19 +373,13 @@ sub encode_coffee { # shell dependency
 
 }
 
-=begin comment
+# The code inside the following subroutine, including comments, is entirely
+# accredited to John Gruber, the inventor of Markdown.  It's his code, not mine.
+# See the following links for more details.
 
-	The code inside the following subroutine, including comments, is
-	entirely accredited to John Gruber, the inventor of Markdown.  It's his
-	code, not mine.  See the following links for more details.
-
-	https://en.wikipedia.org/wiki/John_Gruber
-	https://daringfireball.net/2007/03/javascript_bookmarklet_builder
-	https://gist.github.com/gruber/8658935
-
-=end comment
-
-=cut
+	# https://en.wikipedia.org/wiki/John_Gruber
+	# https://daringfireball.net/2007/03/javascript_bookmarklet_builder
+	# https://gist.github.com/gruber/8658935
 
 sub encode_js {
 
@@ -517,5 +508,3 @@ $anchors
 EOF
 
 print $document;
-
-# UPDATED: Saturday, January 13th, 2024   12:33 PM
