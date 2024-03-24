@@ -5,7 +5,7 @@
 # DATE: Friday, January 5th, 2024
 # ABOUT: a bookmarklet compiler for the command line
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks
-# UPDATED: Friday, March 22nd, 2024 at 6:37 AM
+# UPDATED: Sunday, March 24th, 2024 at 1:05 PM
 
 ################################################################################
 
@@ -344,7 +344,15 @@ The following are keywords if placed at the beginning of a new line:
 	PARAMS      comma-delimited list     local      optional
 	---------------------------------------------------------
 
-Some keywords accept arguments.
+The keywords with local scope should optionally appear inside of the blocks
+delimited by BEGIN and END.  They pertain to individual bookmarklets.  The
+keywords with global scope can appear anywhere.  They pertain to the resulting
+file as a whole.  The only required keywords are the BEGIN and END delimiters
+themselves.
+
+Let's walk though each keyword individually to understand its purpose.  Many of
+the keywords accept arguments, which are placed directly after the keyword on
+the same line with a space in between.
 
 The argument passed to BEGIN is the title of the bookmarklet.  It will appear as
 the name of the bookmark when imported into a web browser.  Everything after the
