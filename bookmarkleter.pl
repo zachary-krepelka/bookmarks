@@ -5,7 +5,7 @@
 # DATE: Friday, January 5th, 2024
 # ABOUT: a bookmarklet compiler for the command line
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks
-# UPDATED: Thursday, March 28th, 2024 at 11:34 PM
+# UPDATED: Friday, March 29th, 2024 at 12:00 AM
 
 ################################################################################
 
@@ -628,6 +628,14 @@ The following software should be installed on your system.
 =item * Coffeescript. L<https://coffeescript.org/#installation>
 
 =back
+
+=head1 SEE ALSO
+
+This script is part of my GitHub repository.
+
+	https://github.com/zachary-krepelka/bookmarks.git
+
+This repository contains various scripts for bookmark management.
 
 =head1 AUTHOR
 
