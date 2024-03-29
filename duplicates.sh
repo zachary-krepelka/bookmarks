@@ -16,17 +16,13 @@ Options:
 	-s	switch from name to url
 	-c	cut trailing slash
 
-Example:
-
-	$PROG -i bookmarks.html
-
-Documentation:
-
-	perldoc $PROG
-
+Example:       $PROG -i bookmarks.html
+Documentation: perldoc $PROG
 EOF
 exit 0
 }
+
+[ "$1" == "--help" ] && usage
 
 # VARIABLES
 
@@ -273,6 +269,14 @@ outcomes.
 =head1 CAVEATS
 
 When using the -d flag, input filenames are assumed not to contain spaces.
+
+=head1 SEE ALSO
+
+This script is part of my GitHub repository.
+
+	https://github.com/zachary-krepelka/bookmarks.git
+
+This repository contains various scripts for bookmark management.
 
 =head1 AUTHOR
 

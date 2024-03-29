@@ -3,32 +3,26 @@
 # FILENAME: favicon.sh
 # AUTHOR: Zachary Krepelka
 # DATE: Saturday, October 28, 2023
+# UPDATED: Monday, March 25th, 2024 at 2:33 AM
 
-# USAGE
+usage() {
+	PROG=$(basename $0)
+	cat <<-EOF >&2
+		Usage: $PROG [option] <input-file> <output-file>
+		Repopulate missing bookmark favicons.
 
-	# bash favicon.sh <input.html> <output.html>
+		Documentation:  perldoc $PROG
+		Options:        -h to display this help message
+		Example:        $PROG bookmarks.html better-bookmarks.html
+	EOF
+	exit 0
+}
 
-		# where 'input.html' is in the Netscape bookmark file format.
+[ "$1" == "-h" -o "$1" == "--help" ] && usage
 
-# PURPOSE
-
-	# The purpose of this script is to repopulate one's bookmark favicons.
-	# A favicon is a small icon associated with a website.  When one
-	# bookmarks a website in a web browser, the favicon helps to visually
-	# identify that bookmark entry.
-
-	# Sometimes these favicons disappear.  Then an unhelpful globe icon
-	# takes its place.  This script is meant to address this issue.  Simply
-	# export your bookmarks from your web browser and run this script on
-	# that file.  A new file will result that you can import back into your
-	# web browser, favicons and all.
-
-# DISCLAIMER
-
-	# Only tested with Google Chrome.
-
-if [[ $# -ne 2 ]]; then
-	echo 'Exactly two arguments are required.' 1>&2
+if [[ $# -ne 2 ]]
+then
+	echo 'Exactly two arguments are required. Try -h for help.' 1>&2
 	exit 1
 fi
 
@@ -108,4 +102,61 @@ done < $list
 
 rm -rf $workspace
 
-# UPDATED: Thursday, January 4th, 2024   6:33 PM
+: <<='cut'
+=pod
+
+=head1 NAME
+
+favicon.sh - repopulate missing bookmark favicons
+
+=head1 SYNOPSIS
+
+Below I describe the program's input, output, and usage.
+
+=head2 Usage
+
+bash favicon.sh [-h] <input-file> <output-file>
+
+=head2 Input
+
+The input is a file in the Netscape Bookmark file format.  This file format was
+originally created to store bookmarks for the Netscape web browser.  All major
+web browsers today use this standard to import and export bookmarks.  These
+files have the html extension with the HTML document type declaration <!DOCTYPE
+NETSCAPE-Bookmark-file-1>.  They are usually called bookmarks.html by default.
+
+=head2 Output
+
+The output is a file in the same format.
+
+=head1 DESCRIPTION
+
+The purpose of this script is to repopulate one's bookmark favicons.  A favicon
+is a small icon associated with a website.  When one bookmarks a website in a
+web browser, the favicon helps to visually identify that bookmark entry.
+
+Sometimes these favicons disappear.  Then an unhelpful globe icon takes its
+place.  This script is meant to address this issue.  Simply export your
+bookmarks from your web browser and run this script on that file.  A new file
+will result that you can import back into your web browser, favicons and all.
+
+=head1 CAVEATS
+
+Only tested with Google Chrome.
+The program may take a long time to run.
+
+=head1 SEE ALSO
+
+This script is part of my GitHub repository.
+
+	https://github.com/zachary-krepelka/bookmarks.git
+
+This repository contains various scripts for bookmark management.
+
+=head1 AUTHOR
+
+Zachary Krepelka L<https://github.com/zachary-krepelka>
+
+=cut
+
+#

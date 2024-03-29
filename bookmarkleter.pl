@@ -5,7 +5,7 @@
 # DATE: Friday, January 5th, 2024
 # ABOUT: a bookmarklet compiler for the command line
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks
-# UPDATED: Sunday, March 24th, 2024 at 1:05 PM
+# UPDATED: Thursday, March 28th, 2024 at 11:34 PM
 
 ################################################################################
 
@@ -15,8 +15,30 @@
 
 use strict;
 use warnings;
+use File::Basename;                  # https://metacpan.org/pod/File::Basename
 use MIME::Base64 qw(encode_base64);  # https://metacpan.org/pod/MIME::Base64
 use URI::Escape qw(uri_escape_utf8); # https://metacpan.org/pod/URI::Escape
+
+################################################################################
+
+#
+# |_| _ |._
+# | |(/_||_)
+#        |
+
+if ($ARGV[0] eq '-h' || $ARGV[0] eq '--help')
+{
+	my $prog = basename($0);
+	print STDERR <<~USAGE;
+		Usage: $prog [options] <file>
+		a bookmarklet compiler for the command line
+
+		Documentation: perldoc $prog
+		Options:       -h to display this help message
+		Example:       perl $prog source-code.txt > bookmarklets.html
+		USAGE
+	exit;
+}
 
 ################################################################################
 
@@ -244,14 +266,15 @@ Below I describe the program's input, output, and usage.
 
 =head2 Usage
 
-perl bookmarkleter.pl [input bml file] > [output html file]
+perl bookmarkleter.pl [source code file] > [bookmark file]
 
 =head2 Input
 
-The input is a file having the .bml extension, which holds the source code for
-one or more bookmarklets.  The extension denotes my custom file format, which I
-describe in the section of this document titled 'file format specification.' It
-is a wrapper around JavaScript and other languages that transpile to JavaScript.
+The input is a file which holds the source code for one or more bookmarklets,
+preferably having the .bml extension.  This extension denotes my custom file
+format, which I describe in the section of this document titled 'file format
+specification.' It is a wrapper around JavaScript and other languages that
+transpile to JavaScript.
 
 =head2 Output
 

@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
-# FILENAME: spell-check.sh
+# FILENAME: spellcheck.sh
 # AUTHOR: Zachary Krepelka
 # DATE: Thursday, January 18th, 2024
+# UPDATED: Thursday, March 28th, 2024 at 8:40 PM
 
 # PURPOSE
 
@@ -10,14 +11,24 @@
 	# to identify spelling mistakes
 	# within bookmark entries.
 
-# REMARK
+usage() {
+	PROG=$(basename $0)
+	cat <<-EOF >&2
+		Usage: $PROG [option] <file>
+		spellcheck your bookmark entries
 
-	# It may help to pipe the result into less with the -R flag, like this:
+		Documentation:  perldoc $PROG
+		Options:        -h to display this help message
+		Example:        bash $PROG bookmarks.html
+	EOF
+	exit 0
+}
 
-		# bash spell-check.sh bookmarks.html | less -R
+[ "$1" == "-h" -o "$1" == "--help" ] && usage
 
-if [[ $# -ne 1 ]]; then
-	echo 'Exactly one argument is required.' 1>&2
+if [[ $# -ne 1 ]]
+then
+	echo 'Exactly one argument is required. Try -h for help.' 1>&2
 	exit 1
 fi
 
@@ -37,3 +48,42 @@ done < <(sed -f - <(grep -Po '(?<=>)[^<]*(?=</A>)' $1) <<-EOF |
 
 EOF
 sort -u)
+
+: <<='cut'
+=pod
+
+=head1 NAME
+
+spellcheck.sh - spellcheck your bookmark entries
+
+=head1 SYNOPSIS
+
+bash spellcheck.sh <bookmark-file>
+
+=head1 DESCRIPTION
+
+The purpose of this script is to identify spelling mistakes within bookmark
+entries.  The input is a file in the Netscape Bookmark file format.  The output
+is a list of bookmark entries with spelling mistakes highlighted.
+
+=head1 NOTES
+
+It may help to pipe the result into less with the -R flag, like this:
+
+	bash spellcheck.sh bookmarks.html | less -R
+
+=head1 SEE ALSO
+
+This script is part of my GitHub repository.
+
+	https://github.com/zachary-krepelka/bookmarks.git
+
+This repository contains various scripts for bookmark management.
+
+=head1 AUTHOR
+
+Zachary Krepelka L<https://github.com/zachary-krepelka>
+
+=cut
+
+#

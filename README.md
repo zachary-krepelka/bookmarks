@@ -39,7 +39,7 @@ your bookmarks by importing and exporting them to a file, typically called
 This file format was originally created to store bookmarks for the [Netscape][4]
 web browser, but all major web browsers today have adopted this standard,
 therein promoting [data portability][4] and [interoperability][5] between
-browsers.  These files have the extension `.html` with the HTML document type
+browsers.  These files have the `.html` extension with the HTML document type
 declaration `<!DOCTYPE NETSCAPE-Bookmark-file-1>`, which can be seen by opening
 the file in a text editor.  **The programs in this repository operate on these
 files.**
@@ -77,6 +77,9 @@ is an example.
 bash script.sh -h   # quick help
 perldoc script.sh   # documentation
 ```
+
+Where it is impossible to document a script in this fashion, the documentation
+is instead provided in the source code as comments.
 
 ## Functionality
 
