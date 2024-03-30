@@ -7,7 +7,7 @@ Scripts for bookmark management by Zachary Krepelka
 	AUTHOR: Zachary Krepelka
 	DATE: Thursday, January 4th, 2024
 	ORIGIN: https://github.com/zachary-krepelka/bookmarks
-	UPDATED: Thursday, March 28th, 2024 at 5:20 PM
+	UPDATED: Saturday, March 30th, 2024 at 1:10 AM
 -->
 
 ## Motivations
@@ -38,7 +38,7 @@ your bookmarks by importing and exporting them to a file, typically called
 `bookmarks.html`.  These files adhere to the [Netscape Bookmark file format][3].
 This file format was originally created to store bookmarks for the [Netscape][4]
 web browser, but all major web browsers today have adopted this standard,
-therein promoting [data portability][4] and [interoperability][5] between
+therein promoting [data portability][5] and [interoperability][6] between
 browsers.  These files have the `.html` extension with the HTML document type
 declaration `<!DOCTYPE NETSCAPE-Bookmark-file-1>`, which can be seen by opening
 the file in a text editor.  **The programs in this repository operate on these
@@ -87,14 +87,15 @@ The functionality of each script is summarized in the table below.
 
 |  Program          | Functionality                               |
 | ----------------- | ------------------------------------------- |
+| 80.sh             | Reports bookmark names over 80 characters   |
 | bookmarkleter.pl  | Packages JavaScript into a bookmark file    |
-| bookmarklets.txt  | Showcases a few of my [bookmarklets][6]     |
+| bookmarklets.txt  | Showcases a few of my [bookmarklets][7]     |
 | bookmarks.sed     | Removes superfluous textual patterns        |
 | count.sh          | Counts the number of bookmarks and folders  |
 | duplicates.sh     | Identifies duplicate bookmark entries       |
-| favicon.sh        | Repopulates missing bookmark [favicons][7]  |
-| 80.sh             | Reports bookmark names over 80 characters   |
+| favicon.sh        | Repopulates missing bookmark [favicons][8]  |
 | spell-check.sh    | Reports spelling mistakes in bookmark names |
+| treeifier.pl      | Creates [tree view][9] from bookmark file   |
 
 <!-- References -->
 
@@ -106,5 +107,6 @@ The functionality of each script is summarized in the table below.
 [6]: https://en.wikipedia.org/wiki/Interoperability
 [7]: https://en.wikipedia.org/wiki/Bookmarklet
 [8]: https://en.wikipedia.org/wiki/Favicon
-[9]: https://stackoverflow.com/questions/72772176/documentation-or-reference-for-netscape-bookmark-file-1-doctype
-[10]: http://fileformats.archiveteam.org/wiki/Netscape_bookmarks
+[9]: https://en.wikipedia.org/wiki/Tree_view
+[10]: https://stackoverflow.com/questions/72772176/documentation-or-reference-for-netscape-bookmark-file-1-doctype
+[11]: http://fileformats.archiveteam.org/wiki/Netscape_bookmarks
