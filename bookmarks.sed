@@ -1,7 +1,17 @@
+#!/usr/bin/sed -f
 
 # FILENAME: bookmarks.sed
 # AUTHOR: Zachary Krepelka
 # DATE: Monday, December 18th, 2023
+# ABOUT: a script to tidy up your bookmarks
+# ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
+# UPDATED: Monday, April 1st, 2024 at 2:08 PM
+
+################################################################################
+
+# USAGE
+
+	# sed -i -f bookmarks.sed bookmarks.html
 
 # PURPOSE
 
@@ -10,7 +20,7 @@
 	# that bookmark's name is autofilled, usually with the page's title
 	# together with a tag that identifies the website.
 
-	#	here is a bookmarked google search - Google Search
+		# here is a bookmarked google search - Google Search
 
 	# The tagline is superfluous; the bookmark's favicon is already enough
 	# to identify the website.  (Moreover, links originating from the same
@@ -18,8 +28,36 @@
 
 	# Removing the tag gives a clearer, uncluttered appearance.  It would be
 	# tedious to remove the extra text every time a bookmark is made, so a
-	# script will suffice instead.  Other clean up and maintenance is also
-	# performed.
+	# script will suffice instead.
+
+	# Clean up is also performed on URLs. Consider the anatomy of a URL.
+
+	# https://www.example.com:443/folder/document.html?lang=en#bottom
+	# \     / \             /  | \                   /\      /\     /
+	#  -----   -------------   |  -------------------  ------  -----
+	#    |           |         |           |             |       |
+	#    |           |         |           |             |       |
+	#    |           |         |           |             |       |
+	#    |           |         |           |             |       Fragment
+	#    |           |         |           |             |
+	#    |           |         |           |             Parameters
+	#    |           |         |           File Path
+	#    |           |         Port
+	#    |           Host
+	#    Protocol
+
+	# The prameters and fragments of a URL are often not worth saving.
+	# Compare and contrast the following two links:
+
+		# https://www.merriam-webster.com/dictionary/effulgence
+
+		# https://www.merriam-webster.com/
+		#	dictionary/effulgence#:~:text=radiant%20splendor
+
+	# The " #:~:text=... " highlights relevant text after following the link
+	# from a google search.  This extra information is unnecessary.  Many
+	# other URLs contain similarly unnecessary information, which we can
+	# remove with regular expressions.
 
 # INSTRUCTIONS
 
@@ -32,10 +70,6 @@
 	#	3) Import the file back into your web browser.
 	#	   Remove your previous bookmarks.
 
-# USAGE
-
-	# sed -i -f bookmarks.sed bookmarks.html
-
 # NOTE
 
 	# This script uses the sed text editor.
@@ -45,8 +79,62 @@
 
 # REMARK
 
-	# I am continually adding to this file.
-	# You may find it useful to add your own commands.
+	# You may notice a general pattern:
+
+	# 	Page Title - Website Name
+
+	# You may think to address the more general situation by choosing a
+	# regex that splits on the delimiting character, then deleting the
+	# second half.  However, I've found that this does not generalize well;
+	# there are too many unpredictable matches and side effects, so I just
+	# prefer to match the many individual instances verbatim.
+
+# QUESTION
+
+	# Does anyone know if sed scripts support block comments?
+
+	# Here's what I've tried.
+
+	# FILENAME: script.sed
+	# 1  s/foo/bar/
+	# 2  s/baz/quuz/
+	# 3  q
+	# 4
+	# 5  =head1
+	# 6
+	# 7  script.sed - an attempt to document a sed script with Perl's POD.
+
+	# The man page for sed says that the q command "immediately quits the
+	# sed script without processing any more input."
+
+		# sed -f script.sed file.txt
+
+	# But when I run the above command, sed still quits with an error on
+	# line 5. It would be nice if there was some hack to make this work.
+
+	# The only solution that I can think of is to create shell wrapper
+	# around a sed script, but that's undesirable.
+
+# TODO
+
+	# remove ?lang=en from ctan.org urls
+	# remove ?ref=website from Merriam-Webster urls
+	# remove ?redirectfrom=... parameters
+
+	# removed YouTube time stamps
+
+		# https://www.youtube.com/watch?v={stuff}&t={num}s
+
+	# remove YouTube playlist indexes
+
+		# https://www.youtube.com/watch?v={str}&list={str}&index={num}
+
+################################################################################
+
+#  _           _
+# /  _  _| _  |_) _  _ o._  _ |_| _ .__
+# \_(_)(_|(/_ |_)(/_(_||| |_> | |(/_|(/_
+#                    _|
 
 # POPULAR WEBSITES
 s/ - Google Search//
@@ -96,42 +184,7 @@ s/GitHub - \([^:]*\):[^<]*/\1/
 s/ - Wikibooks, open books for an open world//
 s/ - wikiHow//
 
-# REMARK
-
-	# You may notice a general pattern:
-
-	# 	Page Title - Website Name
-
-	# You may think to address the more general situation by choosing a
-	# regex that splits on the delimiting character, then deleting the
-	# second half.  However, I've found that this does not generalize well;
-	# there are too many unpredictable matches and side effects, so I just
-	# prefer to match the many individual instances verbatim.
-
 # URL CORRECTIONS
-
-	# Sometimes URLs contain unnecessary information.  Case in point, compare
-	# and contrast the following two links:
-
-	#	https://www.merriam-webster.com/dictionary/effulgence
-
-	#	https://www.merriam-webster.com/
-	#		dictionary/effulgence#:~:text=radiant%20splendor
-
-	# The " #:~:text=... " highlights relevant text after following the link
-	# from a google search.  This extra information is unnecessary.  Many
-	# other URLs contain similarly unnecessary information, which we can
-	# remove with regular expressions.
-
 /quora/ s/?ch=[^"]*//
 /youtube/ s/&list=[^"]*//
 s/#:~:text=[^"]*//
-
-# TODO
-
-	# remove ?lang=en from ctan.org urls
-	# remove ?ref=website from Merriam-Webster urls
-
-# QUESTION
-
-	# Does anyone know if sed scripts support block comments?
