@@ -5,7 +5,7 @@
 # DATE: Monday, December 18th, 2023
 # ABOUT: a script to tidy up your bookmarks
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-# UPDATED: Monday, April 1st, 2024 at 2:08 PM
+# UPDATED: Monday, April 1st, 2024 at 2:31 PM
 
 ################################################################################
 
@@ -46,7 +46,7 @@
 	#    |           Host
 	#    Protocol
 
-	# The prameters and fragments of a URL are often not worth saving.
+	# The parameters and fragments of a URL are often not worth saving.
 	# Compare and contrast the following two links:
 
 		# https://www.merriam-webster.com/dictionary/effulgence
@@ -95,25 +95,56 @@
 
 	# Here's what I've tried.
 
-	# FILENAME: script.sed
-	# 1  s/foo/bar/
-	# 2  s/baz/quuz/
-	# 3  q
-	# 4
-	# 5  =head1
-	# 6
-	# 7  script.sed - an attempt to document a sed script with Perl's POD.
+		# FILENAME: script.sed
+		# --------------------
+		# 1  s/foo/bar/
+		# 2  s/baz/quuz/
+		# 3  q
+		# 4
+		# 5  =head1 NAME
+		# 6
+		# 7  script.sed - an attempt to document a sed script
 
-	# The man page for sed says that the q command "immediately quits the
-	# sed script without processing any more input."
+	# I tried devising a way to embed Perl POD into a sed script.  The man
+	# page for sed says that the q command "immediately quits the sed script
+	# without processing any more input."
 
 		# sed -f script.sed file.txt
 
 	# But when I run the above command, sed still quits with an error on
 	# line 5. It would be nice if there was some hack to make this work.
 
-	# The only solution that I can think of is to create shell wrapper
+	# The only solution that I can think of is to create a shell wrapper
 	# around a sed script, but that's undesirable.
+
+		# FILENAME: sed-script.sh
+		# -----------------------
+		# 01  #!/usr/bin/env bash
+		# 02
+		# 03  sed -f - <<-EOF $1
+		# 04
+		# 05  s/foo/bar/
+		# 06  s/baz/quuz/
+		# 07
+		# 08  EOF
+		# 09
+		# 10  : <<='cut'
+		# 11  =pod
+		# 12
+		# 13  =head1 NAME
+		# 14
+		# 15  sed-script.sh - a shell wrapper around a sed script.
+		# 16
+		# 17  =head1 SYNOPSIS
+		# 18
+		# 19  bash sed-script.sh [input file] > [output file]
+		# 20
+		# 21  =head1 DESCRIPTION
+		# 22
+		# 23  This is a demonstration of how to document a sed script.
+		# 24
+		# 25  =cut
+		# 26
 
 # TODO
 
@@ -121,7 +152,7 @@
 	# remove ?ref=website from Merriam-Webster urls
 	# remove ?redirectfrom=... parameters
 
-	# removed YouTube time stamps
+	# remove YouTube time stamps
 
 		# https://www.youtube.com/watch?v={stuff}&t={num}s
 
