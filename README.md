@@ -7,7 +7,7 @@ Scripts for bookmark management by Zachary Krepelka
 	AUTHOR: Zachary Krepelka
 	DATE: Thursday, January 4th, 2024
 	ORIGIN: https://github.com/zachary-krepelka/bookmarks
-	UPDATED: Saturday, March 30th, 2024 at 5:02 AM
+	UPDATED: Wednesday, April 3rd, 2024 at 11:41 AM
 -->
 
 ## Motivations
@@ -95,7 +95,7 @@ The functionality of each script is summarized in the table below.
 | domains.sh        | Reports domain frequencies                  |
 | duplicates.sh     | Identifies duplicate bookmark entries       |
 | favicon.sh        | Repopulates missing bookmark [favicons][8]  |
-| spell-check.sh    | Reports spelling mistakes in bookmark names |
+| spellcheck.sh     | Reports spelling mistakes in bookmark names |
 | treeifier.pl      | Creates [tree view][9] from bookmark file   |
 
 <!-- References -->
