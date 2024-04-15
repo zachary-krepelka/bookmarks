@@ -7,7 +7,7 @@ Scripts for bookmark management by Zachary Krepelka
 	AUTHOR: Zachary Krepelka
 	DATE: Thursday, January 4th, 2024
 	ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-	UPDATED: Sunday, April 7th, 2024 at 5:16 PM
+	UPDATED: Monday, April 15th, 2024 at 7:54 PM
 -->
 
 ## Motivations
@@ -89,7 +89,7 @@ The functionality of each script is summarized in the table below.
 | ----------------------------- | ------------------------------------------- |
 | 80.sh                         | Reports bookmark names over 80 characters   |
 | bookmarkleter.pl              | Packages JavaScript into a bookmark file    |
-| bookmarklets.txt              | Showcases a few of my [bookmarklets][7]     |
+| bookmarklets.js               | Showcases a few of my [bookmarklets][7]     |
 | bookmarks.sed                 | Removes superfluous textual patterns        |
 | count.sh                      | Counts the number of bookmarks and folders  |
 | domains.sh                    | Reports domain frequencies                  |
