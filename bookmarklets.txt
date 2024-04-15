@@ -1,17 +1,22 @@
-FILENAME: bookmarklets.txt
-AUTHOR: Zachary Krepelka
-DATE: Thursday, December 21st, 2023
-
-DESCRIPTION
-
-	Bookmarklets for the web browser.  This file can be packaged into an
-	importable file using my bookmarklet-parsing Perl script.
+// FILENAME: bookmarklets.txt
+// AUTHOR: Zachary Krepelka
+// DATE: Thursday, December 21st, 2023
+// ABOUT: bookmarklets for the web browser
+// ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
+// UPDATED: Monday, April 15th, 2024 at 7:47 PM
 
 ################################################################################
 
-SORT
+         /* This source code can be packaged into an importable file */
+         /* using my bookmarklet-parsing Perl script.  Find it in my */
+         /* GitHub repository as stated above.  The words in all     */
+         /* caps are keywords recognized by the parser.              */
+
+################################################################################
 
 NAME Zachary
+
+SORT
 
 BEGIN Favicon Grabber
 
@@ -169,6 +174,30 @@ ICON javascript.ico
 
 location.href = location.href.replace(/com/, 'net');
 
-END
+END Monday, February 5th, 2024 at 8:49 PM
 
-UPDATED: Monday, February 5th, 2024 at 8:49 PM
+################################################################################
+
+BEGIN YouTube Playlist Plucker
+
+ICON javascript.ico
+
+/* When listening to playlists on YouTube, I often find songs that I like and
+ * consequently want to save with a bookmark.  However, I want to save the song
+ * independently of the playlist that I found it in.  I created this bookmarklet
+ * for this reason.
+ *
+ * The purpose of this bookmarklet is to detether a YouTube video from a
+ * playlist.  It redirects a YouTube video that is part of a playlist to the
+ * page having that video by itself.
+ */
+
+	// In the same tab:
+
+		// location.href = location.href.replace(/&list=.*/, "");
+
+	// In a new tab:
+
+		window.open(location.href.replace(/&list=.*/, "")).focus();
+
+END Monday, April 15th, 2024 at 6:55 PM
