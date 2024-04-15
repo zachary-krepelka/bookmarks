@@ -1,4 +1,4 @@
-// FILENAME: bookmarklets.txt
+// FILENAME: bookmarklets.js
 // AUTHOR: Zachary Krepelka
 // DATE: Thursday, December 21st, 2023
 // ABOUT: bookmarklets for the web browser
