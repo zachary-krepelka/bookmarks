@@ -7,7 +7,7 @@ Scripts for bookmark management by Zachary Krepelka
 	AUTHOR: Zachary Krepelka
 	DATE: Thursday, January 4th, 2024
 	ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-	UPDATED: Monday, April 15th, 2024 at 7:54 PM
+	UPDATED: Saturday, April 20th, 2024 at 2:18 AM
 -->
 
 ## Motivations
@@ -85,19 +85,20 @@ is instead provided in the source code as comments.
 
 The functionality of each script is summarized in the table below.
 
-|  Program                      | Functionality                               |
-| ----------------------------- | ------------------------------------------- |
-| 80.sh                         | Reports bookmark names over 80 characters   |
-| bookmarkleter.pl              | Packages JavaScript into a bookmark file    |
-| bookmarklets.js               | Showcases a few of my [bookmarklets][7]     |
-| bookmarks.sed                 | Removes superfluous textual patterns        |
-| count.sh                      | Counts the number of bookmarks and folders  |
-| domains.sh                    | Reports domain frequencies                  |
-| duplicates.sh                 | Identifies duplicate bookmark entries       |
-| favicon.sh                    | Repopulates missing bookmark [favicons][8]  |
-| spellcheck.sh                 | Reports spelling mistakes in bookmark names |
-| treeifier.pl                  | Creates [tree view][9] from bookmark file   |
-| youtube-thumbnail-grabber.sh  | Donwload YouTube thumbnails in bulk         |
+|  Program                      | Functionality                                |
+| ----------------------------- | -------------------------------------------- |
+| 80.sh                         | Reports bookmark names over 80 characters    |
+| bookmarkleter.pl              | Packages JavaScript into a bookmark file     |
+| bookmarklets.js               | Showcases a few of my [bookmarklets][7]      |
+| bookmarks.sed                 | Removes superfluous textual patterns         |
+| count.sh                      | Counts the number of bookmarks and folders   |
+| domains.sh                    | Reports domain frequencies                   |
+| duplicates.sh                 | Identifies duplicate bookmark entries        |
+| favicon.sh                    | Repopulates missing bookmark [favicons][8]   |
+| spellcheck.sh                 | Reports spelling mistakes in bookmark names  |
+| tabgroups-to-bookmarks.pl     | A data converter tageting a Chrome extension |
+| treeifier.pl                  | Creates [tree view][9] from bookmark file    |
+| youtube-thumbnail-grabber.sh  | Donwload YouTube thumbnails in bulk          |
 
 <!-- References -->
 
