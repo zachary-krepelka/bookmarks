@@ -4,6 +4,7 @@
 # AUTHOR: Zachary Krepelka
 # DATE: Saturday, March 30th, 2024
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks
+# UPDATED: Sunday, April 21st, 2024 at 4:00 AM
 
 usage() { PROG=$(basename $0); cat << EOF >&2
 Usage: $PROG [options] <file>
@@ -11,7 +12,8 @@ analyze domain frequencies in a bookmark file
 
 Options:
 	-h	display this help message
-	-m NUM	minimum freqeuncy to appear
+	-m NUM	minimum frequency to appear
+	-M NUM  maximum frequency to appear
 
 Documentation: perldoc $PROG
 Example:       bash $PROG bookmarks.html
@@ -22,16 +24,20 @@ exit 0
 [ "$1" == "--help" ] && usage
 
 MIN=0
+MAX=0
 
 while [ $# -gt 0 ]; do
 
-	while getopts hm: options; do
+	while getopts hm:M: options; do
 
 		case $options in
 
 			h) usage;;
 
 			m) MIN=$OPTARG;;
+
+			M) MAX=$OPTARG;;
+
 		esac
 	done
 
@@ -60,6 +66,14 @@ do
 		continue
 	fi
 
+	if [ $MAX -ne 0 ]
+	then
+		if [[ $NUM -gt $MAX ]]
+		then
+			continue
+		fi
+	fi
+
 	echo "$NUM $domain"
 
 done | column -t -N FREQ,DOMAIN
@@ -79,7 +93,7 @@ bash domains.sh [options] <bookmark file>
 
 The purpose of this script is to analyze domain frequencies in a bookmark file.
 The input is a file in the Netscape bookmark file format. The output is a
-formatted table to STDOUT. The table reports each unqiue domain in the file
+formatted table to STDOUT. The table reports each unique domain in the file
 together with the frequency of bookmark entries belonging to that domain.
 
 =head1 OPTIONS
@@ -98,6 +112,13 @@ This allows the user to filter out one-off domains.
 	bash domains.sh -m 10 bookmarks.html > double-digits-and-up.txt
 
 	bash domains.sh -m 100 bookmarks.html > triple-digits-and-up.txt
+
+=item B<-M> I<NUM>
+
+Specifies the maximum frequency to appear in the output.  Compounded with -m,
+use it to find domain frequencies in a range.
+
+	bash domains.sh -m 10 -M 20 bookmarks.html > a-lot-but-not-a-lot.txt
 
 =back
 
