@@ -3,7 +3,7 @@
 // DATE: Thursday, December 21st, 2023
 // ABOUT: bookmarklets for the web browser
 // ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-// UPDATED: Monday, April 15th, 2024 at 7:47 PM
+// UPDATED: Sunday, April 21st, 2024 at 6:15 PM
 
 ################################################################################
 
@@ -201,3 +201,16 @@ ICON javascript.ico
 		window.open(location.href.replace(/&list=.*/, "")).focus();
 
 END Monday, April 15th, 2024 at 6:55 PM
+
+################################################################################
+
+BEGIN Youtube Thumbnail Grabber
+
+ICON javascript.ico
+
+const video_id = location.href.match(/(?<=v=).{11}/)[0];
+const url = `https://img.youtube.com/vi/${video_id}/default.jpg`;
+
+window.open(url).focus();
+
+END Sunday, April 21st, 2024 at 5:54 PM
