@@ -3,7 +3,7 @@
 // DATE: Thursday, December 21st, 2023
 // ABOUT: bookmarklets for the web browser
 // ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-// UPDATED: Monday, April 22nd, 2024 at 2:13 AM
+// UPDATED: Monday, April 22nd, 2024 at 2:20 AM
 
 ################################################################################
 
@@ -218,6 +218,8 @@ END Sunday, April 21st, 2024 at 5:54 PM
 ################################################################################
 
 BEGIN GET Killer
+
+ICON javascript.ico
 
 // To remove URL parameters after a GET request.
 
