@@ -3,7 +3,7 @@
 // DATE: Thursday, December 21st, 2023
 // ABOUT: bookmarklets for the web browser
 // ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-// UPDATED: Sunday, April 21st, 2024 at 6:15 PM
+// UPDATED: Monday, April 22nd, 2024 at 2:13 AM
 
 ################################################################################
 
@@ -214,3 +214,13 @@ const url = `https://img.youtube.com/vi/${video_id}/default.jpg`;
 window.open(url).focus();
 
 END Sunday, April 21st, 2024 at 5:54 PM
+
+################################################################################
+
+BEGIN GET Killer
+
+// To remove URL parameters after a GET request.
+
+location.href = location.href.replace(/\?.*/, '');
+
+END Monday, April 22nd, 2024 at 2:08 AM
