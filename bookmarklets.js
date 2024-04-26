@@ -3,7 +3,7 @@
 // DATE: Thursday, December 21st, 2023
 // ABOUT: bookmarklets for the web browser
 // ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-// UPDATED: Monday, April 22nd, 2024 at 2:20 AM
+// UPDATED: Friday, April 26th, 2024 at 2:17 AM
 
 ################################################################################
 
@@ -226,3 +226,29 @@ ICON javascript.ico
 location.href = location.href.replace(/\?.*/, '');
 
 END Monday, April 22nd, 2024 at 2:08 AM
+
+################################################################################
+
+BEGIN YouTube Playlist Abstractor
+
+function getQueryParameters(url) {
+
+	let params = {};
+
+	url.match(/(?<=\?)[^#]*/)[0].split("&").forEach(param => {
+
+		let [key, value] = param.split("=");
+
+		params[key] = value;
+
+	});
+
+	return params;
+
+}
+
+let params = getQueryParameters(location.href);
+
+location.href = `https://www.youtube.com/playlist?list=${params['list']}`;
+
+END Friday, April 26th, 2024 at 2:13 AM
