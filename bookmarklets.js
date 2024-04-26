@@ -231,6 +231,8 @@ END Monday, April 22nd, 2024 at 2:08 AM
 
 BEGIN YouTube Playlist Abstractor
 
+ICON javascript.ico
+
 function getQueryParameters(url) {
 
 	let params = {};
