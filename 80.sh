@@ -3,7 +3,9 @@
 # FILENAME: 80.sh
 # AUTHOR: Zachary Krepelka
 # DATE: Thursday, January 18th, 2024
-# UPDATED: Thursday, March 28th, 2024 at 8:40 PM
+# ABOUT: identify bookmark entries exceeding 80 characters
+# ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
+# UPDATED: Thursday, April 25th, 2024 at 9:39 PM
 
 # PURPOSE
 
@@ -13,20 +15,34 @@
 
 		# https://www.emacswiki.org/emacs/EightyColumnRule
 
-usage() {
-	PROG=$(basename $0)
-	cat <<-EOF >&2
-		Usage: $PROG [option] <file>
-		identify bookmark entries exceeding 80 chars
+usage() { program=$(basename $0); cat <<-EOF >&2
+Usage: $program [options] <file>
+identify bookmark entries exceeding 80 characters
 
-		Documentation:  perldoc $PROG
-		Options:        -h to display this help message
-		Example:        bash $PROG bookmarks.html
-	EOF
-	exit 0
+Options:
+	-h          display this [h]elp message
+	-n {num}    use your own [n]umber
+
+Example:       bash $program bookmarks.html
+Documentation: perldoc $program
+EOF
+exit 0
 }
 
-[ "$1" == "-h" -o "$1" == "--help" ] && usage
+num=80
+
+while getopts hn: option
+do
+	case $option in
+
+		h) usage;;
+		n) num=$OPTARG;;
+
+	esac
+done
+shift $((OPTIND-1))
+
+[ "$1" == "--help" ] && usage
 
 if [[ $# -ne 1 ]]
 then
@@ -43,7 +59,7 @@ sed -f - <(grep -Po '(?<=>)[^<]*(?=</A>)' $1) <<-EOF |
 	s/&quot;/"/g
 
 EOF
-grep '.\{80,\}' | sort -u
+grep ".\{$num,\}" | sort -u
 
 : <<='cut'
 =pod
@@ -58,12 +74,29 @@ bash 80.sh <bookmark-file>
 
 =head1 DESCRIPTION
 
-The purpose of this script is to identify bookmark entries that exceed 80
-characters in length.  The input is a file in the Netscape Bookmark file format.
-The output is a list.  Why write a script like this?  A consise name is easy to
-read.  A long name is not.
+The purpose of this script is to identify bookmark entries with lengthy names.
+A concise name is easy to read, and a long name is not.  The input is a file in
+the Netscape Bookmark file format.  The output is a list of bookmark entries.
+
+In spirit of a common programming convention, our script reports bookmark
+entries with names exceeding 80 characters, but you can choose your own number
+with the B<-h> flag.
 
 	https://www.emacswiki.org/emacs/EightyColumnRule
+
+=head1 OPTIONS
+
+=over
+
+=item B<-h>
+
+Display a [h]elp message and exit.
+
+=item B<-n> I<NUM>
+
+Identify bookmark entries exceeding I<NUM> characters.
+
+=back
 
 =head1 SEE ALSO
 
