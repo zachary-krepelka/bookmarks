@@ -3,38 +3,57 @@
 # FILENAME: count.sh
 # AUTHOR: Zachary Krepelka
 # DATE: Wednesday, January 3rd, 2024
-# UPDATED: Thursday, March 28th, 2024 at 8:40 PM
+# ABOUT: a script to count entries in a Netscape bookmark file
+# ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
+# UPDATED: Friday, April 26th, 2024 at 12:05 AM
 
-# PURPOSE
+usage() { program=$(basename $0); cat <<-EOF >&2
+Usage: $program [options] <file>
+count your bookmark entries
 
-	# The purpose of this script is to count
-	# the number of bookmark entries in a
-	# Netscape bookmark file.
+Options:
+	-h	display this [h]elp message
+	-r	count the [r]oot directory
 
-usage() {
-	PROG=$(basename $0)
-	cat <<-EOF >&2
-		Usage: $PROG [option] <file>
-		count your bookmark entries
-
-		Documentation:  perldoc $PROG
-		Options:        -h to display this help message
-		Example:        bash $PROG bookmarks.html
-	EOF
-	exit 0
+Example:       bash $program bookmarks.html
+Documentation: perldoc $program
+EOF
+exit 0
 }
 
-[ "$1" == "-h" -o "$1" == "--help" ] && usage
+root=false
+
+while getopts hr option
+do
+	case $option in
+
+		h) usage;;
+		r) root=true;;
+	esac
+done
+shift $((OPTIND-1))
+
+[ "$1" == "--help" ] && usage
 
 if [[ $# -ne 1 ]]; then
 	echo 'Exactly one argument is required. Try -h for help.' 1>&2
 	exit 1
 fi
 
+bookmarks=$(grep '<A' $1 | wc -l)
+folders=$(grep '<H3' $1 | wc -l)
+
+if ! $root
+then
+	((--folders))
+fi
+
+total=$(expr $bookmarks + $folders)
+
 cat << EOF
-Bookmarks: $(grep '<A'  $1 | wc -l)
-Folders:   $(grep '<H3' $1 | wc -l)
-Total:     $(grep '<DT' $1 | wc -l)
+Bookmarks: $bookmarks
+Folders:   $folders
+Total:     $total
 EOF
 
 : <<='cut'
@@ -54,6 +73,20 @@ The purpose of this script is to count the number of bookmark entries in a
 Netscape bookmark file.  The input is a file in the Netscape Bookmark file
 format.  The output is a table displaying the number of bookmarks and folders in
 that file.
+
+=head1 OPTIONS
+
+=over
+
+=item B<-h>
+
+Display a [h]elp message and exit.
+
+=item B<-r>
+
+Include the [r]oot directory while counting the number of folders.
+
+=back
 
 =head1 SEE ALSO
 
