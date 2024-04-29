@@ -249,8 +249,8 @@ function getQueryParameters(url) {
 
 }
 
-let params = getQueryParameters(location.href);
+let id = getQueryParameters(location.href)['list'];
 
-location.href = `https://www.youtube.com/playlist?list=${params['list']}`;
+location.href = `https://www.youtube.com/playlist?list=${id}`;
 
 END Friday, April 26th, 2024 at 2:13 AM
