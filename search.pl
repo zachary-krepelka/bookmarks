@@ -5,11 +5,10 @@
 # DATE: Wednesday, May 1st, 2024
 # ABOUT: a command-line bookmark searcher
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-# UPDATED: Friday, May 3rd, 2024 at 12:06 AM
+# UPDATED: Friday, May 3rd, 2024 at 12:01 PM
 
 use strict;
 use warnings;
-
 use File::Basename;
 use File::Temp qw(tempfile);
 use Getopt::Long;
@@ -124,7 +123,6 @@ sub get_folders {
 #                                      /
 
 my @search_terms;
-my ($fh, $filename) = tempfile;
 
 if ($name_flag) {
 
@@ -148,8 +146,8 @@ if ($name_flag) {
 
 } else { usage; }
 
+my ($fh, $filename) = tempfile;
 print $fh join("\n", @search_terms);
-
 chomp(my $input = `cat $filename | fzf`);
 
 if ($folder_flag) {
@@ -224,7 +222,7 @@ This script is a wrapper around fzf, a command-line fuzzy finder. You will need
 to install fzf on your system to use this script. You can find the project on
 GitHub at L<https://github.com/junegunn/fzf.git>.
 
-=head1 CAVEAT
+=head1 CAVEATS
 
 This script specifically targets Google Chrome on WSL because that's what I'm
 using. I would like to generalize the script to run on a variety of systems, but
