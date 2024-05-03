@@ -3,95 +3,152 @@
 # FILENAME: search.pl
 # AUTHOR: Zachary Krepelka
 # DATE: Wednesday, May 1st, 2024
-# ABOUT: a perl script to search bookmarks
+# ABOUT: a command-line bookmark searcher
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
+# UPDATED: Friday, May 3rd, 2024 at 12:06 AM
 
 use strict;
 use warnings;
+
 use File::Basename;
 use File::Temp qw(tempfile);
 use Getopt::Long;
 
-my $key;
-my $value;
+my @urls;
 my @folders;
 my %bookmarks = ();
 
 GetOptions(
-	'folders' => \my $folder_flag,
-	'help' => \my $help_flag,
-	'url' => \my $url_flag
-
+	'name'   => \my $name_flag,
+	'url'    => \my $url_flag,
+	'path'   => \my $path_flag,
+	'folder' => \my $folder_flag,
+	'help'   => \my $help_flag
 );
 
-if ($help_flag)
-{
+#  __
+# (_    |_ .__   _|_o._  _  _
+# __)|_||_)|(_)|_||_|| |(/__>
+
+sub usage {
+
 	my $program = basename($0);
 	print STDERR <<~USAGE;
 		Usage: $program [bookmark file]
 		Command-line Bookmark Searcher
 
 		Options:
-			-h, --help	display this help message
+			-n, --name	search by name
 			-u, --url	search by URL
-			-f, --folder	search by folder
+			-p, --path	search by path
+			-f, --folder	search for a folder
+			-h, --help	display this help message
 
-		Default:       search by name
-		Example:       perl $program bookmarks.html
 		Documentation: perldoc $program
+		Example:       perl $program -n bookmarks.html
 		USAGE
 	exit;
 }
 
+sub get_bookmarks_by_name {
 
-while (<>) {
+	my $key;
+	my $value;
 
-		if (m|((?<=>)[^>]*(?=</H3>))|) {
+	while (<>) {
 
-			push @folders, $1;
+			if (m|((?<=>)[^>]*(?=</A>))|) {
 
-			next;
+				$key = $1;
 
-		} # if
+			} else {
+
+				next;
+
+			}
+
+			if (/HREF="([^"]+)/) {
+
+				$value = $1;
+
+			} else {
+
+				next;
+
+			}
+
+		$bookmarks{$key} = $value;
+
+	}
+}
+
+sub get_bookmarks_by_path {
+
+	# Don't include the root node "Bookmarks bar."
+
+	while (<>) { last if /bar/; }
+
+	my @path;
+
+	while (<>) {
+
+		push @path, $1 if m|((?<=>)[^>]*(?=</H3>))|;
 
 		if (m|((?<=>)[^>]*(?=</A>))|) {
 
-			$key = $1;
+			push @path, $1;
 
-		} else {
+			$bookmarks{join "/", @path} = $1 if /HREF="([^"]+)/;
 
-			next;
+			pop @path;
 
-		} # if
+		}
 
-		if (/HREF="([^"]+)/) {
+		pop @path if /<\/DL><p>/;
+	}
+}
 
-			$value = $1;
+sub get_urls {
 
-		} else {
+	while (<>) { push @urls, $1 if /HREF="([^"]+)/; }
+}
 
-			next;
+sub get_folders {
 
-		} # if
+	while (<>) { push @folders, $1 if m|((?<=>)[^>]*(?=</H3>))|; }
+}
 
-	$bookmarks{$key} = $value;
+#  _         _
+# /  _ .__  |_  ._  __|_o _ ._  _.|o_|_
+# \_(_)|(/_ ||_|| |(_ |_|(_)| |(_||| |_\/
+#                                      /
 
-} # while
-
+my @search_terms;
 my ($fh, $filename) = tempfile;
 
-print $fh join("\n",
+if ($name_flag) {
 
-	$folder_flag ?
+	get_bookmarks_by_name();
+	@search_terms = keys %bookmarks;
 
-		@folders :
+} elsif ($url_flag) {
 
-		$url_flag ?
+	get_urls();
+	@search_terms = @urls;
 
-			values %bookmarks :
+} elsif ($path_flag) {
 
-			keys %bookmarks
-);
+	get_bookmarks_by_path();
+	@search_terms = keys %bookmarks;
+
+} elsif ($folder_flag) {
+
+	get_folders();
+	@search_terms =  @folders;
+
+} else { usage; }
+
+print $fh join("\n", @search_terms);
 
 chomp(my $input = `cat $filename | fzf`);
 
@@ -113,38 +170,70 @@ if ($folder_flag) {
 
 __END__
 
+#  _
+# | \ _  _   ._ _  _ .__|_ _._|_o _ ._
+# |_/(_)(_|_|| | |(/_| ||_(_| |_|(_)| |
+
 =head1 NAME
 
-search.pl - search your bookmarks with fzf from the CLI
+search.pl - a command-line bookmark searcher using fzf
 
 =head1 SYNOPSIS
 
-perl search.pl <bookmark file>
+perl search.pl <option> <bookmark file>
 
 =head1 DESCRIPTION
 
 A script to search your bookmarks from the command line and open the result in a
 web browser.  The input is a file in the Netscape Bookmark file format.  The
 script currently targets Chrome on WSL.  Unlike Chrome's built-in search
-feature, this script allows you to search by name, by URL, and by folder.
+feature, this script gives you a wider variety of search techniques.  You can
+search for a bookmark by name, by URL, and by path. You can also search for
+folders.
 
 =head1 OPTIONS
 
 =over
 
+=item B<-n>, B<--name>
+
+Search for bookmarks by name.
+
+=item B<-u>, B<--url>
+
+Search for bookmarks by URL.
+
+=item B<-p>, B<--path>
+
+Search for bookmarks by path. Unlike the other options, this one respects the
+hierarchical structure of the data. Think nested versus flattened.
+
+=item B<-f> B<--folder>
+
+Search for a folder. Copy the result to your clipboard as a URL.
+
 =item B<-h>, B<--help>
 
 Display a help message and exit.
 
-=item B<-u>, B<--url>
-
-Search by URL instead of by name.
-
-=item B<-f> B<--folder>
-
-Search by folder. Copy the result to your clipboard as a URL.
-
 =back
+
+=head1 DEPENDENCIES
+
+This script is a wrapper around fzf, a command-line fuzzy finder. You will need
+to install fzf on your system to use this script. You can find the project on
+GitHub at L<https://github.com/junegunn/fzf.git>.
+
+=head1 CAVEAT
+
+This script specifically targets Google Chrome on WSL because that's what I'm
+using. I would like to generalize the script to run on a variety of systems, but
+I'll save that for another day when I have more time.
+
+=head1 BUGS
+
+Certain URL characters need shell-escaped and will presently cause the program
+to fail. This shouldn't be difficult to fix, but I don't have the time now.
 
 =head1 SEE ALSO
 
