@@ -7,7 +7,7 @@ Scripts for bookmark management by Zachary Krepelka
 	AUTHOR: Zachary Krepelka
 	DATE: Thursday, January 4th, 2024
 	ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-	UPDATED: Thursday, May 2nd, 2024 at 4:47 AM
+	UPDATED: Sunday, May 19th, 2024 at 3:06 AM
 -->
 
 ## Motivations
@@ -91,6 +91,7 @@ The functionality of each script is summarized in the table below.
 | bookmarkleter.pl              | Packages JavaScript into a bookmark file     |
 | bookmarklets.js               | Showcases a few of my [bookmarklets][7]      |
 | bookmarks.sed                 | Removes superfluous textual patterns         |
+| boookmarks.ahk                | Enhances bookmarking UI for Google Chrome    |
 | count.sh                      | Counts the number of bookmarks and folders   |
 | domains.sh                    | Reports domain frequencies                   |
 | duplicates.sh                 | Identifies duplicate bookmark entries        |
