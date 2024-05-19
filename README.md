@@ -7,7 +7,7 @@ Scripts for bookmark management by Zachary Krepelka
 	AUTHOR: Zachary Krepelka
 	DATE: Thursday, January 4th, 2024
 	ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-	UPDATED: Sunday, May 19th, 2024 at 3:06 AM
+	UPDATED: Sunday, May 19th, 2024 at 3:17 AM
 -->
 
 ## Motivations
@@ -46,8 +46,9 @@ files.**
 
 ## Procedure
 
-Each program serves a different purpose.  Follow this general procedure to use
-a program in this repository.
+Each program serves a different purpose.  Follow this general procedure to use a
+program in this repository. Note that the scripts mostly target the Linux
+command line.
 
 1. Export your bookmarks from your web browser to a file, say `bookmarks.html`.
 
