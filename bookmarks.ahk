@@ -157,7 +157,7 @@ WheelDown:: Send("{down}")
 XButton1::  Send("{right}")
 XButton2::  Send("{left}")
 
-; When holding snift, reverse up and
+; When holding shift, reverse up and
 ; down with left and right for
 ; horizontal scrolling.
 
