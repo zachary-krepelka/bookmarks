@@ -219,16 +219,18 @@ Portation(file, num) { ; https://english.stackexchange.com/q/141717
 
 	delay := 750
 
-	Send("^t"),                     Sleep(delay)
-	SendText("chrome://bookmarks"), Sleep(delay)
-	Send("{Enter}"),                Sleep(delay)
-	Send("{Tab}"),                  Sleep(delay)
-	Send("{Enter}"),                Sleep(delay)
-	Send("{Up " num "}"),           Sleep(delay)
-	Send("{Enter}"),                Sleep(delay)
-	SendText(file),                 Sleep(delay)
-	Send("{Enter}"),                Sleep(delay)
+	Send("^t"),                      Sleep(delay)
+	SendText("chrome://bookmarks "), Sleep(delay)
+	Send("{Enter}"),                 Sleep(delay)
+	Send("{Tab}"),                   Sleep(delay)
+	Send("{Enter}"),                 Sleep(delay)
+	Send("{Up " num "}"),            Sleep(delay)
+	Send("{Enter}"),                 Sleep(delay)
+	SendText(file),                  Sleep(delay)
+	Send("{Enter}"),                 Sleep(delay)
 	Send("^w")
+
+	; The space after "chrome://bookmarks" breaks any autocompletion.
 
 } ; Friday, April 26th, 2024
 
