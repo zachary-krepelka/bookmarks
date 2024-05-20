@@ -109,6 +109,8 @@ sub sort_bookmarks {
 
 usage if $help_flag; while (<>) { last if /bar/; print; } sort_bookmarks();
 
+__END__
+
 #  _
 # | \ _  _   ._ _  _ .__|_ _._|_o _ ._
 # |_/(_)(_|_|| | |(/_| ||_(_| |_|(_)| |
