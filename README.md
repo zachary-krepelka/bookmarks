@@ -7,7 +7,7 @@ Scripts for bookmark management by Zachary Krepelka
 	AUTHOR: Zachary Krepelka
 	DATE: Thursday, January 4th, 2024
 	ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-	UPDATED: Sunday, May 19th, 2024 at 3:17 AM
+	UPDATED: Monday, May 20th, 2024 at 12:03 AM
 -->
 
 ## Motivations
@@ -98,6 +98,7 @@ The functionality of each script is summarized in the table below.
 | duplicates.sh                 | Identifies duplicate bookmark entries        |
 | favicon.sh                    | Repopulates missing bookmark [favicons][8]   |
 | search.pl                     | Search your bookmarks on the command line    |
+| sort.pl                       | Sort bookmarks in folders recursively        |
 | spellcheck.sh                 | Reports spelling mistakes in bookmark names  |
 | tabgroups-to-bookmarks.pl     | A data converter tageting a Chrome extension |
 | treeifier.pl                  | Creates [tree view][9] from bookmark file    |
