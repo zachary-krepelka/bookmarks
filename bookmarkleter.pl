@@ -82,6 +82,7 @@ sub trim {
 sub extract_content {
 
 	# Extracts the content of an html element.
+	# Assumes that the element does not span multiple lines.
 
 	return $1 if shift =~ m|>([^<]*)</|;
 

@@ -43,6 +43,7 @@ sub usage {
 my $extract_content = sub {
 
 	# Extracts the content of an html element.
+	# Assumes that the element does not span multiple lines.
 
 	return $1 if shift =~ m|>([^<]*)</|;
 
