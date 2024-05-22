@@ -7,7 +7,7 @@ Scripts for bookmark management by Zachary Krepelka
 	AUTHOR: Zachary Krepelka
 	DATE: Thursday, January 4th, 2024
 	ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-	UPDATED: Monday, May 20th, 2024 at 12:03 AM
+	UPDATED: Tuesday, May 21st, 2024 at 10:35 PM
 -->
 
 ## Motivations
@@ -41,8 +41,8 @@ web browser, but all major web browsers today have adopted this standard,
 therein promoting [data portability][5] and [interoperability][6] between
 browsers.  These files have the `.html` extension with the HTML document type
 declaration `<!DOCTYPE NETSCAPE-Bookmark-file-1>`, which can be seen by opening
-the file in a text editor.  **The programs in this repository operate on these
-files.**
+the file in a text editor.  **The programs in this repository either operate on
+or generate these files.**
 
 ## Procedure
 
