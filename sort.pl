@@ -5,7 +5,7 @@
 # DATE: Sunday, May 19th, 2024
 # ABOUT: a command-line bookmark sorter
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-# UPDATED: Sunday, May 19th, 2024 at 11:36 PM
+# UPDATED: Friday, May 24th, 2024 at 12:06 AM
 
 use strict;
 use warnings;
@@ -35,7 +35,7 @@ sub usage {
 			-i, --ignore-case	ignore case when sorting
 
 		Documentation: perldoc $program
-		Example: sort.pl -i -s bookmarks.html > sorted-bookmarks.html
+		Example: $program -i -s bookmarks.html > sorted-bookmarks.html
 		USAGE
 	exit;
 }
