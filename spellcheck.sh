@@ -5,7 +5,7 @@
 # DATE: Thursday, January 18th, 2024
 # ABOUT: a bookmark spellchecking program
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-# UPDATED: Wednesday, May 22nd, 2024 at 2:06 AM
+# UPDATED: Sunday, May 26th, 2024 at 1:32 AM
 
 	# The purpose of this script is
 	# to identify spelling mistakes
@@ -41,7 +41,7 @@ do
 
 			word_count=$(expr $(wc -l < $ignore_list) - 1)
 
-			sed -i "s/\(personal_ws-1.1 en \)\w*/\1$word_count/" $ignore_list
+			sed -i "s/\(personal_ws-1.1 en\) \?\w*/\1 $word_count/" $ignore_list
 
 		;;
 
