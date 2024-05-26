@@ -5,7 +5,7 @@
 # DATE: Sunday, May 19th, 2024
 # ABOUT: a command-line bookmark sorter
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-# UPDATED: Saturday, May 25th, 2024 at 11:53 PM
+# UPDATED: Sunday, May 26th, 2024 at 12:02 AM
 
 #
 # |\/| _  _|   | _  _
@@ -56,11 +56,7 @@ sub process_skips {
 
 	open my $fh, '<', $skip_list or die "The skip list failed.";
 
-	while (<$fh>) {
-
-		chomp; push @skips, $_;
-
-	}
+	while (<$fh>) { chomp; push @skips, $_; }
 
 	close $fh;
 
@@ -106,8 +102,6 @@ sub sort_bookmarks {
 
 	PROCESS_FOLDER: while (<>) {
 
-		# Ignore bookmarks that are named "Read Me".
-
 		if (defined $skip_list) {
 
 			foreach my $skip (@skips) {
@@ -117,8 +111,6 @@ sub sort_bookmarks {
 					print; next PROCESS_FOLDER;
 
 				}
-
-			# print if /\Q$skip\E/ && next for my $skip (@skips);
 
 			}
 		}
@@ -177,7 +169,7 @@ recursively throughout all folders at once.
 
 =over
 
-=item B<-s> I<FILE>, B<--skip-list> I<FILE>
+=item B<-s> I<FILE>, B<--skip-list>=I<FILE>
 
 I<FILE> is a list of names of bookmarks to skip when sorting.
 
