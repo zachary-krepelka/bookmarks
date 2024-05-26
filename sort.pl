@@ -100,7 +100,7 @@ sub sort_bookmarks {
 
 	my @hrefs = ();
 
-	PROCESS_FOLDER: while (<>) {
+	PROCESS_FOLDER_CONTENTS: while (<>) {
 
 		if (defined $skip_list) {
 
@@ -108,7 +108,7 @@ sub sort_bookmarks {
 
 				if (/>\Q$skip\E</ and not /<H3/) {
 
-					print; next PROCESS_FOLDER;
+					print; next PROCESS_FOLDER_CONTENTS;
 
 		} } }
 
