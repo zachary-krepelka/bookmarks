@@ -5,7 +5,7 @@
 # DATE: Sunday, May 19th, 2024
 # ABOUT: a command-line bookmark sorter
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-# UPDATED: Sunday, May 26th, 2024 at 12:25 AM
+# UPDATED: Sunday, May 26th, 2024 at 12:39 AM
 
 #
 # |\/| _  _|   | _  _
@@ -106,7 +106,7 @@ sub sort_bookmarks {
 
 			foreach my $skip (@skips) {
 
-				if (/>\Q$skip\E</) {
+				if (/>\Q$skip\E</ and not /<H3/) {
 
 					print; next PROCESS_FOLDER;
 
