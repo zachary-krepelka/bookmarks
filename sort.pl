@@ -5,7 +5,7 @@
 # DATE: Sunday, May 19th, 2024
 # ABOUT: a command-line bookmark sorter
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-# UPDATED: Sunday, May 26th, 2024 at 12:02 AM
+# UPDATED: Sunday, May 26th, 2024 at 12:25 AM
 
 #
 # |\/| _  _|   | _  _
@@ -41,13 +41,13 @@ sub usage {
 		A Recursive, Command-line Bookmark Sorter
 
 		Options:
-			-h, --help		display this help message
-			-l, --links		sort by URL instead of by name
-			-i, --ignore-case	ignore case when sorting
-			-s, --skip-list=FILE	list of bookmarks to skip
+			-h, --help                    display this help message
+			-l, --links                   sort by URLs, not names
+			-i, --ignore-case             ignore case when sorting
+			-s FILE, --skip-list=FILE     list of bookmarks to skip
 
 		Documentation: perldoc $program
-		Example: $program -i -s bookmarks.html > sorted-bookmarks.html
+		Example: $program -l bookmarks.html > sorted-bookmarks.html
 		USAGE
 	exit;
 }
@@ -110,10 +110,7 @@ sub sort_bookmarks {
 
 					print; next PROCESS_FOLDER;
 
-				}
-
-			}
-		}
+		} } }
 
 		push @hrefs, $_ if /<A/; # <DT><A HREF="..." ...>Bookmark</A>
 
