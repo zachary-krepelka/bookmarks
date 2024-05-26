@@ -5,17 +5,28 @@
 # DATE: Sunday, May 19th, 2024
 # ABOUT: a command-line bookmark sorter
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-# UPDATED: Friday, May 24th, 2024 at 12:06 AM
+# UPDATED: Saturday, May 25th, 2024 at 11:53 PM
+
+#
+# |\/| _  _|   | _  _
+# |  |(_)(_||_||(/__>
 
 use strict;
 use warnings;
 use File::Basename;
 use Getopt::Long;
 
+#
+# \  /_.._o _.|_ | _  _
+#  \/(_|| |(_||_)|(/__>
+
+my @skips;
+
 GetOptions(
 	'help'        => \my $help_flag,
-	'switch'      => \my $switch_flag,
-	'ignore-case' => \my $case_insensitive
+	'link'        => \my $url_flag,
+	'ignore-case' => \my $case_insensitive,
+	'skip-list=s' => \my $skip_list
 );
 
 #  __
@@ -30,14 +41,29 @@ sub usage {
 		A Recursive, Command-line Bookmark Sorter
 
 		Options:
-			-h, --help       	display this help message
-			-s, --switch     	sort by URL instead of by name
+			-h, --help		display this help message
+			-l, --links		sort by URL instead of by name
 			-i, --ignore-case	ignore case when sorting
+			-s, --skip-list=FILE	list of bookmarks to skip
 
 		Documentation: perldoc $program
 		Example: $program -i -s bookmarks.html > sorted-bookmarks.html
 		USAGE
 	exit;
+}
+
+sub process_skips {
+
+	open my $fh, '<', $skip_list or die "The skip list failed.";
+
+	while (<$fh>) {
+
+		chomp; push @skips, $_;
+
+	}
+
+	close $fh;
+
 }
 
 my $extract_content = sub {
@@ -63,7 +89,7 @@ sub helper {
 
 	@_ = map lc, @_ if $case_insensitive;
 
-	my $func = $switch_flag ? $extract_url : $extract_content;
+	my $func = $url_flag ? $extract_url : $extract_content;
 
 	my ($a, $b) = map &$func, @_;
 
@@ -78,11 +104,24 @@ sub sort_bookmarks {
 
 	my @hrefs = ();
 
-	while (<>) {
+	PROCESS_FOLDER: while (<>) {
 
 		# Ignore bookmarks that are named "Read Me".
 
-		if (/Read Me/) { print; next; }
+		if (defined $skip_list) {
+
+			foreach my $skip (@skips) {
+
+				if (/>\Q$skip\E</) {
+
+					print; next PROCESS_FOLDER;
+
+				}
+
+			# print if /\Q$skip\E/ && next for my $skip (@skips);
+
+			}
+		}
 
 		push @hrefs, $_ if /<A/; # <DT><A HREF="..." ...>Bookmark</A>
 
@@ -108,7 +147,9 @@ sub sort_bookmarks {
 # \_(_)|(/_ ||_|| |(_ |_|(_)| |(_||| |_\/
 #                                      /
 
-usage if $help_flag; while (<>) { last if /bar/; print; } sort_bookmarks();
+usage if $help_flag;
+process_skips if defined $skip_list;
+while (<>) { last if /bar/; print; } sort_bookmarks();
 
 __END__
 
@@ -136,14 +177,18 @@ recursively throughout all folders at once.
 
 =over
 
+=item B<-s> I<FILE>, B<--skip-list> I<FILE>
+
+I<FILE> is a list of names of bookmarks to skip when sorting.
+
 =item B<-i>, B<--ignore-case>
 
 Sort bookmarks case-insensitively.
 
-=item B<-s>, B<--switch>
+=item B<-l>, B<--link>
 
 By default, this script sorts bookmarks by their names.  To have it sort the
-bookmarks by their URLs, pass the B<--switch> flag.
+bookmarks by their URLs, pass the B<--links> flag.
 
 =item B<-h>, B<--help>
 
