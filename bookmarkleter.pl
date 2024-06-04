@@ -5,7 +5,7 @@
 # DATE: Friday, January 5th, 2024
 # ABOUT: a bookmarklet compiler for the command line
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks
-# UPDATED: Friday, March 29th, 2024 at 12:00 AM
+# UPDATED: Tuesday, June 4th, 2024 at 12:33 AM
 
 ################################################################################
 
@@ -15,9 +15,13 @@
 
 use strict;
 use warnings;
+use feature qw(say);
 use File::Basename;                  # https://metacpan.org/pod/File::Basename
 use MIME::Base64 qw(encode_base64);  # https://metacpan.org/pod/MIME::Base64
 use URI::Escape qw(uri_escape_utf8); # https://metacpan.org/pod/URI::Escape
+
+# For Debugging
+# use Data::Dump qw(dump);
 
 ################################################################################
 
@@ -45,16 +49,27 @@ if ($ARGV[0] eq '-h' || $ARGV[0] eq '--help')
 # \  /_.._o _.|_ | _  _
 #  \/(_|| |(_||_)|(/__>
 
-my $user      = "";
-my $anchors   = "";
-my $href      = "";
-my $icon      = "";
-my $title     = "";
-my $args      = "";
-my $params    = "";
-my $lang      = "";
-my $sort_flag =  0;
-my $root      = "Bookmarklets";
+my $href   = "";
+my $icon   = "";
+my $name   = "";
+my $path   = "";
+my $args   = "";
+my $params = "";
+my $lang   = "";
+my $root   = "Bookmarklets";
+
+#--------------------------------------------------#
+
+my $bookmarks = 'zya3aiGae';
+
+# This string variable serves as a default hash key.
+# Its contents don't matter but would preferably be
+# something nonsensical.  It should start with the
+# letter z for sorting reasons. (Made with pwgen.)
+
+#--------------------------------------------------#
+
+my $bookmarklets = {};
 
 ################################################################################
 
@@ -66,7 +81,6 @@ sub reset_vars {
 
 	$href   = "";
 	$icon   = "";
-	$title  = "";
 	$args   = "";
 	$params = "";
 	$lang   = "";
@@ -77,30 +91,6 @@ sub trim {
 	my $str = shift;
 	$str =~ s/^\s+|\s+$//g;
 	return $str;
-}
-
-sub extract_content {
-
-	# Extracts the content of an html element.
-	# Assumes that the element does not span multiple lines.
-
-	return $1 if shift =~ m|>([^<]*)</|;
-
-	# https://en.wikipedia.org/wiki/HTML_element#Syntax
-
-}
-
-sub encode_ico {
-
-	open (IMAGE, shift) || die $!;
-
-	return
-		encode_base64(
-			do {
-				local $/ = undef;
-				<IMAGE>;
-			},
-		'');
 }
 
 sub encode_coffee { # shell dependency
@@ -114,7 +104,6 @@ sub encode_coffee { # shell dependency
 	my $javascript = do { local $/; <$fh>};
 
 	return "\n" . $javascript . "\n";
-
 }
 
 sub encode_js {
@@ -142,87 +131,99 @@ sub encode_js {
 	return 'javascript:' . uri_escape_utf8($javascript);
 }
 
-################################################################################
+	# The credit for the algorithm in the following
+	# function goes to a Stack Overflow post.  The
+	# algorithm was originally presented in Python.
+	# I translated it into Perl and adapted it for
+	# my needs.
 
-#  _         _                   _
-# /  _ .__  |_).__  _ .__.._ _  |_  ._  __|_o _ ._  _.|o_|_
-# \_(_)|(/_ |  |(_)(_||(_|| | | ||_|| |(_ |_|(_)| |(_||| |_\/
-#                   _|                                     /
+		# https://stackoverflow.com/q/8484943
 
-while (my $line = <>) {
+sub attach {
 
-	if ($line =~ m/^ARGS(.*)$/) {
+	my ($tree, $path, $url, $icon) = @_;
 
-		$args = trim $1;
+	my @parts = split /\//, $path, 2;
 
-	} elsif ($line =~ m/^PARAMS(.*)$/) {
+	if (@parts == 1) {
 
-		$params = trim $1;
+		my $name = shift @parts;
 
-	} elsif ($line =~ m/^ICON(.*)$/) {
-
-		$icon = ' ICON="data:image/png;base64,' .
-		encode_ico(trim $1) . '"';
-
-	} elsif ($line =~ m/^LANG(.*)$/) {
-
-		$lang = $1;
-
-	} elsif ($line =~ m/^NAME(.*)$/) {
-
-		next if $1 =~ m/^\s*$/;
-		$user = trim($1) . "'s ";
-
-	} elsif ($line =~ m/^SORT/) {
-
-		$sort_flag = 1;
-
-	} elsif ($line =~ m/^ROOT(.*)$/) {
-
-		$root = trim $1;
-
-	} elsif ($line =~ m/^BEGIN(.*)$/) {
-
-		reset_vars();
-		$title = trim $1;
-
-	} elsif ($line =~ m/^END/) {
-
-		$href = encode_coffee $href if $lang =~ m/CoffeeScript/i;
-
-		$href =
-			' HREF="' .
-			encode_js(
-				'(function(' .
-				$params      .
-				'){'         .
-				$href        .
-				'})('        .
-				$args        .
-				');'
-			) . '"';
-
-		$anchors .= "<DT><A$href$icon>$title</A>\n";
+		push @{$tree->{$bookmarks}}, [ $name, $url, $icon ];
 
 	} else {
 
-		$href .= $line;
+		my ($folder, $rest) = @parts;
 
+		if (defined $folder) {
+
+			if (not grep { $_ eq $folder } keys %$tree) {
+
+				$tree->{$folder} = { $bookmarks => [] };
+
+			}
+
+			attach($tree->{$folder}, $rest, $url, $icon);
+		}
 	}
-
 }
 
-chomp $anchors;
-my $pad = " " x 8;
-$anchors =~ s/^/$pad/gm;
+sub encode_ico {
 
-$anchors =
-	join("\n",
-		sort(
-			{extract_content($a) cmp extract_content($b)}
-			split("\n", $anchors)
-		)
-	) if $sort_flag;
+	open (IMAGE, shift) || return ""; # fails silently
+
+	return encode_base64( do { local $/ = undef; <IMAGE>; }, '');
+}
+
+sub bookmark_builder {
+
+	my $bookmark = shift;
+
+	my ($name, $href, $icon) = @$bookmark;
+
+	no warnings 'uninitialized';
+
+	$href = " HREF=\"$href\"";
+
+	$icon = encode_ico $icon if $icon;
+
+	$icon = " ICON=\"data:image/png;base64,$icon\"" if $icon;
+
+	return "<DT><A$href$icon>$name</A>";
+}
+
+sub helper {
+
+	my ($tree, $depth) = @_;
+
+	my $pad = (" " x 4) x $depth;
+
+	foreach my $key (sort keys %$tree) {
+
+		my $value = %$tree{$key};
+
+		if ($key eq $bookmarks) {
+
+			for my $bookmark (sort {@$a[0] cmp @$b[0]} @$value) {
+
+				say $pad . bookmark_builder $bookmark;
+			}
+
+		} else {
+
+			say "$pad<DT><H3>$key</H3>";
+			say "$pad<DL><p>";
+
+			helper($value, $depth + 1);
+
+			say "$pad</DL><p>";
+		}
+	}
+}
+
+sub bookmarkify {
+
+my $tree = shift;
 
 print <<"EOF";
 <!DOCTYPE NETSCAPE-Bookmark-file-1>
@@ -238,16 +239,66 @@ print <<"EOF";
 		https://github.com/zachary-krepelka/bookmarks.git
 -->
 
-<TITLE>${user}Bookmarklets</TITLE>
-<H1>${user}Bookmarklets</H1>
-
+<TITLE>Bookmarks</TITLE>
+<H1>Bookmarks</H1>
 <DL><p>
-    <DT><H3>${root}</H3>
+    <DT><H3>$root</H3>
     <DL><p>
-$anchors
-    </DL><p>
-</DL>
 EOF
+
+helper($tree, 2);
+
+print <<'EOF';
+    </DL><p>
+</DL><p>
+EOF
+}
+
+################################################################################
+
+#  _         _                   _
+# /  _ .__  |_).__  _ .__.._ _  |_  ._  __|_o _ ._  _.|o_|_
+# \_(_)|(/_ |  |(_)(_||(_|| | | ||_|| |(_ |_|(_)| |(_||| |_\/
+#                   _|                                     /
+
+while (my $line = <>) {
+
+	   if( $line =~ /^ARGS(.*)$/   ) { $args   = trim $1;                }
+	elsif( $line =~ /^PARAMS(.*)$/ ) { $params = trim $1;                }
+	elsif( $line =~ /^ICON(.*)$/   ) { $icon   = trim $1;                }
+	elsif( $line =~ /^LANG(.*)$/   ) { $lang   = trim $1;                }
+	elsif( $line =~ /^ROOT(.*)$/   ) { $root   = trim $1;                }
+	elsif( $line =~ /^FOLDER(.*)$/ ) { $path   = trim($1) . '/' . $name; }
+	elsif( $line =~ /^BEGIN(.*)$/  ) {
+
+		reset_vars();
+		$name = trim $1;
+		$path = $name;
+
+	} elsif ($line =~ m/^END/) {
+
+		$href = encode_coffee $href if $lang =~ m/CoffeeScript/i;
+
+		$href = encode_js
+
+			'(function(' .
+			$params      .
+			'){'         .
+			$href        .
+			'})('        .
+			$args        .
+			');'         ;
+
+		attach($bookmarklets, $path, $href, $icon);
+
+	} else {
+
+		$href .= $line;
+
+	}
+}
+
+bookmarkify $bookmarklets;
 
 __END__
 
@@ -359,13 +410,12 @@ The following are keywords if placed at the beginning of a new line:
 	---------------------------------------------------------
 	BEGIN       bookmark name            n/a        required
 	END         n/a                      n/a        required
-	ICON        file path                local      optional
+	ICON        local filepath           local      optional
+	FOLDER      path to bookmark         local      optional
 	LANG        programming language     local      optional
-	NAME        user's name              global     optional
-	SORT        n/a                      global     optional
-	ROOT        folder name              global     optional
 	ARGS        comma-delimited list     local      optional
 	PARAMS      comma-delimited list     local      optional
+	ROOT        folder name              global     optional
 	---------------------------------------------------------
 
 The keywords with local scope should optionally appear inside of the blocks
@@ -378,28 +428,36 @@ Let's walk though each keyword individually to understand its purpose.  Many of
 the keywords accept arguments, which are placed directly after the keyword on
 the same line with a space in between.
 
+=head2 Begin
+
 The argument passed to BEGIN is the title of the bookmarklet.  It will appear as
 the name of the bookmark when imported into a web browser.  Everything after the
 keyword up until the end of the line is eaten up.
+
+=head2 Icon
 
 The ICON keyword expects the file path of an icon stored on the local machine.
 This will become the favicon of the bookmark when imported into a web browser.
 Everything after the keyword up until the end of the line is eaten up.  Please
 only specify one file with the .ico extension.
 
-The LANG keyword only knows one message, and that's 'CoffeeScript.'  It allows
-the user to write bookmarklets in CoffeeScript.  If absent, the default language
-is JavaScript.
+=head2 Folder
 
-The NAME keyword injects the user's name into the heading of the HTML file.
-This is only noticeable if you open the resulting file as apposed to only
-importing it.
+The FOLDER keyword allows the user to specify a bookmarklet's location in the
+imported folder structure by providing a path/like/this/one.  If absent, the
+bookmark will appear in the root imported folder.  The path is to a folder;
+don't include the name of the bookmark.
 
-The SORT keyword instructs the program to sort the bookmarks by title.
+=head2 Lang
 
-The ROOT keyword's argument is the name of the root folder containing the
-bookmarklets. If the ROOT keyword is unspecified, the name will default to
-'Bookmarklets.'
+The LANG keyword allows a programmer to write bookmarklets in languages other
+than JavaScript, namely in languages that I<transpile> to JavaScript.
+Currently, the LANG keyword only knows one message, and that's 'CoffeeScript.'
+In the future, support for other languages will be added.  This keyword calls on
+external programs to transpile code, so make sure the required tools are
+installed on your system.  (See the DEPENDENCIES section).
+
+=head2 Params & Args
 
 Everything within a block is automatically wrapped in an immediately invoked
 function expression.  The keywords PARAMS and ARGS pertain to this detail.  An
@@ -415,6 +473,12 @@ That's what PARAMS and ARGS do.  Recall the difference between parameters and
 arguments: arguments are values passed into function calls whereas parameters
 are variables declared in a function's definition.  Arguments are bound to
 parameters when a function enters into scope.
+
+=head2 Root
+
+The ROOT keyword's argument is the name of the root folder containing the
+bookmarklets. If the ROOT keyword is unspecified, the name will default to
+'Bookmarklets.'
 
 =head1 EXAMPLES
 
@@ -584,41 +648,32 @@ this document. Put it in ~/.vim/syntax and use it with :set syntax=bookmarklet.
 	08  	\ 'ARGS',
 	09  	\ 'BEGIN',
 	10  	\ 'END',
-	11  	\ 'ICON',
-	12  	\ 'LANG',
-	13  	\ 'NAME',
+	11  	\ 'FOLDER',
+	12  	\ 'ICON',
+	13  	\ 'LANG',
 	14  	\ 'PARAMS',
-	15  	\ 'ROOT',
-	16  	\ 'SORT'
-	17  \]
-	18
-	19  let s:argument_accepting_keywords =
-	20  \[
-	21  	\ 'ARGS',
-	22  	\ 'BEGIN',
+	15  	\ 'ROOT'
+	16  \]
+	17
+	18  let s:argument_accepting_keywords =
+	19  \[
+	20  	\ 'ARGS',
+	21  	\ 'BEGIN',
+	22  	\ 'FOLDER',
 	23  	\ 'ICON',
 	24  	\ 'LANG',
-	25  	\ 'NAME',
-	26  	\ 'PARAMS',
-	27  	\ 'ROOT'
-	28  \]
-	29
-	30  execute 'syntax match bookmarkletKeyword'
-	31  \ '"^\('..join(s:keywords,'\|')..'\)"'
-	32
-	33  execute 'syntax match bookmarkletKeywordArgument'
-	34  \ '"\(^\('..join(s:argument_accepting_keywords,'\|')..'\)\)\@<=.*"'
-	35
-	36  highlight  link  bookmarkletKeyword          Keyword
-	37  highlight  link  bookmarkletKeywordArgument  String
-
-=head1 TODO
-
-I would like to add a FOLDER keyword that allows the user to specify a
-/path/like/this.  As of now, all the bookmarklets are placed in a single root
-folder called 'Bookmarklets.'  I would like to implement a tree data structure
-to accomplish folder nesting.  I'm new to Perl, so this is outside of my
-abilities at the moment.  Error handling needs addressed too.
+	25  	\ 'PARAMS',
+	26  	\ 'ROOT'
+	27  \]
+	28
+	29  execute 'syntax match bookmarkletKeyword'
+	30  \ '"^\('..join(s:keywords,'\|')..'\)"'
+	31
+	32  execute 'syntax match bookmarkletKeywordArgument'
+	33  \ '"\(^\('..join(s:argument_accepting_keywords,'\|')..'\)\)\@<=.*"'
+	34
+	35  highlight  link  bookmarkletKeyword          Keyword
+	36  highlight  link  bookmarkletKeywordArgument  String
 
 =head1 DEPENDENCIES
 
