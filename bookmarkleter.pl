@@ -5,7 +5,7 @@
 # DATE: Friday, January 5th, 2024
 # ABOUT: a bookmarklet compiler for the command line
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks
-# UPDATED: Tuesday, June 4th, 2024 at 12:33 AM
+# UPDATED: Wednesday, June 5th, 2024 at 1:56 AM
 
 ################################################################################
 
@@ -17,6 +17,7 @@ use strict;
 use warnings;
 use feature qw(say);
 use File::Basename;                  # https://metacpan.org/pod/File::Basename
+use Getopt::Long;                    # https://perldoc.perl.org/Getopt::Long
 use MIME::Base64 qw(encode_base64);  # https://metacpan.org/pod/MIME::Base64
 use URI::Escape qw(uri_escape_utf8); # https://metacpan.org/pod/URI::Escape
 
@@ -25,38 +26,23 @@ use URI::Escape qw(uri_escape_utf8); # https://metacpan.org/pod/URI::Escape
 
 ################################################################################
 
-#
-# |_| _ |._
-# | |(/_||_)
-#        |
-
-if ($ARGV[0] eq '-h' || $ARGV[0] eq '--help')
-{
-	my $prog = basename($0);
-	print STDERR <<~USAGE;
-		Usage: $prog [options] <file>
-		a bookmarklet compiler for the command line
-
-		Documentation: perldoc $prog
-		Options:       -h to display this help message
-		Example:       perl $prog source-code.txt > bookmarklets.html
-		USAGE
-	exit;
-}
-
-################################################################################
-
 # \  /_.._o _.|_ | _  _
 #  \/(_|| |(_||_)|(/__>
 
-my $href   = "";
-my $icon   = "";
-my $name   = "";
-my $path   = "";
-my $args   = "";
-my $params = "";
-my $lang   = "";
-my $root   = "Bookmarklets";
+GetOptions(
+	'ugly' => \my $outsourced,
+	'help' => \my $help_flag
+);
+
+my $bookmarklets = {};
+my $href         = "";
+my $icon         = "";
+my $name         = "";
+my $path         = "";
+my $args         = "";
+my $params       = "";
+my $lang         = "";
+my $root         = "Bookmarklets";
 
 #--------------------------------------------------#
 
@@ -69,13 +55,34 @@ my $bookmarks = 'zya3aiGae';
 
 #--------------------------------------------------#
 
-my $bookmarklets = {};
-
 ################################################################################
 
 #  __
 # (_    |_ .__   _|_o._  _  _
 # __)|_||_)|(_)|_||_|| |(/__>
+
+sub usage {
+
+	my $program = basename($0);
+	print STDERR <<~USAGE;
+		Usage: $program [options] <file>
+		a bookmarklet compiler for the command line
+
+		Example:
+		  perl $program source-code.txt > bookmarklets.html
+
+		    * source-code.txt wraps js code in a custom file format
+		    * bookmarklets.html imports into a web browser
+		    * read documentation for detailed usage
+
+		Options:
+		  -u, --ugly	outsource compression to UglifyJS
+		  -h, --help	display this help message
+
+		Documentation: perldoc $program
+		USAGE
+	exit;
+}
 
 sub reset_vars {
 
@@ -93,20 +100,7 @@ sub trim {
 	return $str;
 }
 
-sub encode_coffee { # shell dependency
-
-	(my $coffee = shift) =~ s/"/\\"/g;
-
-	my $cmd = "echo \"$coffee\" | coffee -csb ";
-
-	open my $fh, '-|', $cmd or die $!;
-
-	my $javascript = do { local $/; <$fh>};
-
-	return "\n" . $javascript . "\n";
-}
-
-sub encode_js {
+sub encode_js_internally {
 
 	# Taken from John Gruber's blog with slight modification.
 
@@ -128,7 +122,21 @@ sub encode_js {
 
 	# The order is important.
 
-	return 'javascript:' . uri_escape_utf8($javascript);
+	return uri_escape_utf8($javascript);
+}
+
+sub encode_js_externally { # introduces a shell dependency
+
+	(my $javascript = shift) =~ s/'/'"'"'/g;
+
+	return uri_escape_utf8(`echo '$javascript' | uglifyjs -c -m`);
+}
+
+sub encode_coffee {        # introduces a shell dependency
+
+	(my $coffeescript= shift) =~ s/'/'"'"'/g;
+
+	return `echo '$coffeescript' | coffee -csb`;
 }
 
 	# The credit for the algorithm in the following
@@ -261,6 +269,10 @@ EOF
 # \_(_)|(/_ |  |(_)(_||(_|| | | ||_|| |(_ |_|(_)| |(_||| |_\/
 #                   _|                                     /
 
+usage if $help_flag;
+
+my $encode_js = $outsourced ? \&encode_js_externally : \&encode_js_internally;
+
 while (my $line = <>) {
 
 	   if( $line =~ /^ARGS(.*)$/   ) { $args   = trim $1;                }
@@ -279,7 +291,7 @@ while (my $line = <>) {
 
 		$href = encode_coffee $href if $lang =~ m/CoffeeScript/i;
 
-		$href = encode_js
+		$href = 'javascript:' . &$encode_js(
 
 			'(function(' .
 			$params      .
@@ -287,7 +299,7 @@ while (my $line = <>) {
 			$href        .
 			'})('        .
 			$args        .
-			');'         ;
+			');'        );
 
 		attach($bookmarklets, $path, $href, $icon);
 
@@ -318,7 +330,7 @@ Below I describe the program's input, output, and usage.
 
 =head2 Usage
 
-perl bookmarkleter.pl [source code file] > [bookmark file]
+perl  bookmarkleter.pl  [OPTIONS]  <SOURCE CODE FILE>  >  [BOOKMARK FILE]
 
 =head2 Input
 
@@ -340,7 +352,7 @@ files have the html extension with the HTML document type declaration
 =head1 DESCRIPTION
 
 This script is a bookmarklet compiler.  First and foremost, what is a
-bookmarklet? Quoting bookmarklets.org, a bookmarklet is "a special kind of
+bookmarklet?  Quoting bookmarklets.org, a bookmarklet is "a special kind of
 [digital, web-browser] bookmark that performs a task when you click it.
 Bookmarklets are tiny programs stored inside bookmarks....A bookmarklet is
 usually written in the programming language called JavaScript," the programming
@@ -351,6 +363,23 @@ file that one can import into a web browser.  Namely, it packages JavaScript
 Code into a Netscape bookmark file containing bookmarklets.  This allows the
 user to store bookmarklet source code in a readable format while still having
 the ability to quickly 'compile' the code into an importable file.
+
+=head1 OPTIONS
+
+=over
+
+=item B<-u>, B<--ugly>
+
+Compress and mangle the code using the UglifyJS command-line tool.  An internal
+method will be used if absent.  Using this flag will result in a smaller file.
+The idea is to outsource the work to a program that does a better job.  There is
+only a dependency when the flag is used.
+
+=item B<-h>, B<--help>
+
+Display a help message and exit.
+
+=back
 
 =head1 MOTIVATIONS
 
@@ -677,13 +706,27 @@ this document. Put it in ~/.vim/syntax and use it with :set syntax=bookmarklet.
 
 =head1 DEPENDENCIES
 
-The following software should be installed on your system.
+The following software should be installed on your system.  These software
+dependencies are not strictly necessary, but not all features will be available
+without them.
 
 =over
 
-=item * Coffeescript. L<https://coffeescript.org/#installation>
+=item * Node.js L<https://nodejs.org/en>
+
+=item * npm L<https://www.npmjs.com/>
+
+=item * UglifyJS L<https://www.npmjs.com/package/uglify-js>
+
+=item * CoffeeScript L<https://coffeescript.org/#installation>
 
 =back
+
+If you're on Ubuntu, you might try the following commands:
+
+	sudo apt-get install nodejs npm
+	sudo npm install --global uglify-js
+	sudo npm install --global coffeescript
 
 =head1 SEE ALSO
 
