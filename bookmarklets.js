@@ -1,22 +1,18 @@
-// FILENAME: bookmarklets.js
-// AUTHOR: Zachary Krepelka
-// DATE: Thursday, December 21st, 2023
-// ABOUT: bookmarklets for the web browser
-// ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-// UPDATED: Friday, April 26th, 2024 at 2:17 AM
+/*##############################################################################
 
-################################################################################
+FILENAME: bookmarklets.js
+AUTHOR: Zachary Krepelka
+DATE: Thursday, December 21st, 2023
+ABOUT: bookmarklets for the web browser
+ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
+UPDATED: Wednesday, June 5th, 2024 at 2:14 AM
 
-         /* This source code can be packaged into an importable file */
-         /* using my bookmarklet-parsing Perl script.  Find it in my */
-         /* GitHub repository as stated above.  The words in all     */
-         /* caps are keywords recognized by the parser.              */
+	 This source code can be packaged into an importable file using my
+	 bookmarklet-parsing Perl script.  Find it in my GitHub repository as
+	 stated above.  The words in all caps are meta keywords recognized by
+	 the parser.  *This file contains instances of invalid JavaScript.*
 
-################################################################################
-
-NAME Zachary
-
-SORT
+##############################################################################*/
 
 BEGIN Favicon Grabber
 
@@ -39,10 +35,11 @@ location.href = url + domain + size;
 
 END
 
-################################################################################
+//##############################################################################
 
 BEGIN Greatest Common Divisor
 
+FOLDER Math
 LANG CoffeeScript
 ICON javascript.ico
 
@@ -62,7 +59,7 @@ alert "gcd(#{input}) = #{result}"
 
 END
 
-################################################################################
+//##############################################################################
 
 BEGIN Google Chrome Extension List
 
@@ -125,7 +122,7 @@ navigator.clipboard.writeText(code);
 
 END
 
-################################################################################
+//##############################################################################
 
 BEGIN Center Page
 
@@ -166,7 +163,7 @@ addStyle(`
 
 END
 
-################################################################################
+//##############################################################################
 
 BEGIN com2net
 
@@ -176,10 +173,10 @@ location.href = location.href.replace(/com/, 'net');
 
 END Monday, February 5th, 2024 at 8:49 PM
 
-################################################################################
+//##############################################################################
 
 BEGIN YouTube Playlist Plucker
-
+FOLDER YouTube Tools
 ICON javascript.ico
 
 /* When listening to playlists on YouTube, I often find songs that I like and
@@ -202,10 +199,10 @@ ICON javascript.ico
 
 END Monday, April 15th, 2024 at 6:55 PM
 
-################################################################################
+//##############################################################################
 
-BEGIN Youtube Thumbnail Grabber
-
+BEGIN YouTube Thumbnail Grabber
+FOLDER YouTube Tools
 ICON javascript.ico
 
 const video_id = location.href.match(/(?<=v=).{11}/)[0];
@@ -215,7 +212,7 @@ window.open(url).focus();
 
 END Sunday, April 21st, 2024 at 5:54 PM
 
-################################################################################
+//##############################################################################
 
 BEGIN GET Killer
 
@@ -227,10 +224,10 @@ location.href = location.href.replace(/\?.*/, '');
 
 END Monday, April 22nd, 2024 at 2:08 AM
 
-################################################################################
+//##############################################################################
 
 BEGIN YouTube Playlist Abstractor
-
+FOLDER YouTube Tools
 ICON javascript.ico
 
 function getQueryParameters(url) {
@@ -254,3 +251,5 @@ let id = getQueryParameters(location.href)['list'];
 location.href = `https://www.youtube.com/playlist?list=${id}`;
 
 END Friday, April 26th, 2024 at 2:13 AM
+
+//##############################################################################
