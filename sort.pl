@@ -77,7 +77,7 @@ my $extract_url = sub {
 
 	# Extracts the URL from an html anchor.
 
-	return $1 if shift =~ /HREF="([^"]+)/;
+	return $1 if shift =~ /HREF="([^"]+)/i;
 
 };
 
