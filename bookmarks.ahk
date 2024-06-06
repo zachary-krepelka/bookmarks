@@ -184,6 +184,8 @@ g::  Send("{home}")
 ; |  |(_)(_|(/_ _|_| |(_|(/_|_)(/_| |(_|(/_| ||_ ||_|| |(_ |_|(_)| |(_||| |_\/
 ;                           |                                               /
 
+#HotIf WinActive("ahk_class Chrome_WidgetWin_1")
+
 ; ADD OR EDIT A BOOKMARK
 
 ![::
@@ -269,5 +271,30 @@ F1::
 	; take too long
 
 ; won't work.
+
+; CREATE A NEW USER PROFILE IN GOOGLE CHROME (useful for debugging)
+
+NewChromeUser() {
+
+	delay := 750
+
+	Send("!e"),        Sleep(delay)
+	Send("{Down 4}"),  Sleep(delay)
+	Send("{Enter}"),   Sleep(delay)
+	Send("{Up 2}"),    Sleep(delay)
+	Send("{Enter}"),   Sleep(delay)
+	Send("{Tab 2}"),   Sleep(delay)
+	Send("{Enter}"),   Sleep(delay)
+	SendText("dummy"), Sleep(delay)
+	Send("{Tab 2}"),   Sleep(delay)
+	Send("{Enter}"),   Sleep(delay)
+	Send("^t"),        Sleep(delay)
+	Send("{Tab 3}"),   Sleep(delay)
+	Send("{Enter}"),   Sleep(delay)
+	Send("^w"),        Sleep(delay)
+
+} ; Thursday, June 6th, 2024
+
+^\::NewChromeUser()
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
