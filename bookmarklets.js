@@ -253,3 +253,25 @@ location.href = `https://www.youtube.com/playlist?list=${id}`;
 END Friday, April 26th, 2024 at 2:13 AM
 
 //##############################################################################
+
+BEGIN Fragment Killer
+
+ICON javascript.ico
+
+/* This bookmark strips the fragment from the current URL.
+
+	+-------------------------------------------------------+
+	|                                                       |
+	|  https://en.wikipedia.org/wiki/URI_fragment#Examples  |
+	|                                            \       /  |
+	|  This URL points to a page giving           -------   |
+	|  examples of fragments with the URL            |      |
+	|  itself aptly serving as an example.        Fragment  |
+	|                                                       |
+	+-------------------------------------------------------+
+
+*/ location.href = location.href.replace(/#[^#]+$/, '');
+
+END Friday, June 7th, 2024 @ 9:45 PM
+
+//##############################################################################
