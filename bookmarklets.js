@@ -5,12 +5,12 @@ AUTHOR: Zachary Krepelka
 DATE: Thursday, December 21st, 2023
 ABOUT: bookmarklets for the web browser
 ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-UPDATED: Wednesday, June 5th, 2024 at 2:14 AM
+UPDATED: Sunday, June 9th, 2024 at 11:22 PM
 
-	 This source code can be packaged into an importable file using my
-	 bookmarklet-parsing Perl script.  Find it in my GitHub repository as
-	 stated above.  The words in all caps are meta keywords recognized by
-	 the parser.  *This file contains instances of invalid JavaScript.*
+ This source code can be packaged into an importable file using my
+ bookmarklet-parsing Perl script.  Find it in my GitHub repository as stated
+ above.  The words in all caps are meta keywords recognized by the parser.
+ *This file contains instances of invalid JavaScript.*
 
 ##############################################################################*/
 
@@ -166,7 +166,7 @@ END
 //##############################################################################
 
 BEGIN com2net
-
+FOLDER URL Manipulators
 ICON javascript.ico
 
 location.href = location.href.replace(/com/, 'net');
@@ -214,11 +214,9 @@ END Sunday, April 21st, 2024 at 5:54 PM
 
 //##############################################################################
 
-BEGIN GET Killer
-
+BEGIN Query Killer
+FOLDER URL Manipulators
 ICON javascript.ico
-
-// To remove URL parameters after a GET request.
 
 location.href = location.href.replace(/\?.*/, '');
 
@@ -255,7 +253,7 @@ END Friday, April 26th, 2024 at 2:13 AM
 //##############################################################################
 
 BEGIN Fragment Killer
-
+FOLDER URL Manipulators
 ICON javascript.ico
 
 /* This bookmark strips the fragment from the current URL.
