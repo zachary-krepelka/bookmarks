@@ -5,7 +5,7 @@
 # DATE: Sunday, May 19th, 2024
 # ABOUT: a command-line bookmark sorter
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-# UPDATED: Sunday, May 26th, 2024 at 12:39 AM
+# UPDATED: Wednesday, June 12th, 2024 at 9:18 PM
 
 #
 # |\/| _  _|   | _  _
@@ -81,7 +81,7 @@ my $extract_url = sub {
 
 };
 
-sub helper {
+sub compare {
 
 	@_ = map lc, @_ if $case_insensitive;
 
@@ -93,7 +93,7 @@ sub helper {
 
 }
 
-sub sort_bookmarks {
+sub recurse {
 
 	print;           # <DT><H3 ...>Folder</H3>
 	print scalar <>; # <DL><p>
@@ -106,7 +106,7 @@ sub sort_bookmarks {
 
 			foreach my $skip (@skips) {
 
-				if (/>\Q$skip\E</ and not /<H3/) {
+				if (/>\Q$skip\E</ and /<A/) {
 
 					print; next PROCESS_FOLDER_CONTENTS;
 
@@ -116,19 +116,29 @@ sub sort_bookmarks {
 
 		if (/<\/DL/) {
 
-			print for sort { helper($a, $b) } @hrefs;
+			print for sort { compare($a, $b) } @hrefs;
 
 			print; # </DL><p>
 			last;
 
 		}
 
-		# This function is recursive.
-
-		sort_bookmarks() if /<H3/; # <DT><H3 ...>Folder</H3>
+		recurse() if /<H3/; # <DT><H3 ...>Folder</H3>
 
 	}
 
+}
+
+sub sort_bookmarks {
+
+	while (<>) {
+		last if /bar/;
+		print;
+	}
+
+	recurse;
+
+	print <>;
 }
 
 #  _         _
@@ -138,7 +148,7 @@ sub sort_bookmarks {
 
 usage if $help_flag;
 process_skips if defined $skip_list;
-while (<>) { last if /bar/; print; } sort_bookmarks();
+sort_bookmarks;
 
 __END__
 
