@@ -5,7 +5,7 @@
 # DATE: Wednesday, May 22nd, 2024
 # ABOUT: a tool to idenfity misplaced bookmarks
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-# UPDATED: Thursday, May 23rd, 2024 at 11:40 PM
+# UPDATED: Saturday, June 15th, 2024 at 10:26 PM
 
 #
 # |\/| _  _|   | _  _
@@ -107,11 +107,7 @@ sub print_exempt {
 
 		if (/$where_folder_ends/) {
 
-			unless(defined $flag) {
-
-				say join "/", @path;
-
-			}
+			say join "/", @path unless defined $flag;
 
 			exit_folder;
 			return;
