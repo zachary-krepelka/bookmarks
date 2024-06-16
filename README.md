@@ -93,7 +93,7 @@ The functionality of each script is summarized in the table below.
 | bookmarkleter.pl              | Packages JavaScript into a bookmark file     |
 | bookmarklets.js               | Showcases a few of my [bookmarklets][7]      |
 | bookmarks.sed                 | Removes superfluous textual patterns         |
-| boookmarks.ahk                | Enhances bookmarking UI for Google Chrome    |
+| bookmarks.ahk                 | Enhances bookmarking UI for Google Chrome    |
 | count.sh                      | Counts the number of bookmarks and folders   |
 | domains.sh                    | Reports domain frequencies                   |
 | duplicates.sh                 | Identifies duplicate bookmark entries        |
