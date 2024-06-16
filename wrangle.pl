@@ -22,17 +22,20 @@ use Getopt::Long;
 #  \/(_|| |(_||_)|(/__>
 
 my @path;
-my %rules;
 my %outliers;
+my $where_folder_begins = qr/<H3/;
+my $where_folder_ends = qr/<\/DL/;
 
 GetOptions(
 	'help'  => \my $help_flag,
-	'print' => \my $print_flag
+	'print-rules|p' => \my $print_rules_flag,
+	'print-exempt|q' => \my $print_exempt_flag
 );
 
 #  __
 # (_    |_ .__   _|_o._  _  _
 # __)|_||_)|(_)|_||_|| |(/__>
+
 
 sub usage {
 
@@ -42,8 +45,9 @@ sub usage {
 		Report misplaced bookmarks using a rule-based system
 
 		Options:
-			-p, --print	print the rules
-			-h, --help	display this help message
+			-p, --print-rules    print the rules
+			-q, --print-exempt   print folders without rules
+			-h, --help           display this help message
 
 		Documentation: perldoc $program
 		Example: $program bookmarks.html > report.html
@@ -51,23 +55,69 @@ sub usage {
 	exit;
 }
 
-sub extract_anchor { return $1 if shift =~ /(<A[^>]*>[^<]*<\/A>)/; }
+sub extract_anchor {
 
-sub extract_rules {
+	if (shift =~ /<A HREF="([^"]+)"[^>]*>([^<]*)<\/A>/) {
 
-	push @path, $1 if m|((?<=>)[^>]*(?=</H3>))|;
+		# cuts out the [^>]*, e.g., ICON="..."
+
+		return "<a href=\"$1\">$2</a>";
+
+	}
+
+}
+
+sub enter_folder { m|((?<=>)[^>]*(?=</H3>))| ? push @path, $1 : die; }
+
+sub exit_folder { pop @path; }
+
+sub print_rules {
+
+	enter_folder;
 
 	while (<>) {
 
 		if (/HREF="folder-content-rule:([^"]+)"/) {
 
-			$rules{join "/", @path} = $1;
+			say((join "/", @path) . "\n\n\t$1\n");
 
 		}
 
-		if (/<\/DL/) { pop @path; last; }
+		if (/$where_folder_ends/) {
 
-		extract_rules() if /<H3/;
+			exit_folder;
+			return;
+		}
+
+		print_rules() if /$where_folder_begins/;
+
+	}
+
+}
+
+sub print_exempt {
+
+	enter_folder;
+
+	my $flag = shift;
+
+	while (<>) {
+
+		$flag = 1 if /folder-content-rule/;
+
+		if (/$where_folder_ends/) {
+
+			unless(defined $flag) {
+
+				say join "/", @path;
+
+			}
+
+			exit_folder;
+			return;
+		}
+
+		print_exempt($flag) if /$where_folder_begins/;
 
 	}
 
@@ -75,10 +125,10 @@ sub extract_rules {
 
 sub find_outliers {
 
+	enter_folder;
+
 	my $rule = shift;
 	my @bookmarks = ();
-
-	push @path, $1 if m|((?<=>)[^>]*(?=</H3>))|;
 
 	while (<>) {
 
@@ -86,26 +136,29 @@ sub find_outliers {
 
 		push @bookmarks, extract_anchor $_ if /<A/;
 
-		if (/<\/DL/) {
+		if (/$where_folder_ends/) {
 
-			goto GOODBYE if not defined $rule;
+			goto GOODBYE unless defined $rule;
 
 			my @outliers = ();
 
 			foreach my $bookmark (@bookmarks) {
 
-				push @outliers, $bookmark if
-				index($bookmark, $rule) == -1;
+				if (index($bookmark, $rule) == -1) {
+
+					push @outliers, $bookmark;
+
+				}
 
 			}
 
 			$outliers{join "/", @path} = [ @outliers ] if @outliers;
 
-			GOODBYE: pop @path; last;
+			GOODBYE: exit_folder; return;
 
 		}
 
-		find_outliers($rule) if /<H3/;
+		find_outliers($rule) if /$where_folder_begins/;
 
 	}
 
@@ -120,15 +173,17 @@ usage if $help_flag;
 
 while (<>) { last if /bar/; }
 
-if ($print_flag) {
+if ($print_rules_flag) {
 
-	extract_rules();
+	print_rules();
 
-	foreach my $folder ( sort keys %rules ) {
+	exit;
 
-		say "$folder\n\n\t$rules{$folder}\n";
+}
 
-	}
+if ($print_exempt_flag) {
+
+	print_exempt();
 
 	exit;
 
@@ -299,16 +354,25 @@ Wikipedia article, you'll be made aware.
 
 =head1 OPTIONS
 
+Recall that a folder's rule applies recursively to all subfolders.  A
+folder has a rule if its parent has a rule.
+
 =over
 
 =item B<-h>, B<--help>
 
 Display a help message and exit.
 
-=item B<-p>, B<--print>
+=item B<-p>, B<--print-rules>
 
-Suppress normal HTML report generation.  Print out the folder content rules to
-the terminal for review.
+Suppress normal output.  Instead, print out the folder content rules to the
+terminal for review.
+
+=item B<-q>, B<--print-exempt>
+
+Suppress normal output.  Instead, print out a list of folders that do not have
+rules.  This flag is superseded by the B<--print-rules> flag if they are
+specified together.
 
 =back
 
