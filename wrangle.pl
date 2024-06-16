@@ -140,11 +140,17 @@ sub find_outliers {
 
 			foreach my $bookmark (@bookmarks) {
 
-				if (index($bookmark, $rule) == -1) {
+				my $flag = 0;
 
-					push @outliers, $bookmark;
+				foreach my $substring (split /,/, $rule) {
+
+					$flag = 1 unless
+
+					index($bookmark, $substring) == -1;
 
 				}
+
+				push @outliers, $bookmark unless $flag;
 
 			}
 
@@ -331,7 +337,8 @@ starts with a special keyword:
 	folder-content-rule:
 
 Anything after this keyword is a pattern to be matched against.  If the pattern
-does not match, the rule is violated.
+does not match, the rule is violated. To provide multiple patterns, seperate
+them with a comma.
 
 Currently, I take the word 'match' to mean "be a substring of". Later, when I
 have more time, I would like to adapt the program to use regular expressions
