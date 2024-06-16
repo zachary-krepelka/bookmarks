@@ -7,7 +7,7 @@ Scripts for bookmark management by Zachary Krepelka
 	AUTHOR: Zachary Krepelka
 	DATE: Thursday, January 4th, 2024
 	ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-	UPDATED: Thursday, May 23rd, 2024 at 11:42 PM
+	UPDATED: Sunday, June 16th, 2024 at 6:02 PM
 -->
 
 ## Motivations
@@ -89,6 +89,7 @@ The functionality of each script is summarized in the table below.
 |  Program                      | Functionality                                |
 | ----------------------------- | -------------------------------------------- |
 | 80.sh                         | Reports bookmark names over 80 characters    |
+| alphabetize.pl                | Organize bookmarks alphabetically            |
 | bookmarkleter.pl              | Packages JavaScript into a bookmark file     |
 | bookmarklets.js               | Showcases a few of my [bookmarklets][7]      |
 | bookmarks.sed                 | Removes superfluous textual patterns         |
@@ -98,12 +99,13 @@ The functionality of each script is summarized in the table below.
 | duplicates.sh                 | Identifies duplicate bookmark entries        |
 | favicon.sh                    | Repopulates missing bookmark [favicons][8]   |
 | search.pl                     | Search your bookmarks on the command line    |
+| skeleton.pl                   | Strip bookmarks leaving only folders         |
 | sort.pl                       | Sort bookmarks in folders recursively        |
 | spellcheck.sh                 | Reports spelling mistakes in bookmark names  |
-| tabgroups-to-bookmarks.pl     | A data converter tageting a Chrome extension |
+| tabgroups-to-bookmarks.pl     | Data converter targeting a Chrome extension  |
 | treeifier.pl                  | Creates [tree view][9] from bookmark file    |
 | wrangle.pl                    | Wrangle up misplaced bookmarks               |
-| youtube-thumbnail-grabber.sh  | Donwload YouTube thumbnails in bulk          |
+| youtube-thumbnail-grabber.sh  | Download YouTube thumbnails in bulk          |
 
 <!-- References -->
 
