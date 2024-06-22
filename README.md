@@ -7,7 +7,7 @@ Scripts for bookmark management by Zachary Krepelka
 	AUTHOR: Zachary Krepelka
 	DATE: Thursday, January 4th, 2024
 	ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-	UPDATED: Sunday, June 16th, 2024 at 6:02 PM
+	UPDATED: Friday, June 21st, 2024 at 11:57 PM
 -->
 
 ## Motivations
@@ -92,12 +92,13 @@ The functionality of each script is summarized in the table below.
 | alphabetize.pl                | Organize bookmarks alphabetically            |
 | bookmarkleter.pl              | Packages JavaScript into a bookmark file     |
 | bookmarklets.js               | Showcases a few of my [bookmarklets][7]      |
-| bookmarks.sed                 | Removes superfluous textual patterns         |
 | bookmarks.ahk                 | Enhances bookmarking UI for Google Chrome    |
+| bookmarks.sed                 | Removes superfluous textual patterns         |
 | count.sh                      | Counts the number of bookmarks and folders   |
 | domains.sh                    | Reports domain frequencies                   |
 | duplicates.sh                 | Identifies duplicate bookmark entries        |
 | favicon.sh                    | Repopulates missing bookmark [favicons][8]   |
+| pancake.pl                    | Flatten nested bookmarks                     |
 | search.pl                     | Search your bookmarks on the command line    |
 | skeleton.pl                   | Strip bookmarks leaving only folders         |
 | sort.pl                       | Sort bookmarks in folders recursively        |
