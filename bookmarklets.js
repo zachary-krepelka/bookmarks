@@ -175,7 +175,7 @@ END Monday, February 5th, 2024 at 8:49 PM
 
 //##############################################################################
 
-BEGIN YouTube Playlist Plucker
+BEGIN Playlist Plucker
 FOLDER YouTube Tools
 ICON javascript.ico
 
@@ -201,7 +201,7 @@ END Monday, April 15th, 2024 at 6:55 PM
 
 //##############################################################################
 
-BEGIN YouTube Thumbnail Grabber
+BEGIN Thumbnail Grabber
 FOLDER YouTube Tools
 ICON javascript.ico
 
@@ -224,7 +224,7 @@ END Monday, April 22nd, 2024 at 2:08 AM
 
 //##############################################################################
 
-BEGIN YouTube Playlist Abstractor
+BEGIN Playlist Abstractor
 FOLDER YouTube Tools
 ICON javascript.ico
 
@@ -271,5 +271,23 @@ ICON javascript.ico
 */ location.href = location.href.replace(/#[^#]+$/, '');
 
 END Friday, June 7th, 2024 @ 9:45 PM
+
+//##############################################################################
+
+BEGIN Video Collector
+FOLDER YouTube Tools
+ICON javascript.ico
+
+// Extract all video IDs from a YouTube page. Copy to clipboard.
+
+ navigator
+.clipboard
+.writeText(Array
+.from(document
+.querySelectorAll('[id=video-title-link'))
+.map((element) => element.href.split('?v=')[1])
+.join("\r\n"));
+
+END Sunday, September 8th, 2024 @ 12:03 AM
 
 //##############################################################################
