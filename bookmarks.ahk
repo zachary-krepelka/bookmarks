@@ -4,7 +4,7 @@
 ; AUTHOR: Zachary Krepelka
 ; DATE: Friday, March 8th, 2024
 ; ABOUT: Chrome bookmarking optimizations
-; UPDATED: Wednesday, September 11th, 2024 at 4:05 AM
+; UPDATED: Wednesday, September 11th, 2024 at 7:46 PM
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -73,15 +73,15 @@ keeps your workspace looking clean and uncluttered.
 
 =head1 KEYBINDINGS
 
-There are several keybindings, some of which are context dependent.  The
-keybindings are largely vim-inspired, meaning that you will use hjkl instead of
-the arrow keys.
+=head2 Bookmarking Mode
+
+The following keyboard shortcuts are available when bookmarking mode is active.
+These keybindings are largely vim-inspired, meaning that you will use hjkl
+instead of the arrow keys.
 
 	  k
 	h   l
 	  j
-
-=head2 Bookmarking Mode
 
 =over
 
@@ -117,6 +117,36 @@ Jump to the next entry in the drop-down menu whose name begins with {char}.
 =item B<;>
 
 Repeat the find command B<f{char}> with its most recent character.
+
+=item B<x>
+
+Cut the selected bookmark or folder.
+
+=item B<y>
+
+Yank the selected bookmark or folder. Yank means to copy.
+
+=item B<p>
+
+Put a bookmark or folder. Put means to paste.
+
+=item B<dd>
+
+Delete the selected bookmark or folder.  The double key press is a safe guard,
+so you don't unintentionally delete a bookmark.
+
+=item B<m>
+
+Open the context menu on the selected bookmark or folder.
+
+=item B<*>
+
+Open the selected bookmark or folder in the bookmark manager.
+Then enter normal mode.
+
+=item B<s>
+
+Sort the selected folder by name.
 
 =back
 
@@ -205,6 +235,16 @@ or any pop-up menus when using a keybinding.
 Because this script was written in AutoHotkey, it only works on the Windows
 operating system.  That's unfortunate.  :(
 
+=head1 TODO
+
+=over
+
+=item * The mouse can do cool things too. Document this.
+
+=item * Document how to make the script run at startup.
+
+=back
+
 =head1 NOTES
 
 You can compile this script so that the resulting executable has an icon by
@@ -268,7 +308,48 @@ GetNextKeyPress()
 	hook.Wait()
 
 	return hook.Input
+
+	; Credit for this function goes to a post on the AutoHotkey forms.
+	; https://www.autohotkey.com/boards/viewtopic.php?t=122234#p542806
 }
+
+AppsKey(num)
+{
+	/* Num is one of the following.
+
+		.--------------------------.
+		| Open in new tab          |
+		| Open in new window       |
+		| Open in incognito window |
+		|--------------------------|
+		| Rename...                | 10
+		|--------------------------|
+		| Cut                      | 9
+		| Copy                     | 8
+		| Paste                    | 7
+		|--------------------------|
+		| Delete                   | 6
+		|--------------------------|
+		| Add page...              | 5
+		| Add folder               | 4
+		|--------------------------|
+		| Bookmark Manager         | 3
+		| Show apps shortcut       | 2
+		| Show Bookmarks bar       | 1
+		.--------------------------.
+	*/
+
+	delay := 750
+
+	Send("{AppsKey}"),    Sleep(delay)
+	Send("{Up " num "}"), Sleep(delay)
+	Send("{Enter}"),      Sleep(delay)
+
+	; Has to be UP, not DOWN.
+	; Top of menu can change
+	; depending on context.
+
+} ; Wednesday, September 11th, 2024
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -294,10 +375,7 @@ latest_key   := ""
 
 	} ; Guard
 
-	global mode_enabled
-
-	mode_enabled := mode_enabled ? 0 : 1
-
+	global mode_enabled := !mode_enabled
 }
 
 #HotIf
@@ -347,7 +425,12 @@ Loop {
 +b::return
  c::return
 +c::return
- d::return
+ d::
+ {
+ 	if (DoubleKeyPress())
+
+		AppsKey(6)
+ }
 +d::return
  e::return
 +e::return
@@ -376,19 +459,30 @@ Loop {
 +k::return
  l::Send("{right}")
 +l::return
- m::return
+ m::AppsKey
 +m::return
  n::return
 +n::return
  o::return
 +o::return
- p::return
+ p::AppsKey(7)
 +p::return
  q::return
 +q::return
  r::return
 +r::return
- s::return
+ s::
+ {
+	delay := 750
+
+	AppsKey(3)
+
+	Send("{Tab}"),   Sleep(delay)
+	Send("{Enter}"), Sleep(delay)
+	Send("{Enter}"), Sleep(delay)
+	Send("^w"),      Sleep(delay)
+	Send("!+b")
+ }
 +s::return
  t::return
 +t::return
@@ -398,9 +492,9 @@ Loop {
 +v::return
  w::return
 +w::return
- x::return
+ x::AppsKey(9)
 +x::return
- y::return
+ y::AppsKey(8)
 +y::return
  z::return
 +z::return
@@ -416,6 +510,12 @@ Loop {
 	find := 0
 }
 
+*::
+{
+	AppsKey(3)
+	global mode_enabled := 0
+}
+
 ; The left and right mouse buttons are
 ; repurposed for interacting with
 ; bookmarks and their context menus.
@@ -427,9 +527,7 @@ LButton::
 	; enter key.  Use it to open a bookmark
 	; or to select an item in a context menu.
 
-	global
-
-	context_menu := 0 ; closes after pressing enter
+	global context_menu := 0 ; closes after pressing enter
 
 	Send("{Enter}")
 
@@ -447,14 +545,10 @@ RButton::
 	; selected bookmark.  If pressed again,
 	; it escapes out of that menu.
 
-	global
+	global context_menu := !context_menu
 
-	context_menu := !context_menu
+	Send(context_menu ? "{AppsKey}" : "{Esc}")
 
-	if (context_menu)
-		Send("{AppsKey}")
-	else
-		Send("{Esc}")
 } ; Hotkey
 
 ; The mouse's scroll wheel and extra
