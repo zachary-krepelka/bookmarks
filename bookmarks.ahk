@@ -4,7 +4,7 @@
 ; AUTHOR: Zachary Krepelka
 ; DATE: Friday, March 8th, 2024
 ; ABOUT: Chrome bookmarking optimizations
-; UPDATED: Wednesday, September 11th, 2024 at 7:46 PM
+; UPDATED: Monday, September 16th, 2024 at 12:44 AM
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -387,12 +387,15 @@ Loop {
 		If (!toggle_flag) { ; then entering mode
 
 			toggle_flag := 1
-			SoundBeep 1500
+			SoundBeep(1500)
 
-			BlockInput("MouseMove")    ; disable mouse movement
-			Send("^+b")                ; show bookmark bar
-			Sleep(100)                 ; give time to process
-			Send("!+b")                ; focus on bookmark bar
+			MouseGetPos(&xpos, &ypos) ; save mouse position
+			MouseMove(0, 0)           ; move mouse out of way
+			BlockInput("MouseMove")   ; disable mouse movement
+
+			Send("^+b")               ; show bookmark bar
+			Sleep(100)                ; give time to process
+			Send("!+b")               ; focus on bookmark bar
 
 		} ; else mode is already enabled
 
@@ -401,10 +404,12 @@ Loop {
 		If (toggle_flag) { ; then exiting mode
 
 			toggle_flag := 0
-			SoundBeep 1000
+			SoundBeep(1000)
 
 			Send("{Alt}")              ; escape all drop down menus
 			Send("^+b")                ; hide bookmark bar
+
+			MouseMove(xpos, ypos)      ; restore mouse position
 			BlockInput("MouseMoveOff") ; enable mouse movement
 
 		} ; else mode is already disabled
@@ -585,7 +590,7 @@ XButton2::  Send("{left}")
 
 ![::
 {
-	MouseMove(25, 115) ; the script fails if the mouse disrupts focus
+	MouseMove(0, 0) ; the script fails if the mouse disrupts focus
 	Send("{Ctrl down}d{Ctrl up}{Tab}{Enter}{Up}{Enter}")
 	return
 }
@@ -594,7 +599,7 @@ XButton2::  Send("{left}")
 
 !]::
 {
-	MouseMove(25, 115)
+	MouseMove(0, 0)
 	Send("{Ctrl down}d{Ctrl up}{Tab}{Tab}{Tab}{Enter}")
 	return
 }
