@@ -5,7 +5,7 @@ AUTHOR: Zachary Krepelka
 DATE: Thursday, December 21st, 2023
 ABOUT: bookmarklets for the web browser
 ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-UPDATED: Sunday, June 9th, 2024 at 11:22 PM
+UPDATED: Thursday, October 3rd, 2024 at 11:34 PM
 
  This source code can be packaged into an importable file using my
  bookmarklet-parsing Perl script.  Find it in my GitHub repository as stated
@@ -289,5 +289,21 @@ ICON javascript.ico
 .join("\r\n"));
 
 END Sunday, September 8th, 2024 @ 12:03 AM
+
+//##############################################################################
+
+BEGIN Image Extractor
+ICON javascript.ico
+
+ navigator
+.clipboard
+.writeText(Array
+.from(document
+.getElementsByTagName('img'))
+.map((e) => e
+.getAttribute('src'))
+.join("\r\n"));
+
+END Thursday, October 3rd, 2024
 
 //##############################################################################
