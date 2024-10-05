@@ -148,6 +148,11 @@ Then enter normal mode.
 
 Sort the selected folder by name.
 
+=item B<Caps Lock>
+
+Don't worry, I've already taken the liberty to remap caps lock to escape for
+you. :) This escapes out of all drop down menus.
+
 =back
 
 =head2 Mode Independent
@@ -423,6 +428,8 @@ Loop {
 #HotIf mode_enabled && !find
 
 ; Vim Keybindings
+
+Capslock::Alt
 
  a::return
 +a::return
