@@ -5,7 +5,7 @@
 # DATE: Thursday, January 18th, 2024
 # ABOUT: a bookmark spellchecking program
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-# UPDATED: Sunday, May 26th, 2024 at 1:32 AM
+# UPDATED: Sunday, October 6th, 2024 at 3:54 AM
 
 	# The purpose of this script is
 	# to identify spelling mistakes
@@ -20,21 +20,21 @@ Options:
 	-h		display this [h]elp message
 	-i {file}	{file} is a list of words to [i]gnore
 			It must begin with "personal_ws-1.1 en".
+	-p {args}       [p]ass {args} to aspell
 
-Documentation:  perldoc $PROG
-Example:        bash $PROG bookmarks.html
+Documentation:  perldoc $program
+Example:        bash $program bookmarks.html
 EOF
 exit 0
 }
 
-while getopts hi: option
+while getopts hi:p: option
 do
 	case $option in
 
 		h) usage;;
 
 		i)
-
 			ignore_list=$OPTARG
 
 			# Update the word count so the user doesn't have to
@@ -42,9 +42,9 @@ do
 			word_count=$(expr $(wc -l < $ignore_list) - 1)
 
 			sed -i "s/\(personal_ws-1.1 en\) \?\w*/\1 $word_count/" $ignore_list
-
 		;;
 
+		p) args=$OPTARG;;
 	esac
 done
 
@@ -58,37 +58,40 @@ fi
 
 set -f # disable globbing
 
-while read line; do
+{
+	while read line; do
 
-	echo $line | grep -F --color=ALWAYS -f <( echo $line |
-                                                             \
-		aspell list ${ignore_list:+                  \
-                                                             \
-			--home-dir=$(dirname $ignore_list)   \
-			--personal=$ignore_list              \
-	})
+		echo $line | grep -F --color=ALWAYS -f <( echo $line |
+								     \
+			aspell $args list ${ignore_list:+            \
+								     \
+				--home-dir=$(dirname $ignore_list)   \
+				--personal=$ignore_list              \
+		})
 
-done < <(sed -f - <(grep -Po '(?<=>)[^<]*(?=</A>)' $1) <<-EOF |
+	done < <(sed -f - <(grep -Po '(?<=>)[^<]*(?=</A>)' $1) <<-EOF |
 
-	s/&amp;/\&/g
-	s/&lt;/</g
-	s/&gt;/>/g
-	s/&#39;/'/g
-	s/&quot;/"/g
+		s/&amp;/\&/g
+		s/&lt;/</g
+		s/&gt;/>/g
+		s/&#39;/'/g
+		s/&quot;/"/g
 
-EOF
-sort -u)
+	EOF
+	sort -u)
+
+} | less -FRS
 
 : <<='cut'
 =pod
 
 =head1 NAME
 
-spellcheck.sh - spellcheck your bookmark entries
+spellcheck.sh - a bookmark spellchecker
 
 =head1 SYNOPSIS
 
-bash spellcheck.sh <bookmark-file>
+bash spellcheck.sh [options] <bookmark-file>
 
 =head1 DESCRIPTION
 
@@ -109,13 +112,19 @@ Display a [h]elp message and exit.
 This flag specifies a file containing a list of words to [i]gnore.  The file
 must begin with the string "personal_ws-1.1 en".
 
+=item B<-p> I<ARGS>
+
+This script is ultimately just a wrapper around the command-line program aspell.
+This option allows you to [p]ass arbitrary arguments to aspell.  Consult the
+manual by typing C<man aspell>.
+
 =back
 
 =head1 NOTES
 
-It may help to pipe the result into less with the -R flag, like this:
+To ignore case, use this:
 
-	bash spellcheck.sh bookmarks.html | less -R
+	bash spellcheck.sh -p '--ignore-case' bookmarks.html
 
 =head1 SEE ALSO
 
