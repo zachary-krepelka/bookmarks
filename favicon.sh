@@ -3,7 +3,7 @@
 # FILENAME: favicon.sh
 # AUTHOR: Zachary Krepelka
 # DATE: Saturday, October 28, 2023
-# UPDATED: Monday, March 25th, 2024 at 2:33 AM
+# UPDATED: Sunday, October 6th, 2024 at 4:20 AM
 
 usage() {
 	PROG=$(basename $0)
@@ -58,12 +58,12 @@ while read website; do
 
 	icon_file=$workspace/$website
 
-	wget -q -O $icon_file --tries 1 --timeout 3 \
+	wget -q -O "$icon_file" --tries 1 --timeout 3 \
 	http://www.google.com/s2/favicons?domain_url=$website
 
 	# We skip if the icon file is empty.
 
-	if [ ! -s $icon_file ]; then
+	if [ ! -s "$icon_file" ]; then
 		continue
 	fi
 
@@ -82,7 +82,7 @@ while read website; do
 	# We encode the icon into base64.
 
 	encoding=$(
-		base64 -w 0 $icon_file |
+		base64 -w 0 "$icon_file" |
 		sed 's/\(.*\)/ICON="data:image\/png;base64,\1"/'
 	)
 
