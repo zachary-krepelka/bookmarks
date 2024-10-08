@@ -314,7 +314,7 @@ GetNextKeyPress()
 
 	return hook.Input
 
-	; Credit for this function goes to a post on the AutoHotkey forms.
+	; Credit for this function goes to a post on the AutoHotkey forums.
 	; https://www.autohotkey.com/boards/viewtopic.php?t=122234#p542806
 }
 
