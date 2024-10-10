@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# FILENAME: youtube-thumbnail-grabber.sh
+# FILENAME: youtube-thumbnail-scraper.sh
 # AUTHOR: Zachary Krepelka
 # DATE: Tuesday, April 2nd, 2024
 # ABOUT: a shell script to download YouTube thumbnails in bulk
@@ -129,11 +129,11 @@ done
 
 =head1 NAME
 
-youtube-thumbnail-grabber.sh - download YouTube thumbnails in bulk
+youtube-thumbnail-scraper.sh - download YouTube thumbnails in bulk
 
 =head1 SYNOPSIS
 
-bash youtube-thumbnail-grabber.sh [options] <file>
+bash youtube-thumbnail-scraper.sh [options] <file>
 
 =head1 DESCRIPTION
 
@@ -211,7 +211,7 @@ This flag will also induce a different naming scheme on the output files.  Here
 is an example of how the files will be named when the -a flag is used.
 
 	echo https://www.youtube.com/watch?v=XqZsoesa55w > baby-shark.txt
-	bash youtube-thumbnail-grabber.sh -a baby-shark.txt
+	bash youtube-thumbnail-scraper.sh -a baby-shark.txt
 	ls -1 | grep jpg
 
 		XqZsoesa55w-default.jpg
@@ -236,7 +236,7 @@ download the thumbnails in the [w]ebp file format instead.
 To download a single thumbnail without creating an input file, you can use
 process substitution, like this.
 
-	bash youtube-thumbnail-grabber.sh <(echo YOUR_URL_HERE)
+	bash youtube-thumbnail-scraper.sh <(echo YOUR_URL_HERE)
 
 To download thumbnails in bulk, create a file of YouTube URLs.
 
@@ -249,7 +249,7 @@ To download thumbnails in bulk, create a file of YouTube URLs.
 
 Then just pass the file to the script, like this.
 
-	bash youtube-thumbnail-grabber.sh urls.txt
+	bash youtube-thumbnail-scraper.sh urls.txt
 
 =head1 NOTES
 
@@ -302,7 +302,7 @@ This repository contains various scripts for bookmark management.  I have
 included this script in this repository because it can be used on a bookmark
 file.
 
-	bash youtube-thumbnail-grabber.sh bookmarks.html
+	bash youtube-thumbnail-scraper.sh bookmarks.html
 
 =head1 AUTHOR
 

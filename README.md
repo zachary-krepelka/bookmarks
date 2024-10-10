@@ -7,7 +7,7 @@ Scripts for bookmark management by Zachary Krepelka
 	AUTHOR: Zachary Krepelka
 	DATE: Thursday, January 4th, 2024
 	ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-	UPDATED: Friday, June 21st, 2024 at 11:57 PM
+	UPDATED: Wednesday, October 9th, 2024 at 9:28 PM
 -->
 
 ## Motivations
@@ -106,7 +106,7 @@ The functionality of each script is summarized in the table below.
 | tabgroups-to-bookmarks.pl     | Data converter targeting a Chrome extension  |
 | treeifier.pl                  | Creates [tree view][9] from bookmark file    |
 | wrangle.pl                    | Wrangle up misplaced bookmarks               |
-| youtube-thumbnail-grabber.sh  | Download YouTube thumbnails in bulk          |
+| youtube-thumbnail-scraper.sh  | Download YouTube thumbnails in bulk          |
 
 <!-- References -->
 
