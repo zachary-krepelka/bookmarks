@@ -5,7 +5,7 @@ AUTHOR: Zachary Krepelka
 DATE: Thursday, December 21st, 2023
 ABOUT: bookmarklets for the web browser
 ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-UPDATED: Thursday, October 3rd, 2024 at 11:34 PM
+UPDATED: Wednesday, October 16th, 2024 at 5:49 AM
 
  This source code can be packaged into an importable file using my
  bookmarklet-parsing Perl script.  Find it in my GitHub repository as stated
@@ -305,5 +305,47 @@ ICON javascript.ico
 .join("\r\n"));
 
 END Thursday, October 3rd, 2024
+
+//##############################################################################
+
+// quora.com/Is-there-a-way-of-watching-YouTube-videos-at-higher-than-2x-speed
+
+BEGIN Set Playback Speed
+FOLDER YouTube Tools/Speed
+ICON javascript.ico
+
+const speed = prompt("Enter a video playback speed.", "1");
+
+document.getElementsByTagName("video")[0].playbackRate = speed;
+
+END Wednesday, October 16th, 2024
+
+// The following three bookmarklets should be put directly
+// on the bookmark bar for ease of accessiblity. I put them
+// into a nested folder for the sake of oraganization.
+
+BEGIN Slower
+FOLDER YouTube Tools/Speed
+ICON javascript.ico
+
+document.getElementsByTagName("video")[0].playbackRate -= .25;
+
+END
+
+BEGIN Faster
+FOLDER YouTube Tools/Speed
+ICON javascript.ico
+
+document.getElementsByTagName("video")[0].playbackRate += .25;
+
+END
+
+BEGIN Reset
+FOLDER YouTube Tools/Speed
+ICON javascript.ico
+
+document.getElementsByTagName("video")[0].playbackRate = 1;
+
+END
 
 //##############################################################################
