@@ -321,8 +321,8 @@ document.getElementsByTagName("video")[0].playbackRate = speed;
 END Wednesday, October 16th, 2024
 
 // The following three bookmarklets should be put directly
-// on the bookmark bar for ease of accessiblity. I put them
-// into a nested folder for the sake of oraganization.
+// on the bookmark bar for ease of accessibility. I put them
+// into a nested folder for the sake of organization.
 
 BEGIN Slower
 FOLDER YouTube Tools/Speed
