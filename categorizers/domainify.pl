@@ -5,7 +5,7 @@
 # DATE: Monday, October 21st, 2024
 # ABOUT: sort bookmarks into folders by domain
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-# UPDATED: Tuesday, October 22nd, 2024 at 3:14 AM
+# UPDATED: Tuesday, October 22nd, 2024 at 2:39 PM
 
 #
 # |\/| _  _|   | _  _
@@ -20,9 +20,14 @@ use Getopt::Long;
 # \  /_.._o _.|_ | _  _
 #  \/(_|| |(_||_)|(/__>
 
+my @misc;
 my %bookmarks;
+my $threshold = 0;
 
-GetOptions('help' => \my $help_flag);
+GetOptions(
+	'help' => \my $help_flag,
+	'threshold=i' => \$threshold
+);
 
 #  __
 # (_    |_ .__   _|_o._  _  _
@@ -35,8 +40,15 @@ sub usage {
 		Usage: $program {bookmark file} > [organized bookmark file]
 		Sort bookmarks into folders by website
 
+		Options:
+			-t NUM, --threshold=NUM   domains with NUM or less
+						  bookmarks do not receive their
+						  own folder; URLs are deposited
+						  into a miscellaneous folder.
+
+			-h,     --help            display this help message
+
 		Documentation: perldoc $program
-		Options: -h or --help to display this help message
 		Example: $program bookmarks.html > organized-bookmarks.html
 		USAGE
 	exit;
@@ -113,9 +125,21 @@ EOF
 
 foreach my $domain (sort keys %bookmarks) {
 
-	make_folder $domain, [sort {compare($a, $b)} @{$bookmarks{$domain}}];
+	my @same_origin_urls = @{$bookmarks{$domain}};
+
+	if (@same_origin_urls <= $threshold) {
+
+		push @misc, @same_origin_urls;
+
+		next;
+
+	} # fi
+
+	make_folder $domain, [sort {compare($a, $b)} @same_origin_urls];
 
 } # hcaerof
+
+make_folder("Miscellaneous", [sort {compare($a, $b)} @misc]) if @misc;
 
 print <<'EOF';
     </DL><p>
@@ -141,7 +165,7 @@ perl domainify.pl {bookmark file} > [organized bookmark file]
 A script to organize bookmarks into folders according to their root-level domain
 names.  For each root-level domain in the input file, a folder is created with
 that domain's name, and it will contain all bookmarks in the input file under
-that domain. Bookmarks and folders are sorted alphabetically by title.
+that domain.  Bookmarks and folders are sorted alphabetically by title.
 
 The input is an html file in the Netscape bookmark file format commonly exported
 from web browsers.  The output is an importable file in the same format.
@@ -153,6 +177,14 @@ from web browsers.  The output is an importable file in the same format.
 =item B<-h>, B<--help>
 
 Display a help message and exit.
+
+=item B<-t> I<NUM>, B<--threshold>=I<NUM>
+
+Domains having I<NUM> bookmarks or less do not receive their own folder.
+Instead, they are accumulated up and deposited into a miscellaneous folder.  The
+default threshold is zero so that all domains receive a folder.  It is not
+helpful to have several folders with only a single bookmark, so passing
+B<--threshold>=1 will move all of these one-offs into a single location.
 
 =back
 
