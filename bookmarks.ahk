@@ -158,7 +158,7 @@ you. :) This escapes out of all drop down menus.
 =head2 Mode Independent
 
 The following keyboard shortcuts are available regardless of what mode you are
-in.  These preform general functions.  Note that without the following
+in.  These perform general functions.  Note that without the following
 keybindings, one would need to click through many menus to perform the same
 function.  Some of the keybindings perform complex UI operations, so it is best
 to just sit back and let the computer "take the wheel" until execution finishes.
