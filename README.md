@@ -7,7 +7,7 @@ Scripts for bookmark management by Zachary Krepelka
 	AUTHOR: Zachary Krepelka
 	DATE: Thursday, January 4th, 2024
 	ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-	UPDATED: Tuesday, October 22nd, 2024 at 3:37 AM
+	UPDATED: Tuesday, October 22nd, 2024 at 4:45 AM
 -->
 
 ## Motivations
@@ -86,6 +86,8 @@ is instead provided in the source code as comments.
 
 The functionality of each script is summarized in the table below.
 
+<div align="center">
+
 |  Program                      | Functionality                                |
 | ----------------------------- | -------------------------------------------- |
 | 80.sh                         | Reports bookmark names over 80 characters    |
@@ -109,6 +111,29 @@ The functionality of each script is summarized in the table below.
 | wrangle.pl                    | Wrangle up misplaced bookmarks               |
 | youtube-thumbnail-scraper.sh  | Download YouTube thumbnails in bulk          |
 
+</div>
+
+## Related / Recommended Software
+
+I use the following software in conjunction with the scripts in this repository.
+
+* The [Kiwi Browser][12] is a fully open-source, Chromium-based web browser for
+  the Android operating system. It supports the ability to import and export
+  bookmarks to and from an HTML file in the Netscape bookmark file format.
+  Neither Chrome nor Firefox support this feature in their mobile applications,
+  instead requiring the user to sync their bookmarks using an online account.
+
+* The [Selective Bookmarks Export Tool][13] is a web browser extension available
+  for Chrome, Firefox, and Edge.
+
+  > It allows users to choose the bookmarks they want to export as [an] HTML
+  > file, to decide the data structure of the exported content, and to filter
+  > the results by keywords when selecting bookmarks.
+
+* The [Firefox Bookmark Backup Decompressor][14] is an online web app that can
+  decompress bookmark backup files created by the Firefox web browser. This app
+  is your friend in a last-ditch data recovery effort.
+
 <!-- References -->
 
 [1]: https://en.wikipedia.org/wiki/Bookmark_(digital)
@@ -122,3 +147,6 @@ The functionality of each script is summarized in the table below.
 [9]: https://en.wikipedia.org/wiki/Tree_view
 [10]: https://stackoverflow.com/questions/72772176/documentation-or-reference-for-netscape-bookmark-file-1-doctype
 [11]: http://fileformats.archiveteam.org/wiki/Netscape_bookmarks
+[12]: https://kiwibrowser.com
+[13]: https://github.com/LightAPIs/free-export-bookmarks
+[14]: https://www.jeffersonscher.com/ffu/bookbackreader.html
