@@ -7,7 +7,7 @@ Scripts for bookmark management by Zachary Krepelka
 	AUTHOR: Zachary Krepelka
 	DATE: Thursday, January 4th, 2024
 	ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-	UPDATED: Wednesday, October 9th, 2024 at 9:28 PM
+	UPDATED: Tuesday, October 22nd, 2024 at 3:37 AM
 -->
 
 ## Motivations
@@ -95,6 +95,7 @@ The functionality of each script is summarized in the table below.
 | bookmarks.ahk                 | Enhances bookmarking UI for Google Chrome    |
 | bookmarks.sed                 | Removes superfluous textual patterns         |
 | count.sh                      | Counts the number of bookmarks and folders   |
+| domainify.pl                  | Organize bookmarks by website                |
 | domains.sh                    | Reports domain frequencies                   |
 | duplicates.sh                 | Identifies duplicate bookmark entries        |
 | favicon.sh                    | Repopulates missing bookmark [favicons][8]   |

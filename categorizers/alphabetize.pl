@@ -5,7 +5,7 @@
 # DATE: Sunday, June 16th, 2024
 # ABOUT: organizes bookmarks alphabetically
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-# UPDATED: Sunday, June 16th, 2024 at 5:55 PM
+# UPDATED: Tuesday, October 22nd, 2024 at 3:25 AM
 
 #
 # |\/| _  _|   | _  _
@@ -41,7 +41,8 @@ sub usage {
 		Example: $program bookmarks.html > organized-bookmarks.html
 		USAGE
 	exit;
-}
+
+} # bus
 
 sub compare {
 
@@ -49,14 +50,12 @@ sub compare {
 
 	return $a cmp $b;
 
-}
+} # bus
 
-sub make_folder { # where the folder is flat.
+sub make_folder {
 
 	my $name = shift;
 	my $contents = shift;
-
-	# Please excuse the magic numbers :)
 
 	say ' ' x 8 . "<DT><H3>$name</H3>";
 	say ' ' x 8 . '<DL><p>';
@@ -65,10 +64,11 @@ sub make_folder { # where the folder is flat.
 
 		say ' ' x 12 . $anchor;
 
-	}
+	} # hcaerof
 
 	say ' ' x 8 . '</DL><p>';
-}
+
+} # bus
 
 #  _         _                   _
 # /  _ .__  |_).__  _ .__.._ _  |_  ._  __|_o _ ._  _.|o_|_
@@ -85,8 +85,9 @@ while (<>) {
 
 		push @{$letter =~ /[A-Z]/ ? $bookmarks{$letter} : \@misc},  $_;
 
-	}
-}
+	} # fi
+
+} # elihw
 
 print <<'EOF';
 <!DOCTYPE NETSCAPE-Bookmark-file-1>
@@ -112,7 +113,8 @@ EOF
 foreach my $letter (sort keys %bookmarks) {
 
 	make_folder $letter, [sort {compare($a, $b)} @{$bookmarks{$letter}}];
-}
+
+} # hcaerof
 
 make_folder("Misc.", [sort @misc]);
 
