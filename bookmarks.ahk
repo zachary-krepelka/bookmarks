@@ -327,19 +327,20 @@ AppsKey(num)
 		| Open in new window       |
 		| Open in incognito window |
 		|--------------------------|
-		| Rename...                | 10
+		| Rename...                | 11
 		|--------------------------|
-		| Cut                      | 9
-		| Copy                     | 8
-		| Paste                    | 7
+		| Cut                      | 10
+		| Copy                     | 9
+		| Paste                    | 8
 		|--------------------------|
-		| Delete                   | 6
+		| Delete                   | 7
 		|--------------------------|
-		| Add page...              | 5
-		| Add folder               | 4
+		| Add page...              | 6
+		| Add folder               | 5
 		|--------------------------|
-		| Bookmark Manager         | 3
-		| Show apps shortcut       | 2
+		| Bookmark Manager         | 4
+		| Show apps shortcut       | 3
+		| Show tab groups          | 2
 		| Show Bookmarks bar       | 1
 		.--------------------------.
 	*/
@@ -441,7 +442,7 @@ Capslock::Alt
  {
  	if (DoubleKeyPress())
 
-		AppsKey(6)
+		AppsKey(7)
  }
 +d::return
  e::return
@@ -477,7 +478,7 @@ Capslock::Alt
 +n::return
  o::return
 +o::return
- p::AppsKey(7)
+ p::AppsKey(8)
 +p::return
  q::return
 +q::return
@@ -487,7 +488,7 @@ Capslock::Alt
  {
 	delay := 750
 
-	AppsKey(3)
+	AppsKey(4)
 
 	Send("{Tab}"),   Sleep(delay)
 	Send("{Enter}"), Sleep(delay)
@@ -504,9 +505,9 @@ Capslock::Alt
 +v::return
  w::return
 +w::return
- x::AppsKey(9)
+ x::AppsKey(10)
 +x::return
- y::AppsKey(8)
+ y::AppsKey(9)
 +y::return
  z::return
 +z::return
@@ -524,7 +525,7 @@ Capslock::Alt
 
 *::
 {
-	AppsKey(3)
+	AppsKey(4)
 	global mode_enabled := 0
 }
 
