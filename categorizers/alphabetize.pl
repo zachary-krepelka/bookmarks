@@ -5,7 +5,7 @@
 # DATE: Sunday, June 16th, 2024
 # ABOUT: organizes bookmarks alphabetically
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-# UPDATED: Tuesday, October 22nd, 2024 at 3:25 AM
+# UPDATED: Thursday, October 31st, 2024 at 2:55 AM
 
 #
 # |\/| _  _|   | _  _
@@ -116,7 +116,7 @@ foreach my $letter (sort keys %bookmarks) {
 
 } # hcaerof
 
-make_folder("Misc.", [sort @misc]);
+make_folder("Misc.", [sort @misc]) if @misc;
 
 print <<'EOF';
     </DL><p>
