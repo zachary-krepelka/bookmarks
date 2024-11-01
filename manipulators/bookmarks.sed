@@ -209,6 +209,7 @@ s/ | HackerNoon//
 s/ \xc2\xb7 PyPI//
 s/CTAN: Package //
 s/GitHub - \([^:]*\):[^<]*/\1/
+s/APK for Android Download//
 
 # OTHER
 /medium\.com/ s/\([^>|]*\) | [^<]*/\1/
