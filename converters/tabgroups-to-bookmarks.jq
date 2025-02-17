@@ -79,7 +79,7 @@
 #  C<tabgroups_data_YYYYMMDD.json>.
 #
 # The purpose of this script is to convert these JSON files into the Netscape
-# bookmark file format so that can be imported into a web browser natively.
+# bookmark file format so that they can be imported into a web browser natively.
 #
 # You can find the extension this script targets at L<https://guokai.dev/>.
 # Find the extension's author's GitHub at L<https://github.com/hanguokai>.
