@@ -7,7 +7,7 @@ Scripts for bookmark management by Zachary Krepelka
 	AUTHOR: Zachary Krepelka
 	DATE: Thursday, January 4th, 2024
 	ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-	UPDATED: Thursday, October 31st, 2024 at 10:28 PM
+	UPDATED: Sunday, February 16th, 2025 at 10:02 PM
 -->
 
 ## Motivations
@@ -116,6 +116,7 @@ The functionality of each script is summarized in the table below.
 | sort.pl                       | Sort bookmarks in folders recursively        |
 | spellcheck.sh                 | Reports spelling mistakes in bookmark names  |
 | tabgroups-to-bookmarks.pl     | Data converter targeting a Chrome extension  |
+| tabgroups-to-bookmarks.jq     | Same thing but input is json instead of html |
 | treeifier.pl                  | Creates [tree view][11] from bookmark file   |
 | wrangle.pl                    | Wrangle up misplaced bookmarks               |
 | youtube-thumbnail-scraper.sh  | Download YouTube thumbnails in bulk          |
