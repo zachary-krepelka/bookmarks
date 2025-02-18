@@ -7,7 +7,7 @@ Scripts for bookmark management by Zachary Krepelka
 	AUTHOR: Zachary Krepelka
 	DATE: Thursday, January 4th, 2024
 	ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-	UPDATED: Sunday, February 16th, 2025 at 10:02 PM
+	UPDATED: Tuesday, February 18th, 2025 at 2:03 AM
 -->
 
 ## Motivations
@@ -93,54 +93,96 @@ source code as comments.
 
 ## Functionality
 
-The functionality of each script is summarized in the table below.
+The functionality of each script is summarized below.
 
-<div align="center">
+<!--
+person@computer:~$ cat tree.sed
+/^```graphql$/,/^```$/{
+	/^```$/etree -I tree.sed -F --info --noreport --charset=ascii | tr '[' '#'
+	/^```/p
+	d
+}
+person@computer:~$ sed -f tree.sed README.md | sponge README.md
+-->
 
-|  Program                      | Functionality                                |
-| ----------------------------- | -------------------------------------------- |
-| 80.sh                         | Reports bookmark names over 80 characters    |
-| alphabetize.pl                | Organize bookmarks alphabetically            |
-| bookmarkleter.pl              | Packages JavaScript into a bookmark file     |
-| bookmarklets.js               | Showcases a few of my [bookmarklets][9]      |
-| bookmarks.ahk                 | Enhances bookmarking UI for Google Chrome    |
-| bookmarks.sed                 | Removes superfluous textual patterns         |
-| count.sh                      | Counts the number of bookmarks and folders   |
-| domainify.pl                  | Organize bookmarks by website                |
-| domains.sh                    | Reports domain frequencies                   |
-| duplicates.sh                 | Identifies duplicate bookmark entries        |
-| favicon.sh                    | Repopulates missing bookmark [favicons][10]  |
-| pancake.pl                    | Flatten nested bookmarks                     |
-| search.pl                     | Search your bookmarks on the command line    |
-| skeleton.pl                   | Strip bookmarks leaving only folders         |
-| sort.pl                       | Sort bookmarks in folders recursively        |
-| spellcheck.sh                 | Reports spelling mistakes in bookmark names  |
-| tabgroups-to-bookmarks.pl     | Data converter targeting a Chrome extension  |
-| tabgroups-to-bookmarks.jq     | Same thing but input is json instead of html |
-| treeifier.pl                  | Creates [tree view][11] from bookmark file   |
-| wrangle.pl                    | Wrangle up misplaced bookmarks               |
-| youtube-thumbnail-scraper.sh  | Download YouTube thumbnails in bulk          |
+```graphql
+./
+|-- README.md
+|    # you should read this
+|-- analyzers/
+|    # scripts that generate informational reports
+|   |-- 80.sh
+|   |    # reports bookmark names over 80 characters
+|   |-- count.sh
+|   |    # counts the number of bookmarks and folders
+|   |-- domains.sh
+|   |    # reports domain frequencies
+|   |-- duplicates.sh
+|   |    # identifies duplicate bookmark entries
+|   |-- search.pl
+|   |    # search your bookmarks on the command line
+|   |-- spellcheck.sh
+|   |    # reports spelling mistakes in bookmark names
+|   `-- wrangle.pl
+|        # wrangle up misplaced bookmarks
+|-- categorizers/
+|    # scripts that categorize data
+|   |-- alphabetize.pl
+|   |    # organize bookmarks alphabetically
+|   `-- domainify.pl
+|        # organize bookmarks by website
+|-- converters/
+|    # scripts that convert between file formats
+|   |-- bookmarkleter.pl
+|   |    # packages JavaScript into a bookmark file
+|   |-- tabgroups-to-bookmarks.jq
+|   |    # data converter targeting a Chrome extension
+|   |-- tabgroups-to-bookmarks.pl
+|   |    # same thing but input is html instead of json
+|   `-- treeifier.pl
+|        # creates treeview from bookmark file
+|-- manipulators/
+|    # scripts that perform fine-grained modifications
+|   |-- bookmarks.sed
+|   |    # removes superfluous textual patterns
+|   |-- favicon.sh
+|   |    # repopulates missing bookmark favicons
+|   |-- pancake.pl
+|   |    # flatten nested bookmarks
+|   |-- skeleton.pl
+|   |    # strip bookmarks leaving only folders
+|   `-- sort.pl
+|        # sort bookmarks in folders recursively
+`-- misc/
+     # scripts that are miscellaneous
+    |-- bookmarklets.js
+    |    # showcases a few of my bookmarklets
+    |-- bookmarks.ahk
+    |    # enhances bookmarking ui for Google Chrome
+    `-- youtube-thumbnail-scraper.sh
+         # download YouTube thumbnails in bulk
+```
 
-</div>
+<!-- https://github.com/DavidWells/advanced-markdown?tab=readme-ov-file#nice-looking-file-tree -->
 
 ## Related / Recommended Software
 
 I use the following software in conjunction with the scripts in this repository.
 
-* The [Kiwi Browser][12] is a fully open-source, Chromium-based web browser for
+* The [Kiwi Browser][9] is a fully open-source, Chromium-based web browser for
   the Android operating system.  It supports the ability to import and export
   bookmarks to and from an HTML file in the Netscape bookmark file format.
   Neither Chrome nor Firefox support this feature in their mobile applications,
   instead requiring the user to sync their bookmarks using an online account.
 
-* The [Selective Bookmarks Export Tool][13] is a web browser extension available
+* The [Selective Bookmarks Export Tool][10] is a web browser extension available
   for Chrome, Firefox, and Edge.
 
   > It allows users to choose the bookmarks they want to export as [an] HTML
   > file, to decide the data structure of the exported content, and to filter
   > the results by keywords when selecting bookmarks.
 
-* The [Firefox Bookmark Backup Decompressor][14] is an online web app that can
+* The [Firefox Bookmark Backup Decompressor][11] is an online web app that can
   decompress bookmark backup files created by the Firefox web browser.  This app
   is your friend in a last-ditch data recovery effort.
 
@@ -154,9 +196,6 @@ I use the following software in conjunction with the scripts in this repository.
 [6]: https://en.wikipedia.org/wiki/Interoperability
 [7]: https://superuser.com/questions/128242/how-to-export-an-individual-bookmark-folder-in-google-chrome
 [8]: https://en.wikipedia.org/wiki/Plain_Old_Documentation
-[9]: https://en.wikipedia.org/wiki/Bookmarklet
-[10]: https://en.wikipedia.org/wiki/Favicon
-[11]: https://en.wikipedia.org/wiki/Tree_view
-[12]: https://kiwibrowser.com
-[13]: https://github.com/LightAPIs/free-export-bookmarks
-[14]: https://www.jeffersonscher.com/ffu/bookbackreader.html
+[9]:  https://kiwibrowser.com
+[10]: https://github.com/LightAPIs/free-export-bookmarks
+[11]: https://www.jeffersonscher.com/ffu/bookbackreader.html

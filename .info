@@ -1,0 +1,59 @@
+# FILENAME: .info
+# AUTHOR: Zachary Krepelka
+# DATE: Tuesday, February 18th, 2025
+# ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
+
+./README.md
+	you should read this
+./analyzers
+	scripts that generate informational reports
+./analyzers/80.sh
+	reports bookmark names over 80 characters
+./analyzers/count.sh
+	counts the number of bookmarks and folders
+./analyzers/domains.sh
+	reports domain frequencies
+./analyzers/duplicates.sh
+	identifies duplicate bookmark entries
+./analyzers/search.pl
+	search your bookmarks on the command line
+./analyzers/spellcheck.sh
+	reports spelling mistakes in bookmark names
+./analyzers/wrangle.pl
+	wrangle up misplaced bookmarks
+./categorizers
+	scripts that categorize data
+./categorizers/alphabetize.pl
+	organize bookmarks alphabetically
+./categorizers/domainify.pl
+	organize bookmarks by website
+./converters
+	scripts that convert between file formats
+./converters/bookmarkleter.pl
+	packages JavaScript into a bookmark file
+./converters/tabgroups-to-bookmarks.jq
+	data converter targeting a Chrome extension
+./converters/tabgroups-to-bookmarks.pl
+	same thing but input is html instead of json
+./converters/treeifier.pl
+	creates treeview from bookmark file
+./manipulators
+	scripts that perform fine-grained modifications
+./manipulators/bookmarks.sed
+	removes superfluous textual patterns
+./manipulators/favicon.sh
+	repopulates missing bookmark favicons
+./manipulators/pancake.pl
+	flatten nested bookmarks
+./manipulators/skeleton.pl
+	strip bookmarks leaving only folders
+./manipulators/sort.pl
+	sort bookmarks in folders recursively
+./misc
+	scripts that are miscellaneous
+./misc/bookmarklets.js
+	showcases a few of my bookmarklets
+./misc/bookmarks.ahk
+	enhances bookmarking ui for Google Chrome
+./misc/youtube-thumbnail-scraper.sh
+	download YouTube thumbnails in bulk
