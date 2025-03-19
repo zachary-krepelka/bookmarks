@@ -4,7 +4,7 @@
 ; AUTHOR: Zachary Krepelka
 ; DATE: Friday, March 8th, 2024
 ; ABOUT: Chrome bookmarking optimizations
-; UPDATED: Monday, September 16th, 2024 at 12:44 AM
+; UPDATED: Wednesday, March 19th, 2025 at 5:56 AM
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -87,20 +87,24 @@ instead of the arrow keys.
 
 =item B<j>
 
-Move down.  Used for scrolling through drop-down menus.
+Move down.  Used for scrolling through drop-down menus.  When prefixed
+with a number, move down [count] times.
 
 =item B<k>
 
-Move up.  Used for scrolling through drop-down menus.
+Move up.  Used for scrolling through drop-down menus.  When prefixed
+with a number, move up [count] times.
 
 =item B<h>
 
-Move to the left.  When in a nested drop-down menu, move into the parent
-drop-down menu.
+Move to the left.  When in a nested drop-down menu, move into the
+parent drop-down menu.  When prefixed with a number, move left [count]
+times.
 
 =item B<l>
 
-Move to the right.  When on a folder, descend into that folder.
+Move to the right.  When on a folder, descend into that folder.  When
+prefixed with a number, move right [count] times.
 
 =item B<gg>
 
@@ -113,6 +117,8 @@ Move to the bottom of a drop-down menu.
 =item B<f{char}>
 
 Jump to the next entry in the drop-down menu whose name begins with {char}.
+When prefixed with a number, jump to the [count]th occurrence after the current
+selection.
 
 =item B<;>
 
@@ -150,8 +156,33 @@ Sort the selected folder by name.
 
 =item B<Caps Lock>
 
-Don't worry, I've already taken the liberty to remap caps lock to escape for
-you. :) This escapes out of all drop down menus.
+Escape / Cancel.  If there is a pending count, cancel that; otherwise,
+escape out of all drop-down menus.
+
+I've already taken the liberty to remap Caps Lock to escape for you.
+In the Vim community, it is a common practice to remap the Caps Lock
+key to the escape key and vice versa. This is because
+
+=over
+
+=item 1)
+
+the escape key is used more frequently than the Caps Lock key,
+
+=item 2)
+
+but the Caps Locks key is in a more accessible position,
+
+=item 3)
+
+not to mention that the Caps Lock key is rendered obsolete by Vim's
+many, more ergonomic operators for manipulating letter case, e.g.,
+C<~>, C<gu>, and C<gU>.
+
+=back
+
+As noted before, these changes only take effect in bookmarking mode.
+The Caps Lock Key behaves normally in normal mode.
 
 =back
 
@@ -167,11 +198,11 @@ to just sit back and let the computer "take the wheel" until execution finishes.
 
 =item B<CTRL+]>
 
-Export your bookmarks to a HTML file.
+Export your bookmarks to an HTML file.
 
 =item B<CTRL+[>
 
-Import your bookmarks from a HTML file.
+Import your bookmarks from an HTML file.
 
 =item B<ALT+]>
 
@@ -231,9 +262,10 @@ won't work.
 
 =head1 CAVEATS
 
-The positioning of the mouse can distrust focus and consequently cause the
-script to function improperly.  Make sure the mouse is not near the bookmark bar
-or any pop-up menus when using a keybinding.
+The positioning of the mouse can distrust focus and consequently cause
+the script to function improperly.  Make sure the mouse is not near
+the bookmark bar or any pop-up menus when using a keybinding.  In
+bookmarking mode, the mouse is outright disabled.
 
 =head1 BUGS
 
@@ -244,9 +276,45 @@ operating system.  That's unfortunate.  :(
 
 =over
 
-=item * The mouse can do cool things too. Document this.
+=item *
 
-=item * Document how to make the script run at startup.
+Support other web browsers.  Currently only Google Chrome is
+supported.  Add command-line flags to specify the target web browser,
+possibly like this:
+
+=over
+
+=item -c, --chrome (default)
+
+=item -f, --firefox
+
+=item -e, --edge
+
+=back
+
+=item *
+
+Reimplement this script in a language that runs on Linux, possibly AutoKey.
+Maintain both versions.
+
+L<https://github.com/autokey/autokey>
+
+=item *
+
+The mouse can do cool things too. Document this.
+
+=item *
+
+Document how to make the script run at startup.
+
+=item *
+
+Teach myself how to program in AutoHotkey properly.  Thereafter,
+refactor this script.
+
+I learned AutoHotkey on the go.  I have not read the documentation in
+its entirety.  One day, I want to sit down and take the time to learn
+AutoHotkey thoroughly.
 
 =back
 
@@ -281,9 +349,24 @@ This repository contains various scripts for bookmark management.
 
 Zachary Krepelka L<https://github.com/zachary-krepelka>
 
-=head1
+=head1 HISTORY
+
+=over
+
+=item Wednesday, March 19th, 2025
+
+=over
+
+=item Start a change log (this).
+
+=item Implement [count] for C<h>, C<j>, C<k>, C<l>, and C<f>.
+
+=back
+
+=back
 
 =cut
+
 */
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -368,7 +451,27 @@ mode_enabled := 0
 toggle_flag  := 0
 context_menu := 0
 find         := 0
+count        := 0
 latest_key   := ""
+
+GetCount()
+{
+	global count
+	return count = 0 ? 1 : count
+}
+
+ResetCount()
+{
+	global count
+	count := 0
+}
+
+UpdateCount(new_digit)
+{
+	global count
+	existing_digits := count
+	count := 10 * existing_digits + new_digit
+}
 
 #HotIf WinActive("ahk_class Chrome_WidgetWin_1")
 
@@ -430,8 +533,16 @@ Loop {
 
 ; Vim Keybindings
 
-Capslock::Alt
-
+ 0::UpdateCount(0)
+ 1::UpdateCount(1)
+ 2::UpdateCount(2)
+ 3::UpdateCount(3)
+ 4::UpdateCount(4)
+ 5::UpdateCount(5)
+ 6::UpdateCount(6)
+ 7::UpdateCount(7)
+ 8::UpdateCount(8)
+ 9::UpdateCount(9)
  a::return
 +a::return
  b::return
@@ -451,7 +562,11 @@ Capslock::Alt
  {
 	global find := 1
 	global latest_key := GetNextKeyPress()
-	SendText(latest_key)
+	Loop GetCount() {
+
+		SendText(latest_key)
+	}
+	ResetCount()
 	find := 0
  }
 +f::return
@@ -462,15 +577,27 @@ Capslock::Alt
 		Send("{home}")
  }
 +g::Send("{end}")
- h::Send("{left}")
+ h::{
+	Send("{left " GetCount() "}")
+	ResetCount()
+ }
 +h::return
  i::return
 +i::return
- j::Send("{down}")
+ j::{
+	Send("{down " GetCount() "}")
+	ResetCount()
+ }
 +j::return
- k::Send("{up}")
+ k::{
+	Send("{up " GetCount() "}")
+	ResetCount()
+ }
 +k::return
- l::Send("{right}")
+ l::{
+	Send("{right " GetCount() "}")
+	ResetCount()
+ }
 +l::return
  m::AppsKey
 +m::return
@@ -527,6 +654,27 @@ Capslock::Alt
 {
 	AppsKey(4)
 	global mode_enabled := 0
+}
+
+Capslock::{
+
+	; If there is a count, cancel that.
+	; Otherwise, escape out of all drop down menus.
+
+	If (count = 0) {
+
+		Send("{Alt}")
+
+		/* I couldn't find documentation on this anywhere,
+		 * but I've discovered that pressing the alt
+		 * key--not as a modifier but by itself--will
+		 * escape out of all drop dowm menus in Google
+		 * Chrome.
+		 */
+
+	} Else {
+		ResetCount()
+	}
 }
 
 ; The left and right mouse buttons are
