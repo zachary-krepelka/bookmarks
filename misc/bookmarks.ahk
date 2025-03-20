@@ -4,7 +4,7 @@
 ; AUTHOR: Zachary Krepelka
 ; DATE: Friday, March 8th, 2024
 ; ABOUT: Chrome bookmarking optimizations
-; UPDATED: Wednesday, March 19th, 2025 at 5:56 AM
+; UPDATED: Thursday, March 20th, 2025 at 1:39 AM
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -145,14 +145,37 @@ so you don't unintentionally delete a bookmark.
 
 Open the context menu on the selected bookmark or folder.
 
+=item B<e>
+
+Edit the currently selected bookmark or folder.
+
+ edit bookmark dialog             edit folder dialog
+ +----------------------------+   +----------------------------+
+ | Edit bookmark              |   | Edit folder name           |
+ |                            |   |                            |
+ | Name _____________________ |   | Name _____________________ |
+ | URL  _____________________ |   |                            |
+ |                            |   |               Save  Cancel |
+ | +------------------------+ |   +----------------------------+
+ | |                        | |
+ | |  Bookmarks bar         | |
+ | |  |-- Personal          | |
+ | |  |   `-- Recipes       | |
+ | |  `-- Work              | |
+ | |                        | |
+ | +------------------------+ |
+ |                            |
+ | New Folder    Save  Cancel |
+ +----------------------------+
+
+=item B<s>
+
+Sort the currently selected folder by name.
+
 =item B<*>
 
 Open the selected bookmark or folder in the bookmark manager.
 Then enter normal mode.
-
-=item B<s>
-
-Sort the selected folder by name.
 
 =item B<Caps Lock>
 
@@ -212,25 +235,7 @@ Remove the bookmark from the current page.
 
 Add or edit a bookmark.  When no bookmark exists for the current page, add one;
 otherwise, edit the existing bookmark.  This will open Chrome's "Edit bookmark"
-dialog, which looks like this.
-
-	+----------------------------+
-	| Edit bookmark              |
-	|                            |
-	| Name _____________________ |
-	| URL  _____________________ |
-	|                            |
-	| +------------------------+ |
-	| |                        | |
-	| |  Bookmarks bar         | |
-	| |  |-- Personal          | |
-	| |  |   `-- Recipes       | |
-	| |  `-- Work              | |
-	| |                        | |
-	| +------------------------+ |
-	|                            |
-	| New Folder    Save  Cancel |
-	+----------------------------+
+dialog.
 
 =item B<CTRL+\>
 
@@ -269,8 +274,12 @@ bookmarking mode, the mouse is outright disabled.
 
 =head1 BUGS
 
-Because this script was written in AutoHotkey, it only works on the Windows
-operating system.  That's unfortunate.  :(
+The C<e> command automatically leaves bookmarking mode so that the user can type
+normally to make edits.  The problem is that after returning to normal mode, the
+bookmark bar is left visible, which throws the hide/show cycle out of sync.  The
+user must follow up with C<CTRL+SHIFT+B> in order to resync it.  Without losing
+the context menu, there is no opportunity to programmatically hide the bar in
+between selecting edit from the context menu and receiving the edit dialog box.
 
 =head1 TODO
 
@@ -363,82 +372,19 @@ Zachary Krepelka L<https://github.com/zachary-krepelka>
 
 =back
 
+=item Thursday, March 20th, 2025
+
+=over
+
+=item  Implement the edit command.
+
+=back
+
 =back
 
 =cut
 
 */
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;  _
-; |_  ._  __|_o _ ._  _
-; ||_|| |(_ |_|(_)| |_>
-
-DoubleKeyPress()
-{
-	If (A_PriorHotkey = "")
-
-		return ; Guard
-
-	timeout_duration := 300 ; milliseconds
-	pressed_twice    := A_ThisHotkey = A_PriorHotkey
-	pressed_quickly  := A_TimeSincePriorHotkey < timeout_duration
-
-	return pressed_twice && pressed_quickly
-}
-
-GetNextKeyPress()
-{
-	hook := InputHook("L1") ; L1 denotes a string of length 1.
-
-	hook.Start()
-	hook.Wait()
-
-	return hook.Input
-
-	; Credit for this function goes to a post on the AutoHotkey forums.
-	; https://www.autohotkey.com/boards/viewtopic.php?t=122234#p542806
-}
-
-AppsKey(num)
-{
-	/* Num is one of the following.
-
-		.--------------------------.
-		| Open in new tab          |
-		| Open in new window       |
-		| Open in incognito window |
-		|--------------------------|
-		| Rename...                | 11
-		|--------------------------|
-		| Cut                      | 10
-		| Copy                     | 9
-		| Paste                    | 8
-		|--------------------------|
-		| Delete                   | 7
-		|--------------------------|
-		| Add page...              | 6
-		| Add folder               | 5
-		|--------------------------|
-		| Bookmark Manager         | 4
-		| Show apps shortcut       | 3
-		| Show tab groups          | 2
-		| Show Bookmarks bar       | 1
-		.--------------------------.
-	*/
-
-	delay := 750
-
-	Send("{AppsKey}"),    Sleep(delay)
-	Send("{Up " num "}"), Sleep(delay)
-	Send("{Enter}"),      Sleep(delay)
-
-	; Has to be UP, not DOWN.
-	; Top of menu can change
-	; depending on context.
-
-} ; Wednesday, September 11th, 2024
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -471,6 +417,76 @@ UpdateCount(new_digit)
 	global count
 	existing_digits := count
 	count := 10 * existing_digits + new_digit
+}
+
+; Select an item in Google Chrome's context menu
+
+; .--------------------------.
+; | Open in new tab          |
+; | Open in new window       |
+; | Open in incognito window |
+; |--------------------------|
+; | Edit...                  | 11
+; |--------------------------|
+; | Cut                      | 10
+; | Copy                     |  9
+; | Paste                    |  8
+; |--------------------------|
+; | Delete                   |  7
+; |--------------------------|
+; | Add page...              |  6
+; | Add folder               |  5
+; |--------------------------|
+; | Bookmark Manager         |  4
+; | Show apps shortcut       |  3
+; | Show tab groups          |  2
+; | Show Bookmarks bar       |  1
+; .--------------------------.
+
+AppsKey(num)
+{
+	delay := 750
+
+	; We have to start from the bottom and move
+	; upwards. Starting from the top and moving
+	; downwards would not work because the top of
+	; the context menu can change depending on
+	; context.
+
+	Send("{AppsKey}"),    Sleep(delay)
+	Send("{Up " num "}"), Sleep(delay)
+	Send("{Enter}"),      Sleep(delay)
+}
+
+; Check for a double key press
+
+DoubleKeyPress()
+{
+	If (A_PriorHotkey = "")
+
+		return ; guard
+
+	timeout_duration := 300 ; milliseconds
+	pressed_twice    := A_ThisHotkey = A_PriorHotkey
+	pressed_quickly  := A_TimeSincePriorHotkey < timeout_duration
+
+	return pressed_twice && pressed_quickly
+}
+
+; Accept a single keypress from the user
+
+; Credit for this function goes to a post on the AutoHotkey forums.
+; https://www.autohotkey.com/boards/viewtopic.php?t=122234#p542806
+
+GetNextKeyPress()
+{
+
+	hook := InputHook("L1") ; L1 denotes a string of length 1
+
+	hook.Start()
+	hook.Wait()
+
+	return hook.Input
 }
 
 #HotIf WinActive("ahk_class Chrome_WidgetWin_1")
@@ -556,15 +572,19 @@ Loop {
 		AppsKey(7)
  }
 +d::return
- e::return
+ e::
+ {
+	AppsKey(11)
+	global mode_enabled := 0
+ }
 +e::return
  f::
  {
 	global find := 1
 	global latest_key := GetNextKeyPress()
-	Loop GetCount() {
-
-		SendText(latest_key)
+	Loop GetCount()
+	{
+	       SendText(latest_key)
 	}
 	ResetCount()
 	find := 0
@@ -577,24 +597,28 @@ Loop {
 		Send("{home}")
  }
 +g::Send("{end}")
- h::{
+ h::
+ {
 	Send("{left " GetCount() "}")
 	ResetCount()
  }
 +h::return
  i::return
 +i::return
- j::{
+ j::
+ {
 	Send("{down " GetCount() "}")
 	ResetCount()
  }
 +j::return
- k::{
+ k::
+ {
 	Send("{up " GetCount() "}")
 	ResetCount()
  }
 +k::return
- l::{
+ l::
+ {
 	Send("{right " GetCount() "}")
 	ResetCount()
  }
