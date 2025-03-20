@@ -5,7 +5,7 @@ AUTHOR: Zachary Krepelka
 DATE: Thursday, December 21st, 2023
 ABOUT: bookmarklets for the web browser
 ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-UPDATED: Wednesday, October 16th, 2024 at 5:49 AM
+UPDATED: Wednesday, March 19th, 2025 at 10:27 PM
 
  This source code can be packaged into an importable file using my
  bookmarklet-parsing Perl script.  Find it in my GitHub repository as stated
@@ -347,5 +347,49 @@ ICON javascript.ico
 document.getElementsByTagName("video")[0].playbackRate = 1;
 
 END
+
+//##############################################################################
+
+BEGIN Print Google AI Overview
+FOLDER Scrapers
+ICON javascript.ico
+
+let aiOverview = document.querySelector('.LT6XE').cloneNode(true);
+
+let junk = aiOverview.querySelectorAll('.niO4u,.WDoJJe');
+
+Array.from(junk).forEach(item => item.remove());
+
+let printable = window.open();
+
+printable.document.write(aiOverview.innerHTML);
+printable.document.body.insertAdjacentHTML('afterbegin',
+	`<p>${getStrippedDownGoogleSearchURL()}</p>`);
+printable.document.close();
+printable.focus();
+printable.print();
+
+function getStrippedDownGoogleSearchURL() {
+
+	let query = getQueryParameters(location.href)['q'];
+
+	return `https://www.google.com/search?q=${query}`
+}
+
+function getQueryParameters(url) {
+
+	let params = {};
+
+	url.match(/(?<=\?)[^#]*/)[0].split("&").forEach(param => {
+
+		let [key, value] = param.split("=");
+
+		params[key] = value;
+	});
+
+	return params;
+}
+
+END Wednesday, March 19th, 2025
 
 //##############################################################################
