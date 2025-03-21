@@ -857,6 +857,21 @@ F1::
 
 ; CREATE A NEW USER PROFILE IN GOOGLE CHROME
 
+;	{F10}     set focus on the rightmost item in the chrome toolbar
+;	{Left}    ...
+;	{Enter}   profile
+;	{Up 3}    ...
+;	{Enter}   add chrome profile
+;	{Tab 2}   ...
+;	{Enter}   continue without an account
+;	...       add a name or label, like work or personal
+;	{Tab 2}   ...
+;	{Enter}   done
+;	^t        new tab -> enhanced ad privacy in chrome
+;	{Tab 3}   ...
+;	{Enter}   got it
+;	^w        close tab
+
 NewChromeUser() {
 
 	IB := InputBox("Please enter a username.", "Username", "w300 h100")
@@ -868,20 +883,20 @@ NewChromeUser() {
 
 	delay := 750
 
-	Send("!e"),         Sleep(delay) ; open chrome menu
-	Send("{Up 20}"),    Sleep(delay) ; ...
-	Send("{Enter}"),    Sleep(delay) ; profile
-	Send("{Up 3}"),     Sleep(delay) ; ...
-	Send("{Enter}"),    Sleep(delay) ; add new profile
-	Send("{Tab 2}"),    Sleep(delay) ; ...
-	Send("{Enter}"),    Sleep(delay) ; continue without an account
-	SendText(username), Sleep(delay) ; add a name or label
-	Send("{Tab 2}"),    Sleep(delay) ; ...
-	Send("{Enter}"),    Sleep(delay) ; done
-	Send("^t"),         Sleep(delay) ; new tab -> enhanced ad privacy
-	Send("{Tab 3}"),    Sleep(delay) ; ...
-	Send("{Enter}"),    Sleep(delay) ; got it
-	Send("^w"),         Sleep(delay) ; close tab
+	Send("{F10}"),      Sleep(delay)
+	Send("{Left}"),     Sleep(delay)
+	Send("{Enter}"),    Sleep(delay)
+	Send("{Up 3}"),     Sleep(delay)
+	Send("{Enter}"),    Sleep(delay)
+	Send("{Tab 2}"),    Sleep(delay)
+	Send("{Enter}"),    Sleep(delay)
+	SendText(username), Sleep(delay)
+	Send("{Tab 2}"),    Sleep(delay)
+	Send("{Enter}"),    Sleep(delay)
+	Send("^t"),         Sleep(delay)
+	Send("{Tab 3}"),    Sleep(delay)
+	Send("{Enter}"),    Sleep(delay)
+	Send("^w"),         Sleep(delay)
 
 } ; Thursday, June 6th, 2024
 
