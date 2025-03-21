@@ -4,7 +4,7 @@
 ; AUTHOR: Zachary Krepelka
 ; DATE: Friday, March 8th, 2024
 ; ABOUT: Chrome bookmarking optimizations
-; UPDATED: Thursday, March 20th, 2025 at 1:39 AM
+; UPDATED: Friday, March 21st, 2025 at 1:32 PM
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -184,7 +184,7 @@ escape out of all drop-down menus.
 
 I've already taken the liberty to remap Caps Lock to escape for you.
 In the Vim community, it is a common practice to remap the Caps Lock
-key to the escape key and vice versa. This is because
+key to the escape key and vice versa.  This is because
 
 =over
 
@@ -209,13 +209,12 @@ The Caps Lock Key behaves normally in normal mode.
 
 =back
 
-=head2 Mode Independent
+=head2 Normal Mode
 
-The following keyboard shortcuts are available regardless of what mode you are
-in.  These perform general functions.  Note that without the following
-keybindings, one would need to click through many menus to perform the same
-function.  Some of the keybindings perform complex UI operations, so it is best
-to just sit back and let the computer "take the wheel" until execution finishes.
+The following keyboard shortcuts can be used during normal mode.  They automate
+some common tasks that would otherwise take several mouse clicks.  Some of the
+keybindings perform complex UI operations, so it is best to just sit back and
+let the computer "take the wheel" until execution finishes.
 
 =over
 
@@ -239,7 +238,9 @@ dialog.
 
 =item B<CTRL+\>
 
-Create a new user profile.
+Create a new user profile in Google Chrome.  A popup box will appear asking for
+a username.  If you press "OK" without entering any text, a default name will be
+used.
 
 =item B<F1>
 
@@ -284,6 +285,11 @@ between selecting edit from the context menu and receiving the edit dialog box.
 =head1 TODO
 
 =over
+
+=item *
+
+Disable the use of normal mode commands in bookmarking mode.  Using a normal
+mode command in bookmarking mode will result in undefined behavior.
 
 =item *
 
@@ -366,9 +372,9 @@ Zachary Krepelka L<https://github.com/zachary-krepelka>
 
 =over
 
-=item Start a change log (this).
+=item start a change log
 
-=item Implement [count] for C<h>, C<j>, C<k>, C<l>, and C<f>.
+=item implement [count] for C<h>, C<j>, C<k>, C<l>, and C<f>
 
 =back
 
@@ -376,7 +382,17 @@ Zachary Krepelka L<https://github.com/zachary-krepelka>
 
 =over
 
-=item  Implement the edit command.
+=item  implement the edit command
+
+=back
+
+=item Friday, March 21st, 2025
+
+=over
+
+=item add username dialog to command for creating new chrome user
+
+=item update to reflect change in chrome context menu
 
 =back
 
@@ -843,22 +859,29 @@ F1::
 
 NewChromeUser() {
 
+	IB := InputBox("Please enter a username.", "Username", "w300 h100")
+
+	If IB.Result = "Cancel"
+		return
+
+	username := IB.value || "Secondary"
+
 	delay := 750
 
-	Send("!e"),        Sleep(delay)
-	Send("{Down 4}"),  Sleep(delay)
-	Send("{Enter}"),   Sleep(delay)
-	Send("{Up 2}"),    Sleep(delay)
-	Send("{Enter}"),   Sleep(delay)
-	Send("{Tab 2}"),   Sleep(delay)
-	Send("{Enter}"),   Sleep(delay)
-	SendText("dummy"), Sleep(delay)
-	Send("{Tab 2}"),   Sleep(delay)
-	Send("{Enter}"),   Sleep(delay)
-	Send("^t"),        Sleep(delay)
-	Send("{Tab 3}"),   Sleep(delay)
-	Send("{Enter}"),   Sleep(delay)
-	Send("^w"),        Sleep(delay)
+	Send("!e"),         Sleep(delay) ; open chrome menu
+	Send("{Up 20}"),    Sleep(delay) ; ...
+	Send("{Enter}"),    Sleep(delay) ; profile
+	Send("{Up 3}"),     Sleep(delay) ; ...
+	Send("{Enter}"),    Sleep(delay) ; add new profile
+	Send("{Tab 2}"),    Sleep(delay) ; ...
+	Send("{Enter}"),    Sleep(delay) ; continue without an account
+	SendText(username), Sleep(delay) ; add a name or label
+	Send("{Tab 2}"),    Sleep(delay) ; ...
+	Send("{Enter}"),    Sleep(delay) ; done
+	Send("^t"),         Sleep(delay) ; new tab -> enhanced ad privacy
+	Send("{Tab 3}"),    Sleep(delay) ; ...
+	Send("{Enter}"),    Sleep(delay) ; got it
+	Send("^w"),         Sleep(delay) ; close tab
 
 } ; Thursday, June 6th, 2024
 
