@@ -4,7 +4,8 @@
 ; AUTHOR: Zachary Krepelka
 ; DATE: Friday, March 8th, 2024
 ; ABOUT: Chrome bookmarking optimizations
-; UPDATED: Friday, March 21st, 2025 at 1:32 PM
+; ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
+; UPDATED: Saturday, April 5th, 2025 at 5:14 AM
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -130,16 +131,16 @@ Cut the selected bookmark or folder.
 
 =item B<y>
 
-Yank the selected bookmark or folder. Yank means to copy.
+Yank the selected bookmark or folder.  Yank means to copy.
 
 =item B<p>
 
-Put a bookmark or folder. Put means to paste.
+Put a bookmark or folder.  Put means to paste.
 
 =item B<dd>
 
-Delete the selected bookmark or folder.  The double key press is a safe guard,
-so you don't unintentionally delete a bookmark.
+Delete the selected bookmark or folder.  The double key press is a safeguard, so
+you don't unintentionally delete a bookmark.
 
 =item B<m>
 
@@ -222,9 +223,13 @@ let the computer "take the wheel" until execution finishes.
 
 Export your bookmarks to an HTML file.
 
+Could fail if the window is not maximized.
+
 =item B<CTRL+[>
 
 Import your bookmarks from an HTML file.
+
+Could fail if the window is not maximized.
 
 =item B<ALT+]>
 
@@ -268,10 +273,35 @@ won't work.
 
 =head1 CAVEATS
 
-The positioning of the mouse can distrust focus and consequently cause
-the script to function improperly.  Make sure the mouse is not near
-the bookmark bar or any pop-up menus when using a keybinding.  In
-bookmarking mode, the mouse is outright disabled.
+There are several points to bear in mind.
+
+=over
+
+=item
+
+Google Chrome is responsive, meaning that its UI components may change or move
+around as the application is resized.  Bear in mind that this can disrupt the
+functionality of this script.  Some hotkeys may fail to work if the application
+window is sized down.  To achieve the intended functionality, your best bet is
+to maximize the window when invoking a hotkey.
+
+=item
+
+The positioning of the mouse can distrust focus and consequently cause the
+script to function improperly.  Make sure the mouse is not near the bookmark bar
+or any pop-up menus when using a keybinding.  In bookmarking mode, the mouse is
+outright disabled and even moved out of the way.  (Don't worry, its position is
+later restored.)
+
+=item
+
+Google Chrome is constantly changing.  New features are introduced all the time.
+Context menus sometimes change, and UI components move around.  This requires me
+to periodically update this script to adapt to a change.  Make sure you are
+using the most up-to-date version of Chrome.  I use this script daily, so I am
+likely to stay on top of changes.
+
+=back
 
 =head1 BUGS
 
@@ -293,9 +323,8 @@ mode command in bookmarking mode will result in undefined behavior.
 
 =item *
 
-Support other web browsers.  Currently only Google Chrome is
-supported.  Add command-line flags to specify the target web browser,
-possibly like this:
+Support other web browsers.  Currently, only Google Chrome is supported.  Add
+command-line flags to specify the target web browser, possibly like this:
 
 =over
 
@@ -316,7 +345,7 @@ L<https://github.com/autokey/autokey>
 
 =item *
 
-The mouse can do cool things too. Document this.
+The mouse can do cool things too.  Document this.
 
 =item *
 
@@ -393,6 +422,20 @@ Zachary Krepelka L<https://github.com/zachary-krepelka>
 =item add username dialog to command for creating new chrome user
 
 =item update to reflect change in chrome context menu
+
+=back
+
+=item Saturday, April 5th, 2025
+
+=over
+
+=item refactor code for importing and exporting bookmarks
+
+=item modularize into functions
+
+=item eliminate magic numbers
+
+=item document caveats
 
 =back
 
@@ -782,6 +825,21 @@ XButton2::  Send("{left}")
 
 #HotIf WinActive("ahk_class Chrome_WidgetWin_1")
 
+; APPLY BOOKMARKLET OVER MULTIPLE TABS.
+
+F1::
+{
+	num := InputBox("Enter a number.").value
+
+	Loop num {
+
+		Send("!+b{Enter}^{Tab}")
+		Sleep(500)
+
+	}
+
+} ; Monday, April 29th, 2024
+
 ; ADD OR EDIT A BOOKMARK
 
 ![::
@@ -800,60 +858,71 @@ XButton2::  Send("{left}")
 	return
 }
 
-Portation(file, num) { ; https://english.stackexchange.com/q/141717
+; IMPORT/EXPORT BOOKMAKRS
 
-	/*
+;	^t        new tab
+;	^+o       bookmark manager
+;	{Tab}     focus on kebab menu (three vertical dots)
+;	{Enter}   select it
+;       {Up num}  navigate to menu option
+;	...         num is either 2 or 3
+;	...           2 = export bookmarks
+;	...           3 = import bookmarks
+;	{Enter}   select it
+;	...       enter name of file
+;	{Enter}   confirm
+;	^w        close tab (bookmark manager)
 
-	The purpose of this function is to import and export bookmarks
-	to and from Google Chrome.  The first parameter is the file to
-	import or export.  The second parameter is the number of key
-	presses to access the proper menu item.  Pass 2 for exporting
-	and 3 for importing.  Don't pass anything else for num.
+Portation(num, file) {
 
-	*/
-
-	if file = ""   ; Then the file selection was canceled,
-		return ; so don't do anything else.
+	if file = ""
+		return
 
 	delay := 750
 
-	Send("^t"),                      Sleep(delay)
-	SendText("chrome://bookmarks "), Sleep(delay)
-	Send("{Enter}"),                 Sleep(delay)
-	Send("{Tab}"),                   Sleep(delay)
-	Send("{Enter}"),                 Sleep(delay)
-	Send("{Up " num "}"),            Sleep(delay)
-	Send("{Enter}"),                 Sleep(delay)
-	SendText(file),                  Sleep(delay)
-	Send("{Enter}"),                 Sleep(delay)
+	Send("^t"),           Sleep(delay)
+	Send("^+o"),          Sleep(delay)
+	Send("{Tab}"),        Sleep(delay)
+	Send("{Enter}"),      Sleep(delay)
+	Send("{Up " num "}"), Sleep(delay)
+	Send("{Enter}"),      Sleep(delay)
+	SendText(file),       Sleep(delay * 1.5)
+	Send("{Enter}"),      Sleep(delay)
 	Send("^w")
 
-	; The space after "chrome://bookmarks" breaks any autocompletion.
+} ; https://english.stackexchange.com/q/141717
 
-} ; Friday, April 26th, 2024
 
-; IMPORT BOOKMARKS
+SelectImportFile() {
 
-^[::Portation(FileSelect(3  , , "Bookmark Importer", "*.html"), 3)
+	FileMustExist := 1
+	PathMustExist := 2
+	Options := FileMustExist + PathMustExist
 
-; EXPORT BOOKMARKS
+	return FileSelect(Options,, "Bookmark Importer", "*.html")
+}
 
-^]::Portation(FileSelect("S", , "Bookmark Exporter", "*.html"), 2)
+SelectExportFile() {
 
-; APPLY BOOKMARKLET OVER MULTIPLE TABS.
+	return FileSelect("S",, "Bookmark Exporter", "*.html")
+}
 
-F1::
-{
-	num := InputBox("Enter a number.").value
+ImportBookmarks() {
 
-	Loop num {
+	NumberOfUpsToReachImportSubMenu := 3
 
-		Send("!+b{Enter}^{Tab}")
-		Sleep(500)
+	Portation(NumberOfUpsToReachImportSubMenu, SelectImportFile())
+}
 
-	}
+ExportBookmarks() {
 
-} ; Monday, April 29th, 2024
+	NumberOfUpsToReachExportSubMenu := 2
+
+	Portation(NumberOfUpsToReachExportSubMenu, SelectExportFile())
+}
+
+^[::ImportBookmarks()
+^]::ExportBookmarks()
 
 ; CREATE A NEW USER PROFILE IN GOOGLE CHROME
 
