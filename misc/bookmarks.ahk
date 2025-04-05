@@ -5,7 +5,7 @@
 ; DATE: Friday, March 8th, 2024
 ; ABOUT: Chrome bookmarking optimizations
 ; ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-; UPDATED: Saturday, April 5th, 2025 at 5:14 AM
+; UPDATED: Saturday, April 5th, 2025 at 5:37 AM
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -909,16 +909,16 @@ SelectExportFile() {
 
 ImportBookmarks() {
 
-	NumberOfUpsToReachImportSubMenu := 3
+	NumberOfUpsToReachImportMenuItem := 3
 
-	Portation(NumberOfUpsToReachImportSubMenu, SelectImportFile())
+	Portation(NumberOfUpsToReachImportMenuItem, SelectImportFile())
 }
 
 ExportBookmarks() {
 
-	NumberOfUpsToReachExportSubMenu := 2
+	NumberOfUpsToReachExportMenuItem := 2
 
-	Portation(NumberOfUpsToReachExportSubMenu, SelectExportFile())
+	Portation(NumberOfUpsToReachExportMenuItem, SelectExportFile())
 }
 
 ^[::ImportBookmarks()
