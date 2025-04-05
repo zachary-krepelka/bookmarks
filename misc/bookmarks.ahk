@@ -5,7 +5,7 @@
 ; DATE: Friday, March 8th, 2024
 ; ABOUT: Chrome bookmarking optimizations
 ; ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-; UPDATED: Saturday, April 5th, 2025 at 5:37 AM
+; UPDATED: Saturday, April 5th, 2025 at 6:30 AM
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -437,6 +437,8 @@ Zachary Krepelka L<https://github.com/zachary-krepelka>
 
 =item document caveats
 
+=item disable C<A_MaxHotkeysPerInterval> warning dialog
+
 =back
 
 =back
@@ -458,6 +460,12 @@ context_menu := 0
 find         := 0
 count        := 0
 latest_key   := ""
+
+; When holding down one of h, j, k, and l to scroll, do
+; not recieve a warning about exceeding the maximum
+; number of hotkeys per interval.
+
+A_HotkeyInterval := 0
 
 GetCount()
 {
