@@ -5,7 +5,7 @@
 # DATE: Sunday, May 19th, 2024
 # ABOUT: a command-line bookmark sorter
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-# UPDATED: Tuesday, January 21st, 2025 at 2:04 PM
+# UPDATED: Friday, April 4th, 2025 at 11:11 PM
 
 #
 # |\/| _  _|   | _  _
@@ -25,6 +25,7 @@ my @skips;
 my $default_method = 'name';
 my $where_folder_begins = qr/<H3/;
 my $where_folder_ends = qr/<\/DL/;
+my $where_processing_begins = qr/^    <DT>/;
 
 GetOptions(
 	'help'        => \my $help_flag,
@@ -162,7 +163,7 @@ sub recurse {
 sub sort_bookmarks {
 
 	while (<>) {
-		last if /bar/;
+		last if /$where_processing_begins/;
 		print;
 	}
 

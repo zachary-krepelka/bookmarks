@@ -5,7 +5,7 @@
 # DATE: Wednesday, May 1st, 2024
 # ABOUT: a command-line bookmark searcher
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-# UPDATED: Friday, May 3rd, 2024 at 12:01 PM
+# UPDATED: Friday, April 4th, 2025 at 11:12 PM
 
 use strict;
 use warnings;
@@ -16,6 +16,7 @@ use Getopt::Long;
 my @urls;
 my @folders;
 my %bookmarks = ();
+my $where_processing_begins = qr/^    <DT>/;
 
 GetOptions(
 	'name'   => \my $name_flag,
@@ -83,9 +84,7 @@ sub get_bookmarks_by_name {
 
 sub get_bookmarks_by_path {
 
-	# Don't include the root node "Bookmarks bar."
-
-	while (<>) { last if /bar/; }
+	while (<>) { last if /$where_processing_begins/; }
 
 	my @path;
 

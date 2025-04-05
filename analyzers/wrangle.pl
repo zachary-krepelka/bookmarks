@@ -5,7 +5,7 @@
 # DATE: Wednesday, May 22nd, 2024
 # ABOUT: a tool to idenfity misplaced bookmarks
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-# UPDATED: Saturday, June 15th, 2024 at 10:26 PM
+# UPDATED: Friday, April 4th, 2025 at 11:12 PM
 
 #
 # |\/| _  _|   | _  _
@@ -25,6 +25,7 @@ my @path;
 my %outliers;
 my $where_folder_begins = qr/<H3/;
 my $where_folder_ends = qr/<\/DL/;
+my $where_processing_begins = qr/^    <DT>/;
 
 GetOptions(
 	'help'  => \my $help_flag,
@@ -173,7 +174,7 @@ sub find_outliers {
 
 usage if $help_flag;
 
-while (<>) { last if /bar/; }
+while (<>) { last if /$where_processing_begins/; }
 
 if ($print_rules_flag) {
 
