@@ -462,7 +462,7 @@ count        := 0
 latest_key   := ""
 
 ; When holding down one of h, j, k, and l to scroll, do
-; not recieve a warning about exceeding the maximum
+; not receive a warning about exceeding the maximum
 ; number of hotkeys per interval.
 
 A_HotkeyInterval := 0
