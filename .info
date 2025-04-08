@@ -2,6 +2,7 @@
 # AUTHOR: Zachary Krepelka
 # DATE: Tuesday, February 18th, 2025
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
+# UPDATED: Monday, April 7th, 2025 at 11:33 PM
 
 ./README.md
 	you should read this
@@ -57,3 +58,15 @@
 	enhances bookmarking ui for Google Chrome
 ./misc/youtube-thumbnail-scraper.sh
 	download YouTube thumbnails in bulk
+./samples
+	example Netscape bookmark files
+./samples/beverages.html
+	beverage concept hierarchy
+./samples/canada.html
+	provinces and territories of Canada
+./samples/computers.html
+	computer concept hierarchy
+./samples/education.html
+	educational status concept hierarchy
+./samples/foods.html
+	food concept hierarchy

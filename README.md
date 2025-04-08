@@ -7,7 +7,7 @@ Scripts for bookmark management by Zachary Krepelka
 	AUTHOR: Zachary Krepelka
 	DATE: Thursday, January 4th, 2024
 	ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-	UPDATED: Tuesday, February 18th, 2025 at 2:03 AM
+	UPDATED: Monday, April 7th, 2025 at 11:37 PM
 -->
 
 ## Motivations
@@ -153,14 +153,26 @@ person@computer:~$ sed -f tree.sed README.md | sponge README.md
 |   |    # strip bookmarks leaving only folders
 |   `-- sort.pl
 |        # sort bookmarks in folders recursively
-`-- misc/
-     # scripts that are miscellaneous
-    |-- bookmarklets.js
-    |    # showcases a few of my bookmarklets
-    |-- bookmarks.ahk
-    |    # enhances bookmarking ui for Google Chrome
-    `-- youtube-thumbnail-scraper.sh
-         # download YouTube thumbnails in bulk
+|-- misc/
+|    # scripts that are miscellaneous
+|   |-- bookmarklets.js
+|   |    # showcases a few of my bookmarklets
+|   |-- bookmarks.ahk
+|   |    # enhances bookmarking ui for Google Chrome
+|   `-- youtube-thumbnail-scraper.sh
+|        # download YouTube thumbnails in bulk
+`-- samples/
+     # example Netscape bookmark files
+    |-- beverages.html
+    |    # beverage concept hierarchy
+    |-- canada.html
+    |    # provinces and territories of Canada
+    |-- computers.html
+    |    # computer concept hierarchy
+    |-- education.html
+    |    # educational status concept hierarchy
+    `-- foods.html
+         # food concept hierarchy
 ```
 
 <!-- https://github.com/DavidWells/advanced-markdown?tab=readme-ov-file#nice-looking-file-tree -->
