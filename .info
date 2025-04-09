@@ -42,6 +42,8 @@
 	scripts that perform fine-grained modifications
 ./manipulators/bookmarks.sed
 	removes superfluous textual patterns
+./manipulators/cat.sed
+	concatenate bookmark files
 ./manipulators/favicon.sh
 	repopulates missing bookmark favicons
 ./manipulators/pancake.pl

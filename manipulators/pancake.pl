@@ -184,7 +184,7 @@ flat list.  The ability to concatenate multiple bookmark files is only a
 secondary consideration.  Everything is flattened regardless.
 
 If you would like to concatenate bookmark files while maintaining their file
-structures, I wrote a dedicated script for this purpose called C<concat.pl>.  It
+structures, I wrote a dedicated script for this purpose called C<cat.sed>.  It
 can be found in my GitHub repository as stated below.
 
 =head1 SEE ALSO

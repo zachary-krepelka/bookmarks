@@ -145,6 +145,8 @@ person@computer:~$ sed -f tree.sed README.md | sponge README.md
 |    # scripts that perform fine-grained modifications
 |   |-- bookmarks.sed
 |   |    # removes superfluous textual patterns
+|   |-- cat.sed
+|   |    # concatenate bookmark files
 |   |-- favicon.sh
 |   |    # repopulates missing bookmark favicons
 |   |-- pancake.pl
