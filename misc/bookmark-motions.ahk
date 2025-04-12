@@ -215,7 +215,7 @@ The Caps Lock Key behaves normally in standard mode.
 
 =back
 
-=head2 Normal Mode
+=head2 Standard Mode
 
 The following keyboard shortcuts can be used during standard mode.  They
 automate some common tasks that would otherwise take several mouse clicks.  Some
