@@ -2,7 +2,7 @@
 # AUTHOR: Zachary Krepelka
 # DATE: Tuesday, February 18th, 2025
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-# UPDATED: Monday, April 7th, 2025 at 11:33 PM
+# UPDATED: Friday, April 11th, 2025 at 8:39 PM
 
 ./README.md
 	you should read this
@@ -56,8 +56,8 @@
 	scripts that are miscellaneous
 ./misc/bookmarklets.js
 	showcases a few of my bookmarklets
-./misc/bookmarks.ahk
-	enhances bookmarking ui for Google Chrome
+./misc/bookmark-motions.ahk
+	Vim motions for bookmark management
 ./misc/youtube-thumbnail-scraper.sh
 	download YouTube thumbnails in bulk
 ./samples

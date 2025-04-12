@@ -1,11 +1,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-; FILENAME: bookmarks.ahk
+; FILENAME: bookmark-motions.ahk
 ; AUTHOR: Zachary Krepelka
 ; DATE: Friday, March 8th, 2024
-; ABOUT: Chrome bookmarking optimizations
+; ABOUT: Vim motions for bookmark management
 ; ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-; UPDATED: Saturday, April 5th, 2025 at 6:30 AM
+; UPDATED: Friday, April 11th, 2025 at 8:36 PM
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -18,32 +18,37 @@
 
 =head1 NAME
 
-bookmarks.ahk - bookmarking optimizations for Google Chrome on Windows
+bookmark-motions.ahk - Vim motions for bookmark management
 
 =head1 SYNOPSIS
 
-Using the Command Prompt:
+Using the Windows Command Prompt:
 
 =head2 Invocation
 
-	start bookmarks.exe
+	start bookmark-motions.exe
 
 =head2 Termination
 
-	taskkill /IM bookmarks.exe
+	taskkill /IM bookmark-motions.exe
 
 =head2 Compilation
 
-	ahk2exe.exe /in bookmarks.ahk /out bookmarks.exe
+	Ahk2Exe.exe /in bookmark-motions.ahk /out bookmark-motions.exe
 
 	Using https://github.com/AutoHotkey/Ahk2Exe.git
 
 =head1 DESCRIPTION
 
 The purpose of this script is to provide an enhanced user interface method for
-working with one's bookmarks in the Google Chrome web browser.  This script aims
-to provide a Vim-like, keyboard-centric experience for bookmark management,
+working with one's bookmarks in various web browsers.  This script aims to
+provide a Vim-like, keyboard-centric experience for bookmark management,
 allowing the user to manage their bookmarks without the use of a mouse.
+
+Currently only Google Chrome is supported, but I am working on making it work
+with other web browsers.  Because this script is written with AutoHotkey, it
+will only run on Windows operating systems, but one day I intend to write a port
+for Linux.
 
 =head2 Usage
 
@@ -367,7 +372,7 @@ AutoHotkey thoroughly.
 You can compile this script so that the resulting executable has an icon by
 using the following command.
 
-	ahk2exe.exe /in bookmarks.ahk /out bookmarks.exe /icon bookmarks.ico
+	ahk2exe.exe /in bookmark-motions.ahk /out bookmark-motions.exe /icon bookmarks.ico
 
 You can acquire a suitable icon using this bash script.
 
@@ -438,6 +443,16 @@ Zachary Krepelka L<https://github.com/zachary-krepelka>
 =item document caveats
 
 =item disable C<A_MaxHotkeysPerInterval> warning dialog
+
+=back
+
+=item Friday, April 11th, 2025
+
+=over
+
+=item rename file to elucidate purpose
+
+=item rebranding to emphasize Vim motions
 
 =back
 

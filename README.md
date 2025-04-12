@@ -7,7 +7,7 @@ Scripts for bookmark management by Zachary Krepelka
 	AUTHOR: Zachary Krepelka
 	DATE: Thursday, January 4th, 2024
 	ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-	UPDATED: Monday, April 7th, 2025 at 11:37 PM
+	UPDATED: Friday, April 11th, 2025 at 8:47 PM
 -->
 
 ## Motivations
@@ -157,10 +157,10 @@ person@computer:~$ sed -f tree.sed README.md | sponge README.md
 |        # sort bookmarks in folders recursively
 |-- misc/
 |    # scripts that are miscellaneous
+|   |-- bookmark-motions.ahk
+|   |    # Vim motions for bookmark management
 |   |-- bookmarklets.js
 |   |    # showcases a few of my bookmarklets
-|   |-- bookmarks.ahk
-|   |    # enhances bookmarking ui for Google Chrome
 |   `-- youtube-thumbnail-scraper.sh
 |        # download YouTube thumbnails in bulk
 `-- samples/
