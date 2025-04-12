@@ -5,7 +5,7 @@
 ; DATE: Friday, March 8th, 2024
 ; ABOUT: Vim motions for bookmark management
 ; ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-; UPDATED: Friday, April 11th, 2025 at 8:36 PM
+; UPDATED: Friday, April 11th, 2025 at 9:18 PM
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -52,8 +52,8 @@ for Linux.
 
 =head2 Usage
 
-There are two modes: normal mode and bookmarking mode.  When the user is in
-normal mode, the web browser will behave as expected; but when the user is in
+There are two modes: standard mode and bookmarking mode.  When the user is in
+standard mode, the web browser will behave as expected; but when the user is in
 bookmarking mode, the behavior of the mouse and the keyboard is changed to make
 it less difficult to interact with bookmarks and their drop-down menus.  Focus
 is redirected to the bookmark bar where special navigation commands can be used.
@@ -181,7 +181,7 @@ Sort the currently selected folder by name.
 =item B<*>
 
 Open the selected bookmark or folder in the bookmark manager.
-Then enter normal mode.
+Then enter standard mode.
 
 =item B<Caps Lock>
 
@@ -211,16 +211,16 @@ C<~>, C<gu>, and C<gU>.
 =back
 
 As noted before, these changes only take effect in bookmarking mode.
-The Caps Lock Key behaves normally in normal mode.
+The Caps Lock Key behaves normally in standard mode.
 
 =back
 
 =head2 Normal Mode
 
-The following keyboard shortcuts can be used during normal mode.  They automate
-some common tasks that would otherwise take several mouse clicks.  Some of the
-keybindings perform complex UI operations, so it is best to just sit back and
-let the computer "take the wheel" until execution finishes.
+The following keyboard shortcuts can be used during standard mode.  They
+automate some common tasks that would otherwise take several mouse clicks.  Some
+of the keybindings perform complex UI operations, so it is best to just sit back
+and let the computer "take the wheel" until execution finishes.
 
 =over
 
@@ -311,11 +311,12 @@ likely to stay on top of changes.
 =head1 BUGS
 
 The C<e> command automatically leaves bookmarking mode so that the user can type
-normally to make edits.  The problem is that after returning to normal mode, the
-bookmark bar is left visible, which throws the hide/show cycle out of sync.  The
-user must follow up with C<CTRL+SHIFT+B> in order to resync it.  Without losing
-the context menu, there is no opportunity to programmatically hide the bar in
-between selecting edit from the context menu and receiving the edit dialog box.
+normally to make edits.  The problem is that after returning to standard mode,
+the bookmark bar is left visible, which throws the hide/show cycle out of sync.
+The user must follow up with C<CTRL+SHIFT+B> in order to resync it.  Without
+losing the context menu, there is no opportunity to programmatically hide the
+bar in between selecting edit from the context menu and receiving the edit
+dialog box.
 
 =head1 TODO
 
@@ -323,7 +324,7 @@ between selecting edit from the context menu and receiving the edit dialog box.
 
 =item *
 
-Disable the use of normal mode commands in bookmarking mode.  Using a normal
+Disable the use of standard mode commands in bookmarking mode.  Using a standard
 mode command in bookmarking mode will result in undefined behavior.
 
 =item *
