@@ -5,7 +5,7 @@
 ; DATE: Friday, March 8th, 2024
 ; ABOUT: Vim motions for bookmark management
 ; ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-; UPDATED: Monday, April 14th, 2025 at 2:19 AM
+; UPDATED: Tuesday, April 15th, 2025 at 3:52 AM
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -37,17 +37,29 @@ working with one's bookmarks in various web browsers.  This script aims to
 provide a Vim-like, keyboard-centric experience for bookmark management,
 allowing the user to manage their bookmarks without the use of a mouse.
 
+Conversely, this script also enables the opposite paradigm.  The mouse is
+endowed with advanced modal functionality, making it possible to manage one's
+bookmarks using only a mouse.
+
 The supported web browsers are listed below.
 
 =over
 
-=item Google Chrome
+=item
 
-=item Microsoft Edge
+Google Chrome
 
-=item Mozilla Firefox
+=item
 
-=item Opera & Opera GX
+Microsoft Edge
+
+=item
+
+Mozilla Firefox
+
+=item
+
+Opera & Opera GX
 
 =back
 
@@ -78,23 +90,26 @@ is redirected to the bookmark bar where special navigation commands can be used.
 	                                 .-----------------------.
 
 To toggle between the two modes, press backslash twice in quick succession.  An
-audible beep will sound to indicate that the key press was registered.  While in
-bookmarking mode, the bookmark bar is visible.  Otherwise, it is hidden.  This
-keeps your workspace looking clean and uncluttered.
+audible beep will sound to indicate that the key press was registered.  You can
+also do this with the mouse by pressing both side buttons at the same time.
+
+While in bookmarking mode, the bookmark bar is visible.  Otherwise, it is
+hidden.  This keeps your workspace looking clean and uncluttered.  Maximize
+screen real estate, reduce digital overload.
 
 =head1 KEYBINDINGS
 
 =head2 Bookmarking Mode
 
 The following keyboard shortcuts are available when bookmarking mode is active.
-These keybindings are largely vim-inspired, meaning that you will use hjkl
+These keybindings are largely Vim-inspired, meaning that you will use hjkl
 instead of the arrow keys.
 
 	  k
 	h   l
 	  j
 
-Some keybindings are not supported on all web browsers. Refer to the section
+Some keybindings are not supported on all web browsers.  Refer to the section
 titled COMPATIBILITY for more details.
 
 =over
@@ -322,10 +337,138 @@ won't work.
 
 =back
 
+=head1 MOUSE ACTIONS
+
+This script makes it possible to navigate the bookmark bar and the drop-down
+menus off of it using only a mouse.  You can also access context menus on these
+items, thereby enabling a full range of operations.  Here's how it works.
+
+The mouse behaves normally in standard mode and is given new functionality in
+bookmarking mode.  In bookmarking mode, the mouse cursor is locked down and
+moved out of the way.  Instead of using the pointer, you will use the various
+other input facilities on your mouse, such as
+
+=over
+
+=item
+
+the left and right buttons
+
+=item
+
+the scroll wheel
+
+=item
+
+the two side buttons
+
+=back
+
+Before getting into the particulars, let's address some preliminary knowledge.
+There are two environments that you will be working from when managing your
+bookmarks.
+
+=over
+
+=item 1 The Bookmark Bar
+
+Here bookmarks and folders are laid out horizontally across the top of the
+screen.
+
+=item 2 Drop-Down Menus off of the Bookmark Bar
+
+Here bookmarks and folders are laid out vertically in possibly long list.
+
+=back
+
+ .--------------------------------------------------------------------.
+ | # Shopping # Reading # Leisure # Social # Finance # Recipes # News |
+ .------------|-------------------------------------------------------.
+              |
+              |--------------.
+              | Fiction    >-|--------------.
+              | Nonfiction   |  | Fantasy   |
+              .--------------.  | Science   |
+                                | Mystery   |
+                                | Horror  >-|-------------------------.
+                                | Romance   |  | The Jaunt            |
+                                .-----------.  | The Black Cat        |
+                                               | The Yellow Wallpaper |
+                                               | Colour Out of Space  |
+                                               .----------------------.
+
+The following mouse actions take effect when bookmarking mode is active.
+
+=over
+
+=item * Middle Mouse Wheel Button
+
+This button toggles the scrolling orientation of the mouse.  Essentially, it is
+a way to move between the two aforementioned environments.
+
+When the user first enters bookmarking mode, the first item on the bookmark bar
+is focused.  The user can use the scroll wheel to move the focus ring to other
+items on the bookmark bar.  Thereon, the mouse is initially in horizontal
+scrolling mode.
+
+With the focus ring over a bookmark, the user can press the middle mouse button
+to switch to vertical scrolling mode, after which the user can descend into that
+folder's drop-down menu.  This will actually anchor the focus ring in place over
+the folder on the bookmark bar.  The focus element is now a rectangular bar that
+moves up and down along the drop-down menu.  The user should avoid anchoring on
+bookmarks.
+
+The middle mouse button acts as a toggle.  If it is pressed again, this time
+from within the drop-down menus, then focus will be returned to the bookmark bar
+where horizontal scrolling is renewed.  All of the drop-down menus will
+consequently close.
+
+=item * Left Mouse Button
+
+When in a nested drop-down menu, move into the parent drop-down menu.  That is,
+move to the left.  Only applies during vertical scrolling.
+
+=item * Right Mouse Button
+
+When on a folder in a drop-down menu (or generally any sub-menu), descend into
+that folder.  That is, move to the right.  Only applies during vertical
+scrolling.
+
+=item First Side Button
+
+Opens the context menu for the focused element.  If pressed again while the
+context menu is still open, this will close the context menu as a means of
+canceling.  This button functions as a toggle.
+
+=item Second Side Button
+
+Select a bookmark or context menu item.  All of the drop-down menus will
+subsequently close, and focus will be redirected back to the bookmark bar for
+continued navigation.
+
+The user should avoid using this button to descend into a folder, as it will
+induce unwanted behavior.  Use the right mouse button instead.
+
+=item Both Side Buttons
+
+Pressing both side buttons at the same time will
+toggle bookmarking mode on and off.
+
+=item Mouse Wheel Up
+
+Moves B<right> in horizontal scrolling mode, up otherwise.
+
+=item Mouse Wheel down
+
+Moves B<left> in horizontal scrolling mode, down otherwise.
+
+=back
+
 =head1 COMPATIBILITY
 
-Some keybindings are not supported on all web browsers.  Firefox and Opera don't
-have great support.  I might work on this later.
+Some keybindings are not supported on all web browsers.
+Firefox and Opera don't have great support.
+I might work on this later.
 
  +--------+--------+------+---------+-------+
  | Cmds   | Chrome | Edge | Firefox | Opera |
@@ -363,7 +506,9 @@ the enter key.
 =item
 
 The beginning and end commands (gg ^ 0 G $) do not work on the bookmark bar, but
-they will work in drop-down menus.
+they will work in drop-down menus.  You can use C<33h> and C<33l> in lieu of
+C<gg> and C<G>.  Thirty three is large enough to span the full length, and it is
+convent ant to type.
 
 =back
 
@@ -433,10 +578,6 @@ Support more web browsers.
 =item *
 
 Find an AutoHotkey style guide and adhere to it.
-
-=item *
-
-The mouse can do cool things too.  Document this.
 
 =item *
 
@@ -548,6 +689,14 @@ Zachary Krepelka L<https://github.com/zachary-krepelka>
 
 =back
 
+=item Tuesday, April 15th, 2025
+
+=over
+
+=item refactor, enhance, and document mouse functionality
+
+=back
+
 =back
 
 =cut
@@ -560,7 +709,7 @@ Zachary Krepelka L<https://github.com/zachary-krepelka>
 ;                                         _|
 
 It is difficult to programmatically select items in context menus because the
-context menus can vary depending on context. To complicate matters,  context
+context menus can vary depending on context.  To complicate matters,  context
 menus differ across browsers, requiring us to employ different methods on a
 case-by-case basis.
 
@@ -756,6 +905,10 @@ B) Context menu for folders
 
 class Mouse {
 
+	static horizontal_scroll  := true
+	static context_menu       := false
+	static pending_transition := false
+
 	static Save() {
 
 		MouseGetPos(&x, &y)
@@ -774,6 +927,89 @@ class Mouse {
 
 		MouseMove(this.x, this.y)  ; restore mouse position
 		BlockInput("MouseMoveOff") ; re-enable mouse movement
+	}
+
+	static ToggleScrollDirection() {
+
+		; FIXME shouldn't be used when context menu is active
+
+		EscapeAllDropDownMenus()
+
+		this.horizontal_scroll ^= 1
+	}
+
+	static OnWheelUp() {
+
+		Send(this.horizontal_scroll ? "{right}" : "{up}")
+	}
+
+	static OnWheelDown() {
+
+		Send(this.horizontal_scroll ? "{left}" : "{down}")
+	}
+
+	static OnLeftClick() {
+
+		If !this.horizontal_scroll
+			Send("{left}")
+	}
+
+	static OnRightClick() {
+
+		If !this.horizontal_scroll
+			Send("{right}")
+	}
+
+	static ToggleContextMenu() {
+
+		menu_opened_from_bar := (
+			 this.horizontal_scroll &&
+			!this.context_menu)
+
+		menu_closed_from_bar := (
+			!this.horizontal_scroll &&
+			 this.context_menu &&
+			 this.pending_transition)
+
+		If menu_opened_from_bar {
+
+			this.horizontal_scroll := false
+			this.pending_transition := true
+		}
+
+		If menu_closed_from_bar {
+
+			this.horizontal_scroll := true
+			this.pending_transition := false
+		}
+
+		Send(this.context_menu ? "{Esc}" : "{AppsKey}")
+
+		this.context_menu ^= 1
+	}
+
+	; DIFFICULT EDGE CASE
+
+	; Regarding Mouse.Select() and associated logic:
+
+	; When selecting items in context menus from within drop-down
+	; lists, the browser will drop you back to the bookmark bar and
+	; escape out of all those drop down menus once the selection has
+	; been made.
+
+	; An exception is the `delete` item, which leaves the drop-down
+	; menus open.  This one-off case will throw the script out of
+	; sync, since we work under the assumption that the drop-down
+	; lists are in fact closed.  To the user, the mouse-driven
+	; selector will appear to freeze in place.  A provisional
+	; solution is to follow up with the button bound to
+	; ToggleScrollDirection()
+
+	static Select() {
+
+		this.horizontal_scroll := true
+		this.context_menu := false
+		TabChangeMoniter.Execute(() => Send("{Enter}"))
 	}
 }
 
@@ -1312,6 +1548,8 @@ Main() {
 ; | |(_)|_|<(/_\/_>
 ;              /
 
+A_HotkeyInterval := 0
+
 #HotIf Browser.IsActive()
 
 \::{
@@ -1322,6 +1560,8 @@ Main() {
 	}
 	BookmarkingMode.Toggle()
 }
+
+XButton1 & XButton2::BookmarkingMode.Toggle()
 
 #HotIf
 
@@ -1409,6 +1649,14 @@ $::Motions.GotoEnd()
 *::Motions.OpenBookmarkManager()
 ^::Motions.GotoBeginning()
 `;::Motions.FindAgain()
+
+WheelUp::   Mouse.OnWheelUp()
+WheelDown:: Mouse.OnWheelDown()
+LButton::   Mouse.OnLeftClick()
+RButton::   Mouse.OnRightClick()
+MButton::   Mouse.ToggleScrollDirection() ; should only use in certain contexts
+XButton1::  Mouse.ToggleContextMenu()
+XButton2::  Mouse.Select()
 
 #HotIf
 
@@ -1568,64 +1816,6 @@ F1::
 	Send("{Ctrl down}d{Ctrl up}{Tab}{Tab}{Tab}{Enter}")
 	return
 }
-
-; MOUSE RELATED STUFF
-
-context_menu := 0
-
-; The left and right mouse buttons are
-; repurposed for interacting with
-; bookmarks and their context menus.
-
-LButton::
-{
-
-	; The left-hand mouse button sends the
-	; enter key.  Use it to open a bookmark
-	; or to select an item in a context menu.
-
-	global context_menu := 0 ; closes after pressing enter
-
-	Send("{Enter}")
-
-	; refocus on the bookmark bar for continued navigation
-
-	Send("!+b")
-
-} ; Hotkey
-
-RButton::
-{
-
-	; The right-hand mouse button accesses
-	; the context menu of the currently
-	; selected bookmark.  If pressed again,
-	; it escapes out of that menu.
-
-	global context_menu := !context_menu
-
-	Send(context_menu ? "{AppsKey}" : "{Esc}")
-
-} ; Hotkey
-
-; The mouse's scroll wheel and extra
-; side buttons are repurposed to
-; function as arrow keys for easy menu
-; navigation.
-
-WheelUp::   Send("{up}")
-WheelDown:: Send("{down}")
-XButton1::  Send("{right}")
-XButton2::  Send("{left}")
-
-; When holding shift, reverse up and
-; down with left and right for
-; horizontal scrolling.
-
-+WheelUp::   Send("{left}")
-+WheelDown:: Send("{right}")
-+XButton1::  Send("{up}")
-+XButton2::  Send("{down}")
 
 #HotIf
 
