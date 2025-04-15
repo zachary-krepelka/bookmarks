@@ -5,7 +5,7 @@
 ; DATE: Friday, March 8th, 2024
 ; ABOUT: Vim motions for bookmark management
 ; ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-; UPDATED: Tuesday, April 15th, 2025 at 3:52 AM
+; UPDATED: Tuesday, April 15th, 2025 at 4:32 AM
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -228,10 +228,6 @@ Edit the currently selected bookmark or folder.
  |                            |
  | New Folder    Save  Cancel |
  +----------------------------+
-
-Note that this is currently not supported.  I had this working, but it caused
-some other problems, so I am temporarily removing this feature until I can come
-up with a better implementation.
 
 =item B<*>
 
@@ -552,16 +548,6 @@ removing, or rearranging toolbar buttons, then you may introduce some breaking
 change.
 
 =back
-
-=head1 BUGS
-
-The C<e> command automatically leaves bookmarking mode so that the user can type
-normally to make edits.  The problem is that after returning to standard mode,
-the bookmark bar is left visible, which throws the hide/show cycle out of sync.
-The user must follow up with C<CTRL+SHIFT+B> in order to resync it.  Without
-losing the context menu, there is no opportunity to programmatically hide the
-bar in between selecting edit from the context menu and receiving the edit
-dialog box.
 
 =head1 TODO
 
@@ -1169,6 +1155,26 @@ class BookmarkingMode {
 		)
 	}
 
+	static BypassUntil(Keys) {
+
+		OperatorPendingMode.Enter()
+
+		OnKeyDown(Hook, VirtualKey, ScanKey) {
+			For CandidateKey in Keys {
+				If CandidateKey = VirtualKey {
+					Hook.Stop()
+					OperatorPendingMode.Exit()
+					return
+				}
+			}
+		}
+
+		Hook := InputHook("V")
+		Hook.OnKeyDown := OnKeyDown
+		Hook.KeyOpt("{All}", "+N")
+		Hook.Start()
+	}
+
 	static Monitor() {
 
 		toggleFlag := 0
@@ -1339,6 +1345,20 @@ class Motions { ; and operators too. I'll worry about semantics later.
 	static Confirm() {
 
 		TabChangeMoniter.Execute(() => Send("{Enter}"))
+	}
+
+	static Edit() {
+
+		Switch Browser.Identity() {
+
+			Case Browser.CHROME:
+
+				ContextMenuSelector.SelectByNumber(11, false)
+
+				BookmarkingMode.BypassUntil([0x0D, 0x1B])
+
+			; TODO other browsers
+		}
 	}
 
 	static Cut() {
@@ -1578,7 +1598,7 @@ XButton1 & XButton2::BookmarkingMode.Toggle()
  		Motions.Delete()
  }
 +d::return
- e::return
+ e::Motions.Edit()
 +e::return
  f::Motions.Find()
 +f::return
