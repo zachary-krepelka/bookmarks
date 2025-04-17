@@ -373,9 +373,12 @@ screen.
 
 =item 2 Drop-Down Menus off of the Bookmark Bar
 
-Here bookmarks and folders are laid out vertically in possibly long list.
+Here bookmarks and folders are laid out vertically in possibly long lists which
+work their way across the screen as further submenus are opened.
 
 =back
+
+These two environments are depicted in the following image.
 
  .--------------------------------------------------------------------.
  | # Shopping # Reading # Leisure # Social # Finance # Recipes # News |
@@ -430,13 +433,13 @@ When on a folder in a drop-down menu (or generally any sub-menu), descend into
 that folder.  That is, move to the right.  Only applies during vertical
 scrolling.
 
-=item First Side Button
+=item * First Side Button
 
 Opens the context menu for the focused element.  If pressed again while the
 context menu is still open, this will close the context menu as a means of
 canceling.  This button functions as a toggle.
 
-=item Second Side Button
+=item * Second Side Button
 
 Select a bookmark or context menu item.  All of the drop-down menus will
 subsequently close, and focus will be redirected back to the bookmark bar for
@@ -445,16 +448,16 @@ continued navigation.
 The user should avoid using this button to descend into a folder, as it will
 induce unwanted behavior.  Use the right mouse button instead.
 
-=item Both Side Buttons
+=item * Both Side Buttons
 
 Pressing both side buttons at the same time will
 toggle bookmarking mode on and off.
 
-=item Mouse Wheel Up
+=item * Mouse Wheel Up
 
 Moves B<right> in horizontal scrolling mode, up otherwise.
 
-=item Mouse Wheel down
+=item * Mouse Wheel down
 
 Moves B<left> in horizontal scrolling mode, down otherwise.
 
@@ -504,7 +507,7 @@ the enter key.
 The beginning and end commands (gg ^ 0 G $) do not work on the bookmark bar, but
 they will work in drop-down menus.  You can use C<33h> and C<33l> in lieu of
 C<gg> and C<G>.  Thirty three is large enough to span the full length, and it is
-convent ant to type.
+convenient to type.
 
 =back
 
@@ -1034,6 +1037,32 @@ class Browser {
 
 class BookmarkBar {
 
+	static Activate() {
+
+		 ; assumes that the bookmark bar is hidden
+
+		this.Toggle()
+
+		Sleep(100)
+
+		this.Focus()
+	}
+
+	static Deactivate() {
+
+		 ; assumes that the bookmark bar is shown
+
+		EscapeAllDropDownMenus()
+
+		Sleep(100)
+
+		this.Toggle()
+
+		Sleep(100)
+
+		FocusWebPage()
+	}
+
 	static Toggle() {
 
 		Switch Browser.Identity() {
@@ -1133,16 +1162,13 @@ class BookmarkingMode {
 
 		SoundBeep(this.enterVolume)
 		Mouse.Hide(), Sleep(100)
-		BookmarkBar.Toggle(), Sleep(100)
-		BookmarkBar.Focus()
+		BookmarkBar.Activate()
 	}
 
 	static Exit() {
 
 		SoundBeep(this.exitVolume)
-		EscapeAllDropDownMenus(), Sleep(100)
-		BookmarkBar.Toggle(), Sleep(100)
-		FocusWebPage(), Sleep(100)
+		BookmarkBar.Deactivate()
 		Mouse.Show()
 	}
 
@@ -1573,12 +1599,10 @@ A_HotkeyInterval := 0
 #HotIf Browser.IsActive()
 
 \::{
-	If !DoubleKeyPress() {
-
+	If DoubleKeyPress()
+		BookmarkingMode.Toggle()
+	Else
 		SendText("\")
-		return
-	}
-	BookmarkingMode.Toggle()
 }
 
 XButton1 & XButton2::BookmarkingMode.Toggle()
