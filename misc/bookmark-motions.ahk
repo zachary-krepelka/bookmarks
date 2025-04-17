@@ -1246,14 +1246,25 @@ class Counter {
 
 	static count := 0
 
-	static Get() {
-
-		return this.count || 1
-	}
+	static SAFETY_LIMIT := 100
 
 	static Reset() {
 
 		this.count := 0
+	}
+
+	static Guard() {
+
+		If this.count > this.SAFETY_LIMIT
+
+			this.Reset()
+	}
+
+	static Get() {
+
+		this.Guard()
+
+		return this.count || 1
 	}
 
 	static Update(new_digit) {
