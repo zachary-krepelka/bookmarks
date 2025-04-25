@@ -5,7 +5,7 @@
 ; DATE: Friday, March 8th, 2024
 ; ABOUT: Vim motions for bookmark management
 ; ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-; UPDATED: Tuesday, April 15th, 2025 at 4:32 AM
+; UPDATED: Friday, April 25th, 2025 at 3:02 AM
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -410,12 +410,12 @@ is focused.  The user can use the scroll wheel to move the focus ring to other
 items on the bookmark bar.  Thereon, the mouse is initially in horizontal
 scrolling mode.
 
-With the focus ring over a bookmark, the user can press the middle mouse button
-to switch to vertical scrolling mode, after which the user can descend into that
-folder's drop-down menu.  This will actually anchor the focus ring in place over
-the folder on the bookmark bar.  The focus element is now a rectangular bar that
-moves up and down along the drop-down menu.  The user should avoid anchoring on
-bookmarks.
+With the focus ring over a folder on the bookmark bar, the user can press the
+middle mouse button to switch to vertical scrolling mode, after which the user
+can descend into that folder's drop-down menu.  This will actually anchor the
+focus ring in place over the folder.  The focus element is now a rectangular bar
+that moves up and down along the drop-down menu.  The user should avoid
+anchoring on bookmarks.
 
 The middle mouse button acts as a toggle.  If it is pressed again, this time
 from within the drop-down menus, then focus will be returned to the bookmark bar
@@ -697,15 +697,15 @@ Zachary Krepelka L<https://github.com/zachary-krepelka>
 ; \_(_)| ||_(/_><|_ |  |(/_| ||_| |_/|(_|(_||(_|| | |_>
 ;                                         _|
 
-It is difficult to programmatically select items in context menus because the
-context menus can vary depending on context.  To complicate matters,  context
+It is difficult to programmatically select items in context menus because--big
+surprise--they can vary depending on context.  To complicate matters, context
 menus differ across browsers, requiring us to employ different methods on a
 case-by-case basis.
 
 There are common operations that can be performed on both bookmarks and folders,
 like cut, copy, and paste.  If we can predictably access the menu items for
 these common operations, then there is no trouble.  But if a common operation
-has to be accessed in differing ways depending on weather the context menu is
+has to be accessed in differing ways depending on whether the context menu is
 for a bookmark or for a folder, then we have to be aware of that context, which
 is difficult to do programmatically.  To help work out all of the oddities and
 quirks, I have charted out the context menus in various browsers.
