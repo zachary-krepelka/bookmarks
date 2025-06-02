@@ -7,7 +7,7 @@ Scripts for bookmark management by Zachary Krepelka
 	AUTHOR: Zachary Krepelka
 	DATE: Thursday, January 4th, 2024
 	ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-	UPDATED: Monday, May 19th, 2025 at 10:21 PM
+	UPDATED: Monday, June 2nd, 2025 at 3:44 AM
 -->
 
 ## Motivations
@@ -131,6 +131,12 @@ The functionality of each script is summarized below.
 |   |    # same thing but input is html instead of json
 |   `-- treeifier.pl
 |        # creates treeview from bookmark file
+|-- maintenance/
+|    # scripts pertaining to the maintenance of this repository
+|   |-- doc.sed
+|   |    # inline pod extractor / documentation tool
+|   `-- tree.sed
+|        # for including file tree diagrams in readme files
 |-- manipulators/
 |    # scripts that perform fine-grained modifications
 |   |-- bookmarks.sed
@@ -147,24 +153,28 @@ The functionality of each script is summarized below.
 |        # sort bookmarks in folders recursively
 |-- misc/
 |    # scripts that are miscellaneous
-|   |-- bookmark-motions.ahk
-|   |    # Vim motions for bookmark management
 |   |-- bookmarklets.js
 |   |    # showcases a few of my bookmarklets
 |   `-- youtube-thumbnail-scraper.sh
 |        # download YouTube thumbnails in bulk
-`-- samples/
-     # example Netscape bookmark files
-    |-- beverages.html
-    |    # beverage concept hierarchy
-    |-- canada.html
-    |    # provinces and territories of Canada
-    |-- computers.html
-    |    # computer concept hierarchy
-    |-- education.html
-    |    # educational status concept hierarchy
-    `-- foods.html
-         # food concept hierarchy
+|-- samples/
+|    # example Netscape bookmark files
+|   |-- beverages.html
+|   |    # beverage concept hierarchy
+|   |-- canada.html
+|   |    # provinces and territories of Canada
+|   |-- computers.html
+|   |    # computer concept hierarchy
+|   |-- education.html
+|   |    # educational status concept hierarchy
+|   `-- foods.html
+|        # food concept hierarchy
+`-- user-interface/
+     # bookmark management user interface automation
+    |-- bookmark-motions.ahk
+    |    # Vim motions for bookmark management
+    `-- context-menus.txt
+         # ascii art diagrams of web browser context menus
 ```
 
 ## Related / Recommended Software
@@ -176,6 +186,7 @@ I use the following software in conjunction with the scripts in this repository.
   bookmarks to and from an HTML file in the Netscape bookmark file format.
   Neither Chrome nor Firefox support this feature in their mobile applications,
   instead requiring the user to sync their bookmarks using an online account.
+  UPDATE: sadly, it's no longer maintained.
 
 * The [Selective Bookmarks Export Tool][10] is a web browser extension available
   for Chrome, Firefox, and Edge.

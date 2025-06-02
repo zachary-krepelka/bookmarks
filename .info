@@ -2,7 +2,7 @@
 # AUTHOR: Zachary Krepelka
 # DATE: Tuesday, February 18th, 2025
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-# UPDATED: Friday, April 11th, 2025 at 8:39 PM
+# UPDATED: Monday, June 2nd, 2025 at 3:41 AM
 
 ./README.md
 	you should read this
@@ -62,8 +62,6 @@
 	scripts that are miscellaneous
 ./misc/bookmarklets.js
 	showcases a few of my bookmarklets
-./misc/bookmark-motions.ahk
-	Vim motions for bookmark management
 ./misc/youtube-thumbnail-scraper.sh
 	download YouTube thumbnails in bulk
 ./samples
@@ -78,3 +76,9 @@
 	educational status concept hierarchy
 ./samples/foods.html
 	food concept hierarchy
+./user-interface
+	bookmark management user interface automation
+./user-interface/bookmark-motions.ahk
+	Vim motions for bookmark management
+./user-interface/context-menus.txt
+	ascii art diagrams of web browser context menus
