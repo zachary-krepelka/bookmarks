@@ -38,6 +38,12 @@
 	same thing but input is html instead of json
 ./converters/treeifier.pl
 	creates treeview from bookmark file
+./maintenance
+	scripts pertaining to the maintenance of this repository
+./maintenance/doc.sed
+	inline pod extractor / documentation tool
+./maintenance/tree.sed
+	for including file tree diagrams in readme files
 ./manipulators
 	scripts that perform fine-grained modifications
 ./manipulators/bookmarks.sed

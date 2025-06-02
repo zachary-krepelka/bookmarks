@@ -7,7 +7,7 @@ Scripts for bookmark management by Zachary Krepelka
 	AUTHOR: Zachary Krepelka
 	DATE: Thursday, January 4th, 2024
 	ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-	UPDATED: Friday, April 11th, 2025 at 8:47 PM
+	UPDATED: Monday, May 19th, 2025 at 10:21 PM
 -->
 
 ## Motivations
@@ -95,16 +95,6 @@ source code as comments.
 
 The functionality of each script is summarized below.
 
-<!--
-person@computer:~$ cat tree.sed
-/^```graphql$/,/^```$/{
-	/^```$/etree -I tree.sed -F --info --noreport --charset=ascii | tr '[' '#'
-	/^```/p
-	d
-}
-person@computer:~$ sed -f tree.sed README.md | sponge README.md
--->
-
 ```graphql
 ./
 |-- README.md
@@ -176,8 +166,6 @@ person@computer:~$ sed -f tree.sed README.md | sponge README.md
     `-- foods.html
          # food concept hierarchy
 ```
-
-<!-- https://github.com/DavidWells/advanced-markdown?tab=readme-ov-file#nice-looking-file-tree -->
 
 ## Related / Recommended Software
 
