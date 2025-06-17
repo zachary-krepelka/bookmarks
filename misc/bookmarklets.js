@@ -5,7 +5,7 @@ AUTHOR: Zachary Krepelka
 DATE: Thursday, December 21st, 2023
 ABOUT: bookmarklets for the web browser
 ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-UPDATED: Wednesday, March 19th, 2025 at 10:27 PM
+UPDATED: Monday, June 16th, 2025 at 8:23 PM
 
  This source code can be packaged into an importable file using my
  bookmarklet-parsing Perl script.  Find it in my GitHub repository as stated
@@ -391,5 +391,13 @@ function getQueryParameters(url) {
 }
 
 END Wednesday, March 19th, 2025
+
+//##############################################################################
+
+BEGIN Get User Agent
+FOLDER Scrapers
+ICON javascript.ico
+alert(navigator.userAgent);
+END Monday, June 16th, 2025
 
 //##############################################################################
