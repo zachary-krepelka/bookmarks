@@ -5,7 +5,7 @@ AUTHOR: Zachary Krepelka
 DATE: Thursday, December 21st, 2023
 ABOUT: bookmarklets for the web browser
 ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-UPDATED: Monday, June 16th, 2025 at 8:23 PM
+UPDATED: Saturday, July 12th, 2025 at 6:09 PM
 
  This source code can be packaged into an importable file using my
  bookmarklet-parsing Perl script.  Find it in my GitHub repository as stated
@@ -168,9 +168,7 @@ END
 BEGIN com2net
 FOLDER URL Manipulators
 ICON javascript.ico
-
 location.href = location.href.replace(/com/, 'net');
-
 END Monday, February 5th, 2024 at 8:49 PM
 
 //##############################################################################
@@ -217,9 +215,7 @@ END Sunday, April 21st, 2024 at 5:54 PM
 BEGIN Query Killer
 FOLDER URL Manipulators
 ICON javascript.ico
-
 location.href = location.href.replace(/\?.*/, '');
-
 END Monday, April 22nd, 2024 at 2:08 AM
 
 //##############################################################################
@@ -399,5 +395,23 @@ FOLDER Scrapers
 ICON javascript.ico
 alert(navigator.userAgent);
 END Monday, June 16th, 2025
+
+//##############################################################################
+
+BEGIN Subdomain Killer
+FOLDER URL Manipulators
+ICON javascript.ico
+
+location.href = location.href
+	.replace(/(?<=\/\/).*?\./, '')
+	.replace(/(?<!\/)(\/[^\/]+)*$/, '');
+
+/* Examples
+ *
+ * https://images.google.com                   --->  https://google.com
+ * https://wiki.archlinux.org/title/Main_page  --->  https://archlinux.org
+ */
+
+END Saturday, July 12th, 2025 at 3:54 PM
 
 //##############################################################################
