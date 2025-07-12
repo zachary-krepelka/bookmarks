@@ -524,7 +524,7 @@ but let's stick to just one for now.
 
 	01  BEGIN Greeter
 	02
-	03  // This is an inline comment.
+	03  // This is a single-line comment.
 	04
 	05  let person = prompt("What's your name?", "World");
 	06
@@ -727,6 +727,22 @@ If you're on Ubuntu, you might try the following commands:
 	sudo apt-get install nodejs npm
 	sudo npm install --global uglify-js
 	sudo npm install --global coffeescript
+
+=head1 BUGS
+
+Inline comments will break a bookmarklet program.  This should be fixed by
+revising the subroutine C<encode_js_internally>.  For the time being, inline
+comments are prohibited.  Single-line comments must be placed on their own line.
+Do not place a single-line comment on the same line as a code statement.
+
+=head2 Bad
+
+	var x = 3; // TODO better variable name
+
+=head2 Good
+
+	// TODO better variable name
+	var x = 3;
 
 =head1 SEE ALSO
 
