@@ -2,7 +2,7 @@
 # AUTHOR: Zachary Krepelka
 # DATE: Tuesday, February 18th, 2025
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-# UPDATED: Monday, June 2nd, 2025 at 3:41 AM
+# UPDATED: Tuesday, September 2nd, 2025 at 1:38 AM
 
 ./README.md
 	you should read this
@@ -60,14 +60,12 @@
 	sort bookmarks in folders recursively
 ./misc
 	scripts that are miscellaneous
-./misc/bookmarklets.js
-	showcases a few of my bookmarklets
-./misc/youtube-thumbnail-scraper.sh
-	download YouTube thumbnails in bulk
 ./samples
 	example Netscape bookmark files
 ./samples/beverages.html
 	beverage concept hierarchy
+./samples/bookmarklets.js
+	showcases a few of my bookmarklets
 ./samples/canada.html
 	provinces and territories of Canada
 ./samples/computers.html

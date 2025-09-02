@@ -7,7 +7,7 @@ Scripts for bookmark management by Zachary Krepelka
 	AUTHOR: Zachary Krepelka
 	DATE: Thursday, January 4th, 2024
 	ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-	UPDATED: Monday, June 2nd, 2025 at 3:44 AM
+	UPDATED: Tuesday, September 2nd, 2025 at 1:38 AM
 -->
 
 ## Motivations
@@ -151,16 +151,12 @@ The functionality of each script is summarized below.
 |   |    # strip bookmarks leaving only folders
 |   `-- sort.pl
 |        # sort bookmarks in folders recursively
-|-- misc/
-|    # scripts that are miscellaneous
-|   |-- bookmarklets.js
-|   |    # showcases a few of my bookmarklets
-|   `-- youtube-thumbnail-scraper.sh
-|        # download YouTube thumbnails in bulk
 |-- samples/
 |    # example Netscape bookmark files
 |   |-- beverages.html
 |   |    # beverage concept hierarchy
+|   |-- bookmarklets.js
+|   |    # showcases a few of my bookmarklets
 |   |-- canada.html
 |   |    # provinces and territories of Canada
 |   |-- computers.html
