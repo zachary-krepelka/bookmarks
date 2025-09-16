@@ -7,7 +7,7 @@ Scripts for bookmark management by Zachary Krepelka
 	AUTHOR: Zachary Krepelka
 	DATE: Thursday, January 4th, 2024
 	ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-	UPDATED: Tuesday, September 2nd, 2025 at 1:38 AM
+	UPDATED: Monday, September 15th, 2025 at 11:09 PM
 -->
 
 ## Motivations
@@ -91,6 +91,15 @@ something like `perldoc bookmarks.ahk` for example.  Where it is impossible to
 document a script in this fashion, the documentation is instead provided in the
 source code as comments.
 
+You can mass-generate multi-format documentation using the `gendoc.sh` script.
+The output is a directory `docs` which contains documentation for each script in
+a variety of formats. I recommend reading the plain text documents over other
+formats.
+
+```bash
+bash gendoc.sh
+```
+
 ## Functionality
 
 The functionality of each script is summarized below.
@@ -131,6 +140,8 @@ The functionality of each script is summarized below.
 |   |    # same thing but input is html instead of json
 |   `-- treeifier.pl
 |        # creates treeview from bookmark file
+|-- gendoc.sh
+|    # mass-generate multi-format documentation
 |-- maintenance/
 |    # scripts pertaining to the maintenance of this repository
 |   |-- doc.sed
