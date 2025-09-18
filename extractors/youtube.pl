@@ -5,7 +5,7 @@
 # DATE: Wednesday, September 17th, 2025
 # ABOUT: extract and organize YouTube bookmarks
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-# UPDATED: Thursday, September 18th, 2025 at 4:58 AM
+# UPDATED: Thursday, September 18th, 2025 at 5:37 AM
 
 #
 # |\/| _  _|   | _  _
@@ -124,20 +124,15 @@ while (<>) {
 		} elsif (
 			$page eq 'channel' ||
 			$page eq 'user' ||
-			$page eq 'c') {
+			$page eq 'c' ||
+			$page =~ /^@/) {
 
-			if (@segments == 3) {
+			my $threshold = $page =~ /^@/ ? 2 : 3;
+
+			if (@segments == $threshold) {
 				push @channels, $anchor;
 			} else {
-				$anchor =~ s/>\K(?=[^<]*<\/A>)/\U$segments[3] /;
-				push @channel_content, $anchor;
-			}
-		} elsif ($page =~ /^@/) {
-
-			if (@segments == 2) {
-				push @channels, $anchor;
-			} else  {
-				$anchor =~ s/>\K(?=[^<]*<\/A>)/\U$segments[2] /;
+				$anchor =~ s/>\K(?=[^<]*<\/A>)/\U$segments[$threshold] /;
 				push @channel_content, $anchor;
 			}
 		} else {
