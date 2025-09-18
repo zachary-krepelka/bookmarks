@@ -2,7 +2,7 @@
 # AUTHOR: Zachary Krepelka
 # DATE: Tuesday, February 18th, 2025
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-# UPDATED: Monday, September 15th, 2025 at 11:07 PM
+# UPDATED: Thursday, September 18th, 2025 at 5:10 AM
 
 ./README.md
 	you should read this
@@ -38,6 +38,10 @@
 	same thing but input is html instead of json
 ./converters/treeifier.pl
 	creates treeview from bookmark file
+./extractors
+	extract and organize bookmarks of particular kinds
+./extractors/youtube.pl
+	extract and organize YouTube bookmarks
 ./gendoc.sh
 	mass-generate multi-format documentation
 ./maintenance
