@@ -5,7 +5,7 @@
 # DATE: Wednesday, January 3rd, 2024
 # ABOUT: a script to count entries in a Netscape bookmark file
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-# UPDATED: Thursday, March 13th, 2025 at 2:20 AM
+# UPDATED: Thursday, September 18th, 2025 at 3:50 PM
 
 program=$(basename $0)
 
@@ -69,8 +69,8 @@ done
 
 if test $# -eq 1 || test $aggregate -eq 0
 then
-	bookmarks=$( grep '<A'  $@ | wc -l)
-	folders=$(   grep '<H3' $@ | wc -l)
+	bookmarks=$( grep -c '<A'  $@)
+	folders=$(   grep -c '<H3' $@)
 	total=$(     expr $bookmarks + $folders)
 
 	cat <<-EOF
@@ -86,8 +86,8 @@ fi
 
 for file
 do
-	bookmarks=$( grep '<A'  $file | wc -l)
-	folders=$(   grep '<H3' $file | wc -l)
+	bookmarks=$( grep -c '<A'  $file)
+	folders=$(   grep -c '<H3' $file)
 	total=$(     expr $bookmarks + $folders)
 
 	echo $file $bookmarks $folders $total
