@@ -151,6 +151,8 @@
 #
 # To use this script with your project, follow these steps.
 #
+# =over
+#
 # =item Step 1
 #
 # Create a README.md file in the root directory of your project if it does not
@@ -185,6 +187,8 @@
 # flag, assuming the GNU implementation of sed is used. A second option is to
 # use the C<sponge> command from C<moreutils> to circumvent the use of a
 # temporary file.
+#
+# =back
 #
 # =head1 EXAMPLE
 #
