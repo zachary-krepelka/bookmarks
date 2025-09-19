@@ -212,7 +212,7 @@ I use the following software in conjunction with the scripts in this repository.
 
 <!-- References -->
 
-[1]: https://en.wikipedia.org/wiki/Bookmark_(digital)
+[1]: https://en.wikipedia.org/wiki/Bookmark_(World_Wide_Web)
 [2]: https://en.wikipedia.org/wiki/Personal_information_management
 [3]: https://learn.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/platform-apis/aa753582(v=vs.85)
 [4]: https://en.wikipedia.org/wiki/Netscape
