@@ -5,55 +5,85 @@
 # DATE: Wednesday, January 3rd, 2024
 # ABOUT: a script to count entries in a Netscape bookmark file
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-# UPDATED: Thursday, September 18th, 2025 at 3:50 PM
+# UPDATED: Thursday, September 18th, 2025 at 4:48 PM
 
-program=$(basename $0)
+# Functions --------------------------------------------------------------- {{{1
+
+program="${0##*/}"
 
 usage() {
 	cat <<-USAGE
-	Usage: $program [options] <files>
-	count your bookmark entries
+	Count your bookmark entries
+
+	Usage:
+	  bash $program [options] <netscape-bookmark-file> ...
 
 	Options:
-	  -a	[a]ggregate input files
-	  -h	display this [h]elp message
-
-	Example:       bash $program bookmarks.html
-	Documentation: perldoc $program
+	  -h  display this [h]elp message and exit
+	  -H  read documentation for this script then exit
+	  -a  [a]ggregate input files
 	USAGE
 	exit 0
 }
 
-error() {
-
-	echo "$program: $2" 1>&2
-	exit $1
+documentation() {
+	pod2text "$0" | less -Sp '^[^ ].*$' +k
+	exit 0
 }
 
-# Process command-line options.
+error() {
+	local code="$1"
+	local message="$2"
+	echo "$program: error: $message" >&2
+	exit "$code"
+}
+
+check_dependencies() {
+
+	local dependencies=(cat column grep less pod2text)
+
+	local missing=
+
+	for cmd in "${dependencies[@]}"
+	do
+		if ! command -v "$cmd" &>/dev/null
+		then missing+="$cmd, "
+		fi
+	done
+
+	if test -n "$missing"
+	then error 1 "missing dependencies: ${missing%, }"
+	fi
+}
+
+# Command-line Argument Parsing ------------------------------------------- {{{1
+
+check_dependencies # must be called before any external command
 
 aggregate=1
 
-while getopts ah option
+while getopts ahH option
 do
-	case $option in
+	case "$option" in
 
 		a) aggregate=0;;
 		h) usage;;
+		H) documentation;;
 
 	esac
 done
 
-shift $((OPTIND-1))
+shift "$((OPTIND - 1))"
+
+# Error Handling ---------------------------------------------------------- {{{1
 
 # Check that positional arguments were supplied.
 
 if test $# -eq 0
-then error 1 'At least one argument is required. Try -h for help.'
+then error 2 'At least one argument is required. Try -h for help.'
 fi
 
-# Check that each argument is a regular file,
-# and if so, that it is a bookmark file.
+# Check that each argument is a bookmark file.
 
 for file
 do
@@ -61,17 +91,19 @@ do
 	then continue
 	fi
 
-	error 2 "$file does not appear to be a bookmark file."
+	error 3 "$file does not appear to be a bookmark file."
 done
+
+# Processing -------------------------------------------------------------- {{{1
 
 # If there is only one file or if all the files are aggregated together,
 # then we do not need to include filenames in the output.
 
 if test $# -eq 1 || test $aggregate -eq 0
 then
-	bookmarks=$( grep -c '<A'  $@)
-	folders=$(   grep -c '<H3' $@)
-	total=$(     expr $bookmarks + $folders)
+	bookmarks="$(grep -c '<A'  $@)"
+	folders="$(grep -c '<H3' $@)"
+	total="$((bookmarks + folders))"
 
 	cat <<-EOF
 	Bookmarks: $bookmarks
@@ -86,15 +118,18 @@ fi
 
 for file
 do
-	bookmarks=$( grep -c '<A'  $file)
-	folders=$(   grep -c '<H3' $file)
-	total=$(     expr $bookmarks + $folders)
+	bookmarks="$(grep -c '<A'  $file)"
+	folders="$(grep -c '<H3' $file)"
+	total="$((bookmarks + folders))"
 
-	echo $file $bookmarks $folders $total
+	echo "$file $bookmarks $folders $total"
 
 done | column -t -N FILE,BOOKMARKS,FOLDERS,TOTAL
 
-# Documentation is important!
+# Documentation ----------------------------------------------------------- {{{1
+
+# https://charlotte-ngs.github.io/2015/01/BashScriptPOD.html
+# http://bahut.alma.ch/2007/08/embedding-documentation-in-shell-script_16.html
 
 : <<='cut'
 =pod
@@ -105,7 +140,7 @@ count.sh - count your bookmark entries
 
 =head1 SYNOPSIS
 
-bash count.sh [options] <bookmark-file(s)>
+bash count.sh [options] <netscape-bookmark-file> ...
 
 =head1 DESCRIPTION
 
@@ -135,6 +170,15 @@ But when multiple files are supplied, we get something different.
 
 Display a [h]elp message and exit.
 
+=item B<-H>
+
+Display this documentation in a pager and exit after the user quits.  The
+documentation is divided into sections.  Each section header is matched with a
+search pattern, meaning that you can use navigation commands like C<n> and its
+counterpart C<N> to go to the next or previous section respectively.
+
+The uppercase -H is to parallel the lowercase -h.
+
 =item B<-a>
 
 This will give a cumulative total of the entries in all the files together
@@ -143,15 +187,19 @@ file was passed.  Note that [a] stands for [a]ggregate.
 
 =back
 
-=head1 EXIT STATUS
+=head1 DIAGNOSTICS
+
+The program exits with the following status codes.
 
 =over
 
 =item 0 if okay
 
-=item 1 if no positional arguments were supplied
+=item 1 if dependencies are missing
 
-=item 2 if a positional argument is invalid
+=item 2 if no positional arguments were supplied
+
+=item 3 if a positional argument is invalid
 
 =over
 
@@ -196,4 +244,4 @@ Zachary Krepelka L<https://github.com/zachary-krepelka>
 
 =cut
 
-#
+# vim: tw=80 ts=8 sw=8 noet fdm=marker

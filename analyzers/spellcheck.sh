@@ -5,58 +5,97 @@
 # DATE: Thursday, January 18th, 2024
 # ABOUT: a bookmark spellchecking program
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-# UPDATED: Sunday, October 6th, 2024 at 3:54 AM
+# UPDATED: Thursday, September 18th, 2025 at 7:01 PM
 
-	# The purpose of this script is
-	# to identify spelling mistakes
-	# within bookmark entries.
+# Functions --------------------------------------------------------------- {{{1
 
-usage() { program=$(basename $0); cat << EOF >&2
-Usage: $program [option] <bookmark file>
-spellcheck your bookmark entries on the command line
+program="${0##*/}"
 
-Options:
+usage() {
+	cat <<-USAGE
+	Spellcheck your bookmark entries on the command line
 
-	-h		display this [h]elp message
-	-i {file}	{file} is a list of words to [i]gnore
-			It must begin with "personal_ws-1.1 en".
-	-p {args}       [p]ass {args} to aspell
+	Usage:
+	  bash $program [options] <netscape-bookmark-file>
 
-Documentation:  perldoc $program
-Example:        bash $program bookmarks.html
-EOF
-exit 0
+	Options:
+	  -h       display this [h]elp message and exit
+	  -H       read documentation for this script then exit
+	  -i FILE  line-by-line list of words to [i]gnore
+	           FILE must begin with "personal_ws-1.1 en"
+	  -p ARGS  [p]ass ARGS to aspell
+	USAGE
+	exit 0
 }
 
-while getopts hi:p: option
+documentation() {
+	pod2text "$0" | less -Sp '^[^ ].*$' +k
+	exit 0
+}
+
+error() {
+	local code="$1"
+	local message="$2"
+	echo "$program: error: $message" >&2
+	exit "$code"
+}
+
+check_dependencies() {
+
+	local dependencies=(
+		aspell cat dirname expr grep
+		less pod2text sed sort wc
+	)
+
+	local missing=
+
+	for cmd in "${dependencies[@]}"
+	do
+		if ! command -v "$cmd" &>/dev/null
+		then missing+="$cmd, "
+		fi
+	done
+
+	if test -n "$missing"
+	then error 1 "missing dependencies: ${missing%, }"
+	fi
+}
+
+# Command-line Argument Parsing ------------------------------------------- {{{1
+
+check_dependencies # must be called before any external command
+
+while getopts hHi:p: option
 do
-	case $option in
+	case "$option" in
 
 		h) usage;;
-
+		H) documentation;;
 		i)
-			ignore_list=$OPTARG
+			ignore_list="$OPTARG"
 
 			# Update the word count so the user doesn't have to
 
-			word_count=$(expr $(wc -l < $ignore_list) - 1)
+			word_count="$(expr $(wc -l < "$ignore_list") - 1)"
 
 			sed -i "s/\(personal_ws-1.1 en\) \?\w*/\1 $word_count/" $ignore_list
 		;;
 
-		p) args=$OPTARG;;
+		p) args="$OPTARG";;
 	esac
 done
 
-shift $((OPTIND-1))
+shift "$((OPTIND - 1))"
 
-if [[ $# -ne 1 ]]
-then
-	echo 'Exactly one argument is required. Try -h for help.' 1>&2
-	exit 1
+if test $# -ne 1
+then error 2 'Exactly one argument is required. Try -h for help.'
 fi
 
+# Processing -------------------------------------------------------------- {{{1
+
 set -f # disable globbing
+
+# TODO quoting, escaping, and reading need addressed.
 
 {
 	while read line; do
@@ -69,7 +108,10 @@ set -f # disable globbing
 				--personal=$ignore_list              \
 		})
 
-	done < <(sed -f - <(grep -Po '(?<=>)[^<]*(?=</A>)' $1) <<-EOF |
+	done < <(sed -f - <(grep -Po '(?<=>)[^<]*(?=</A>)' $1) <<-'EOF' |
+
+		# TODO outsource HTML decoding to an external program
+		# TRY perl -MHTML::Entities -pe 'decode_entities($_);'
 
 		s/&amp;/\&/g
 		s/&lt;/</g
@@ -82,6 +124,11 @@ set -f # disable globbing
 
 } | less -FRS
 
+# Documentation ----------------------------------------------------------- {{{1
+
+# https://charlotte-ngs.github.io/2015/01/BashScriptPOD.html
+# http://bahut.alma.ch/2007/08/embedding-documentation-in-shell-script_16.html
+
 : <<='cut'
 =pod
 
@@ -91,7 +138,7 @@ spellcheck.sh - a bookmark spellchecker
 
 =head1 SYNOPSIS
 
-bash spellcheck.sh [options] <bookmark-file>
+bash spellcheck.sh [options] <netscape-bookmark-file>
 
 =head1 DESCRIPTION
 
@@ -107,6 +154,15 @@ is a list of bookmark entries with spelling mistakes highlighted.
 
 Display a [h]elp message and exit.
 
+=item B<-H>
+
+Display this documentation in a pager and exit after the user quits.  The
+documentation is divided into sections.  Each section header is matched with a
+search pattern, meaning that you can use navigation commands like C<n> and its
+counterpart C<N> to go to the next or previous section respectively.
+
+The uppercase -H is to parallel the lowercase -h.
+
 =item B<-i> I<FILE>
 
 This flag specifies a file containing a list of words to [i]gnore.  The file
@@ -117,6 +173,20 @@ must begin with the string "personal_ws-1.1 en".
 This script is ultimately just a wrapper around the command-line program aspell.
 This option allows you to [p]ass arbitrary arguments to aspell.  Consult the
 manual by typing C<man aspell>.
+
+=back
+
+=head1 DIAGNOSTICS
+
+The program exits with the following status codes.
+
+=over
+
+=item 0 if okay
+
+=item 1 if dependencies are missing
+
+=item 2 if the wrong number of positional arguments are supplied
 
 =back
 
@@ -140,4 +210,4 @@ Zachary Krepelka L<https://github.com/zachary-krepelka>
 
 =cut
 
-#
+# vim: tw=80 ts=8 sw=8 noet fdm=marker

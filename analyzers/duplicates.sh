@@ -3,79 +3,97 @@
 # FILENAME: duplicates.sh
 # AUTHOR: Zachary Krepelka
 # DATE: Monday, December 25th, 2023
-# UPDATED: Saturday, March 23rd, 2024 at 1:30 PM
+# ABOUT: identify duplicate entries in a bookmark file
+# ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
+# UPDATED: Thursday, September 18th, 2025 at 6:08 PM
 
-usage() { PROG=$(basename $0); cat << EOF >&2
-Usage: $PROG [OPTION]... [FILE(S)]...
-Identify duplicate entries in a bookmark file.
+# Functions --------------------------------------------------------------- {{{1
 
-Options:
-	-h	display this help message
-	-i	enable case insensitivity
-	-d	distinquish between files
-	-s	switch from name to url
-	-c	cut trailing slash
+program="${0##*/}"
 
-Example:       $PROG -i bookmarks.html
-Documentation: perldoc $PROG
-EOF
-exit 0
+usage() {
+	cat <<-USAGE
+	Identify duplicate entries in a bookmark file
+
+	Usage:
+	  bash $program [options] <netscape-bookmark-file> ...
+
+	Options:
+	  -h  display this [h]elp message and exit
+	  -H  read documentation for this script then exit
+	  -i  enable case [i]nsensitivity
+	  -d  [d]istinquish between files
+	  -s  [s]witch from name to url
+	  -c  [c]ut trailing slash
+
+	Example:
+	  bash $program -i bookmarks.html > report.txt
+	USAGE
+	exit 0
 }
 
-[ "$1" == "--help" ] && usage
+documentation() {
+	pod2text "$0" | less -Sp '^[^ ].*$' +k
+	exit 0
+}
 
-# VARIABLES
+error() {
+	local code="$1"
+	local message="$2"
+	echo "$program: error: $message" >&2
+	exit "$code"
+}
 
-	TYPE=NAME
-	REGEX='(?<=>)[^<]*(?=</A>)'
+check_dependencies() {
 
-	CASE_INSENSITIVE=1
-	REMOVE_TAIL=1
-	DISTINCT=1
-	ARGS=()
+	local dependencies=(cat column grep less pod2text sed sort tr uniq)
 
-# COMMAND LINE ARGUMENT PARSING
+	local missing=
 
-	# Our program takes optional and positional arguments. This was helpful:
-
-	# https://gist.github.com/caruccio/836c2dda2bdfa5666c5f9b0230978f26
-
-	while [ $# -gt 0 ]; do
-
-		while getopts hicds options; do
-
-			case $options in
-
-				h) usage;;
-
-				i) CASE_INSENSITIVE=0;;
-
-				c) REMOVE_TAIL=0;;
-
-				d) DISTINCT=0;;
-
-				s)
-					TYPE=URL
-					REGEX='(?<=HREF=")[^"]+'
-				;;
-			esac
-		done
-
-		[ $? -eq 0 ] || exit 1
-		[ $OPTIND -gt $# ] && break
-
-		shift $[$OPTIND - 1]
-		OPTIND=1
-		ARGS[${#ARGS[*]}]=$1
-		shift
+	for cmd in "${dependencies[@]}"
+	do
+		if ! command -v "$cmd" &>/dev/null
+		then missing+="$cmd, "
+		fi
 	done
 
-	if [ ${#ARGS[*]} -lt 1 ]; then
-		echo 'At least one argument is required. Try -h for help.' 1>&2
-		exit 1
+	if test -n "$missing"
+	then error 1 "missing dependencies: ${missing%, }"
 	fi
+}
 
-# CORE PROGRAM FUNCTIONALITY
+# Command-line Argument Parsing ------------------------------------------- {{{1
+
+check_dependencies # must be called before any external command
+
+REMOVE_TAIL=1
+DISTINCT=1
+CASE_INSENSITIVE=1
+TYPE=NAME
+REGEX='(?<=>)[^<]*(?=</A>)'
+
+while getopts hHcdis option
+do
+	case "$option" in
+		h) usage;;
+		H) documentation;;
+		c) REMOVE_TAIL=0;;
+		d) DISTINCT=0;;
+		i) CASE_INSENSITIVE=0;;
+		s)
+			TYPE=URL
+			REGEX='(?<=HREF=")[^"]+'
+		;;
+	esac
+done
+
+shift "$((OPTIND - 1))"
+
+if test $# -eq 0
+then error 2 'At least one argument is required. Try -h for help.'
+fi
+
+# Processing -------------------------------------------------------------- {{{1
 
 	grep \
 		--perl-regexp \
@@ -88,7 +106,7 @@ exit 0
 				echo no
 			fi
 		)-filename \
-		$REGEX ${ARGS[*]} |
+		$REGEX "$@" |
 	\
 	if [ $CASE_INSENSITIVE -eq 0 ]
 	then
@@ -114,7 +132,10 @@ exit 0
 		column -t -l 2 -N FREQ,$TYPE
 	fi
 
-# DOCUMENTATION
+# Documentation ----------------------------------------------------------- {{{1
+
+# https://charlotte-ngs.github.io/2015/01/BashScriptPOD.html
+# http://bahut.alma.ch/2007/08/embedding-documentation-in-shell-script_16.html
 
 : <<='cut'
 =pod
@@ -129,7 +150,7 @@ Below I describe the program's input, output, and usage.
 
 =head2 Usage
 
-bash duplicates.sh [options] [files]
+bash duplicates.sh [options] <netscape-bookmark-file> ...
 
 =head2 Input
 
@@ -156,15 +177,26 @@ There are five command-line options.  Any combination is viable. They can be
 passed individually or all at once, e.g., passing -s -c -i versus passing -sci,
 but they should be passed before the file arguments.
 
-=head2 -h
+=over
 
-Display a short [h]elp message and exit.
+=item B<-h>
 
-=head2 -i
+Display a [h]elp message and exit.
+
+=item B<-H>
+
+Display this documentation in a pager and exit after the user quits.  The
+documentation is divided into sections.  Each section header is matched with a
+search pattern, meaning that you can use navigation commands like C<n> and its
+counterpart C<N> to go to the next or previous section respectively.
+
+The uppercase -H is to parallel the lowercase -h.
+
+=item B<-i>
 
 Enable case [i]nsensitivity when determining if an entry is a duplicate.
 
-=head2 -d
+=item B<-d>
 
 When multiple files are passed to the program, they are globed together by
 default and regarded as one file; duplicates are identified across all the
@@ -180,7 +212,7 @@ appears once in both file_1 and file_2.
 
 		The entry is not counted as a duplicate.
 
-=head2 -s
+=item B<-s>
 
 A bookmark entry entails its name and associated URL.  This program can
 identify duplicates in each. By default, it identifies duplicate bookmark
@@ -194,11 +226,27 @@ names. To identify duplicate URLs instead, use the [s]witch flag.
 
 		Duplicate bookmark URLs are identified.
 
-=head2 -c
+=item B<-c>
 
 Sometimes the only difference between two URLs is a trailing slash at the end.
 To disregard the trailing slash when identifying duplicate URLs, pass the -c
 flag to [c]ut the trailing slash. This only applies when the -s flag is passed.
+
+=back
+
+=head1 DIAGNOSTICS
+
+The program exits with the following status codes.
+
+=over
+
+=item 0 if okay
+
+=item 1 if dependencies are missing
+
+=item 2 if no positional arguments were supplied
+
+=back
 
 =head1 EXAMPLE
 
@@ -268,7 +316,7 @@ outcomes.
 
 =head1 CAVEATS
 
-When using the -d flag, input filenames are assumed not to contain spaces.
+When using the B<-d> flag, input filenames are assumed not to contain spaces.
 
 =head1 SEE ALSO
 
@@ -284,4 +332,4 @@ Zachary Krepelka L<https://github.com/zachary-krepelka>
 
 =cut
 
-#
+# vim: tw=80 ts=8 sw=8 noet fdm=marker

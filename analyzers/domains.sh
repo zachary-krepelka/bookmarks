@@ -3,80 +3,110 @@
 # FILENAME: domains.sh
 # AUTHOR: Zachary Krepelka
 # DATE: Saturday, March 30th, 2024
+# ABOUT: analyze domain frequencies in a bookmark file
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks
-# UPDATED: Sunday, April 21st, 2024 at 4:00 AM
+# UPDATED: Thursday, September 18th, 2025 at 5:57 PM
 
-usage() { PROG=$(basename $0); cat << EOF >&2
-Usage: $PROG [options] <file>
-analyze domain frequencies in a bookmark file
+# Functions --------------------------------------------------------------- {{{1
 
-Options:
-	-h	display this help message
-	-m NUM	minimum frequency to appear
-	-M NUM  maximum frequency to appear
+program="${0##*/}"
 
-Documentation: perldoc $PROG
-Example:       bash $PROG bookmarks.html
-EOF
-exit 0
+usage() {
+	cat <<-USAGE
+	Analyze domain frequencies in a bookmark file
+
+	Usage:
+	  bash $program [options] <netscape-bookmark-file>
+
+	Options:
+	  -h      display this [h]elp message
+	  -H      read documentation for this script then exit
+	  -m NUM  specifies [m]inimum frequency to appear in report
+	  -M NUM  specifies [M]aximum frequency to appear in report
+	USAGE
+	exit 0
 }
 
-[ "$1" == "--help" ] && usage
+documentation() {
+	pod2text "$0" | less -Sp '^[^ ].*$' +k
+	exit 0
+}
 
-MIN=0
-MAX=0
+error() {
+	local code="$1"
+	local message="$2"
+	echo "$program: error: $message" >&2
+	exit "$code"
+}
 
-while [ $# -gt 0 ]; do
+check_dependencies() {
 
-	while getopts hm:M: options; do
+	local dependencies=(cat column grep less pod2text sort)
 
-		case $options in
+	local missing=
 
-			h) usage;;
-
-			m) MIN=$OPTARG;;
-
-			M) MAX=$OPTARG;;
-
-		esac
+	for cmd in "${dependencies[@]}"
+	do
+		if ! command -v "$cmd" &>/dev/null
+		then missing+="$cmd, "
+		fi
 	done
 
-	[ $? -eq 0 ] || exit 1
-	[ $OPTIND -gt $# ] && break
+	if test -n "$missing"
+	then error 1 "missing dependencies: ${missing%, }"
+	fi
+}
 
-	shift $[$OPTIND - 1]
-	OPTIND=1
-	ARGS[${#ARGS[*]}]=$1
-	shift
+# Command-line Argument Parsing ------------------------------------------- {{{1
+
+check_dependencies # must be called before any external command
+
+min=0
+max=0
+
+while getopts hHm:M: option
+do
+	case "$option" in
+		h) usage;;
+		H) documentation;;
+		m) min="$OPTARG";; # TODO check that it's a number
+		M) max="$OPTARG";; # TODO ditto
+	esac
 done
 
-if [ ${#ARGS[*]} -lt 1 ]; then
-	echo 'At least one argument is required. Try -h for help.' 1>&2
-	exit 1
+shift "$((OPTIND - 1))"
+
+if test $# -eq 0
+then error 2 'At least one argument is required. Try -h for help.'
 fi
 
-URLS=$(grep -oP '(?<=HREF=")[^"]+' ${ARGS[*]})
+# Processing -------------------------------------------------------------- {{{1
 
-for domain in $(grep -oP '(?<=:\/\/)[^\/]+' <(echo "$URLS") | sort -u)
+hrefs="$(grep -oP '(?<=HREF=")[^"]+' "$@")"
+
+for domain in "$(grep -oP '(?<=:\/\/)[^\/]+' <(echo "$hrefs") | sort -u)"
 do
-	NUM=$(grep -F "://$domain" <(echo "$URLS") | wc -l)
+	num="$(grep -cF "://$domain" <(echo "$hrefs"))"
 
-	if [[ $NUM -lt $MIN ]]
-	then
-		continue
+	if test "$num" -lt "$min"
+	then continue
 	fi
 
-	if [ $MAX -ne 0 ]
+	if test "$max" -ne 0
 	then
-		if [[ $NUM -gt $MAX ]]
-		then
-			continue
+		if test "$num" -gt "$max"
+		then continue
 		fi
 	fi
 
-	echo "$NUM $domain"
+	echo "$num $domain"
 
 done | column -t -N FREQ,DOMAIN
+
+# Documentation ----------------------------------------------------------- {{{1
+
+# https://charlotte-ngs.github.io/2015/01/BashScriptPOD.html
+# http://bahut.alma.ch/2007/08/embedding-documentation-in-shell-script_16.html
 
 : <<='cut'
 =pod
@@ -87,7 +117,7 @@ domains.sh - analyze domain frequencies in a bookmark file
 
 =head1 SYNOPSIS
 
-bash domains.sh [options] <bookmark file>
+bash domains.sh [options] <netscape-bookmark-file>
 
 =head1 DESCRIPTION
 
@@ -102,7 +132,16 @@ together with the frequency of bookmark entries belonging to that domain.
 
 =item B<-h>
 
-Display a help message.
+Display a [h]elp message and exit.
+
+=item B<-H>
+
+Display this documentation in a pager and exit after the user quits.  The
+documentation is divided into sections.  Each section header is matched with a
+search pattern, meaning that you can use navigation commands like C<n> and its
+counterpart C<N> to go to the next or previous section respectively.
+
+The uppercase -H is to parallel the lowercase -h.
 
 =item B<-m> I<NUM>
 
@@ -119,6 +158,20 @@ Specifies the maximum frequency to appear in the output.  Compounded with -m,
 use it to find domain frequencies in a range.
 
 	bash domains.sh -m 10 -M 20 bookmarks.html > a-lot-but-not-a-lot.txt
+
+=back
+
+=head1 DIAGNOSTICS
+
+The program exits with the following status codes.
+
+=over
+
+=item 0 if okay
+
+=item 1 if dependencies are missing
+
+=item 2 if no positional arguments were supplied
 
 =back
 
@@ -155,4 +208,4 @@ Zachary Krepelka L<https://github.com/zachary-krepelka>
 
 =cut
 
-#
+# vim: tw=80 ts=8 sw=8 noet fdm=marker
