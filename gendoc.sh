@@ -5,7 +5,36 @@
 # DATE: Wednesday, April 9th, 2025
 # ABOUT: generate documentation in various formats
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-# UPDATED: Monday, September 15th, 2025 at 10:03 PM
+# UPDATED: Thursday, September 18th, 2025 at 7:49 PM
+
+program="${0##*/}"
+
+error() {
+	local code="$1"
+	local message="$2"
+	echo "$program: error: $message" >&2
+	exit "$code"
+}
+
+check_dependencies() {
+
+	local dependencies=(mkdir pod2html pod2man pod2pdf pod2text rm sed)
+
+	local missing=
+
+	for cmd in "${dependencies[@]}"
+	do
+		if ! command -v "$cmd" &>/dev/null
+		then missing+="$cmd, "
+		fi
+	done
+
+	if test -n "$missing"
+	then error 1 "missing dependencies: ${missing%, }"
+	fi
+}
+
+check_dependencies
 
 declare -A formats
 
@@ -50,3 +79,5 @@ do
 done
 
 rm -f pod2htmd.tmp # Why isn't this cleaned up automatically?
+
+# vim: tw=80 ts=8 sw=8 noet fdm=marker
