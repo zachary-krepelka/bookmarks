@@ -1,4 +1,4 @@
-#!/usr/bin/sed -f
+#!/usr/bin/env -S sed -f
 
 # FILENAME: bookmarks.sed
 # AUTHOR: Zachary Krepelka

@@ -1,4 +1,4 @@
-#!/usr/bin/env sed -nf
+#!/usr/bin/env -S sed -nf
 
 # FILENAME: cat.sed
 # AUTHOR: Zachary Krepelka

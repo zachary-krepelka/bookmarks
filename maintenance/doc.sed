@@ -1,4 +1,4 @@
-#!/usr/bin/sed -nf
+#!/usr/bin/env -S sed -nf
 
 # FILENAME: doc.sed
 # AUTHOR: Zachary Krepelka
