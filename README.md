@@ -141,7 +141,7 @@ The functionality of each script is summarized below.
 |   `-- treeifier.pl
 |        # creates treeview from bookmark file
 |-- extractors/
-|    # extract and organize bookmarks of particular kinds
+|    # scripts that extract and organize bookmarks of particular kinds
 |   |-- bar.sed
 |   |    # extract bookmarks on the bookmarks bar
 |   `-- youtube.pl

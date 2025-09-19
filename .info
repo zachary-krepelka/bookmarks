@@ -39,7 +39,7 @@
 ./converters/treeifier.pl
 	creates treeview from bookmark file
 ./extractors
-	extract and organize bookmarks of particular kinds
+	scripts that extract and organize bookmarks of particular kinds
 ./extractors/bar.sed
 	extract bookmarks on the bookmarks bar
 ./extractors/youtube.pl
