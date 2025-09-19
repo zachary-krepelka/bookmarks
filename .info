@@ -2,7 +2,7 @@
 # AUTHOR: Zachary Krepelka
 # DATE: Tuesday, February 18th, 2025
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-# UPDATED: Thursday, September 18th, 2025 at 5:10 AM
+# UPDATED: Friday, September 19th, 2025 at 1:35 AM
 
 ./README.md
 	you should read this
@@ -40,6 +40,8 @@
 	creates treeview from bookmark file
 ./extractors
 	extract and organize bookmarks of particular kinds
+./extractors/bar.sed
+	extract bookmarks on the bookmarks bar
 ./extractors/youtube.pl
 	extract and organize YouTube bookmarks
 ./gendoc.sh

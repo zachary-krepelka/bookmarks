@@ -7,7 +7,7 @@ Scripts for bookmark management by Zachary Krepelka
 	AUTHOR: Zachary Krepelka
 	DATE: Thursday, January 4th, 2024
 	ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-	UPDATED: Thursday, September 18th, 2025 at 5:12 AM
+	UPDATED: Friday, September 19th, 2025 at 1:45 AM
 -->
 
 ## Motivations
@@ -142,6 +142,8 @@ The functionality of each script is summarized below.
 |        # creates treeview from bookmark file
 |-- extractors/
 |    # extract and organize bookmarks of particular kinds
+|   |-- bar.sed
+|   |    # extract bookmarks on the bookmarks bar
 |   `-- youtube.pl
 |        # extract and organize YouTube bookmarks
 |-- gendoc.sh
