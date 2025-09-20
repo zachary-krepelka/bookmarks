@@ -5,7 +5,7 @@
 # DATE: Saturday, March 30th, 2024
 # ABOUT: analyze domain frequencies in a bookmark file
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks
-# UPDATED: Thursday, September 18th, 2025 at 5:57 PM
+# UPDATED: Saturday, September 20th, 2025 at 7:17 AM
 
 # Functions --------------------------------------------------------------- {{{1
 
@@ -84,7 +84,7 @@ fi
 
 hrefs="$(grep -oP '(?<=HREF=")[^"]+' "$@")"
 
-for domain in "$(grep -oP '(?<=:\/\/)[^\/]+' <(echo "$hrefs") | sort -u)"
+for domain in $(grep -oP '(?<=:\/\/)[^\/]+' <(echo "$hrefs") | sort -u)
 do
 	num="$(grep -cF "://$domain" <(echo "$hrefs"))"
 
