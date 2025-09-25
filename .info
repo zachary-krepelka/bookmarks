@@ -2,7 +2,7 @@
 # AUTHOR: Zachary Krepelka
 # DATE: Tuesday, February 18th, 2025
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-# UPDATED: Friday, September 19th, 2025 at 1:35 AM
+# UPDATED: Thursday, September 25th, 2025 at 5:22 AM
 
 ./README.md
 	you should read this
@@ -38,6 +38,10 @@
 	same thing but input is html instead of json
 ./converters/treeifier.pl
 	creates treeview from bookmark file
+./extensions
+	browser extensions pertaining to bookmark management
+./extensions/bookmarks-bar-enumerator
+	a Chrome extension to enumerate items on the bookmarks bar
 ./extractors
 	scripts that extract and organize bookmarks of particular kinds
 ./extractors/bar.sed

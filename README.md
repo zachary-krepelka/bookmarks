@@ -7,7 +7,7 @@ Scripts for bookmark management by Zachary Krepelka
 	AUTHOR: Zachary Krepelka
 	DATE: Thursday, January 4th, 2024
 	ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-	UPDATED: Friday, September 19th, 2025 at 1:45 AM
+	UPDATED: Thursday, September 25th, 2025 at 5:24 AM
 -->
 
 ## Motivations
@@ -140,6 +140,10 @@ The functionality of each script is summarized below.
 |   |    # same thing but input is html instead of json
 |   `-- treeifier.pl
 |        # creates treeview from bookmark file
+|-- extensions/
+|    # browser extensions pertaining to bookmark management
+|   `-- bookmarks-bar-enumerator/
+|        # a Chrome extension to enumerate items on the bookmarks bar
 |-- extractors/
 |    # scripts that extract and organize bookmarks of particular kinds
 |   |-- bar.sed
