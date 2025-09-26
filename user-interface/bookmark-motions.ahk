@@ -5,7 +5,7 @@
 ; DATE: Friday, March 8th, 2024
 ; ABOUT: Vim motions for bookmark management
 ; ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-; UPDATED: Monday, June 2nd, 2025 at 3:27 AM
+; UPDATED: Friday, September 26th, 2025 at 6:10 PM
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -26,9 +26,11 @@ Using the Windows Command Prompt:
 
  Invocation:  start bookmark-motions.exe
  Termination: taskkill /IM bookmark-motions.exe
- Compilation: Ahk2Exe.exe /in bookmark-motions.ahk /out bookmark-motions.exe
+ Compilation: Ahk2Exe.exe /in bookmark-motions.ahk /out bookmark-motions.exe /base AutoHotkey64.exe
 
-The compiler can be obtained at L<https://github.com/AutoHotkey/Ahk2Exe.git>
+The compiler can be obtained at L<https://github.com/AutoHotkey/Ahk2Exe>
+
+Download the base image from L<https://github.com/AutoHotkey/AutoHotkey>
 
 =head1 DESCRIPTION
 
