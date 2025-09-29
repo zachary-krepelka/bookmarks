@@ -5,7 +5,7 @@
 # DATE: Wednesday, September 17th, 2025
 # ABOUT: extract and organize YouTube bookmarks
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-# UPDATED: Thursday, September 18th, 2025 at 5:37 AM
+# UPDATED: Monday, September 29th, 2025 at 3:43 AM
 
 #
 # |\/| _  _|   | _  _
@@ -25,11 +25,13 @@ use URI;
 
 my @shorts          = ();
 my @longs           = ();
+my %comments        = ();
 my @playlists       = ();
 my @channels        = ();
 my @channel_content = ();
 my @searches        = ();
 my @misc            = ();
+my %titles          = ();
 
 GetOptions(
 	'help' => \my $help_flag,
@@ -86,6 +88,24 @@ sub compare {
 	return $a cmp $b;
 }
 
+sub compare_comments {
+
+	my ($a, $b) = map {
+
+		my $cmt = "";
+
+		if (/HREF="\K([^"]*)/) {
+
+			my $uri = URI->new($1);
+			my $params = $uri->query_form_hash();
+			$cmt = $params->{lc} if exists $params->{lc};
+		}
+		$cmt;
+	} @_;
+
+	return $a cmp $b;
+}
+
 #  _
 # |_).__  _ _  _ _o._  _
 # |  |(_)(_(/__>_>|| |(_|
@@ -107,7 +127,19 @@ while (<>) {
 
 		if ($page eq 'watch') {
 
-			push @longs, $anchor;
+			my $params = $uri->query_form_hash();
+
+			if (exists $params->{lc}) {
+
+				my $video = $params->{v};
+
+				push @{$comments{$video}}, $anchor;
+
+				$titles{$video} = $1
+					if !exists $titles{$video} &&
+						m|>([^<]*)</|;
+
+			} else { push @longs, $anchor; }
 
 		} elsif ($page eq 'shorts') {
 
@@ -161,6 +193,32 @@ make_folder 3, "Longs", [sort {compare($a, $b)} @longs] if @longs;
 
 print " " x 8 . "</DL><p>\n";
 
+
+if (%comments) {
+
+	print <<~'EOF';
+		<DT><H3>Comments</H3>
+		<DL><p>
+	EOF
+
+	foreach my $video (
+		sort {
+			fc($titles{$a}) cmp fc($titles{$b})
+		} keys %comments
+	) {
+		my $count;
+		make_folder 3, $titles{$video}, [
+			# map {s/>\K[^<]*(?=<\/)/++$count/e; $_;}
+			sort {compare_comments($a, $b)}
+			@{$comments{$video}}
+		];
+	}
+
+	print <<~'EOF';
+		</DL><p>
+	EOF
+}
+
 make_folder 2, "Playlists", [sort {compare($a, $b)} @playlists] if @playlists;
 make_folder 2, "Channels", [sort {compare($a, $b)} @channels] if @channels;
 make_folder 2, "Subpages", [sort {compare($a, $b)} @channel_content] if @channel_content;
@@ -201,6 +259,8 @@ OUTPUT with the following file structure.
 	|   |   `-- ...
 	|   `-- Longs/
 	|       `-- ...
+	|-- Comments/
+	|   `-- ...
 	|-- Playlists/
 	|   `-- ...
 	|-- Channels/
@@ -216,17 +276,18 @@ OUTPUT with the following file structure.
 
 The bookmarks are organized into several folders outlined below.  The
 bookmarks in each folder are sorted by their names lexicographically in
-a case-insensitive manner. If the INPUT file does not contain any
-YouTube bookmarks of a particular kind, then the corresponding folder
-will not be populated in the OUTPUT file.  The trailing C< - YouTube>
-tag is stripped from the end of each bookmark name.
+a case-insensitive manner unless otherwise specified.  If the INPUT file
+does not contain any YouTube bookmarks of a particular kind, then the
+corresponding folder will not be populated in the OUTPUT file.  The
+trailing C< - YouTube> tag is stripped from the end of each bookmark
+name.
 
 =over
 
 =item 1) Content
 
-This folder contains standalone playable content. It is divided into two
-subfolders for short-form and long-form content.
+This folder contains standalone playable content.  It is divided into
+two subfolders for short-form and long-form content.
 
 =over
 
@@ -234,24 +295,70 @@ subfolders for short-form and long-form content.
 
 Contains YouTube bookmarks with URLs of the form
 
-	youtube.com/shorts/VIDEO_ID
+	youtube.com/shorts/{VIDEO_ID}
 
 =item ii) Longs
 
 Contains YouTube bookmarks with URLs of the form
 
-	youtube.com/watch?v=VIDEO_ID
+	youtube.com/watch?v={VIDEO_ID}
 
 This includes videos that are part of a playlist, e.g.,
 
-	https://www.youtube.com/watch?v=VIDEO_ID&list=PLAYLIST_ID&index=NUM
+	youtube.com/watch?v={VIDEO_ID}&list={PLAYLIST_ID}&index={NUM}
+
+However, URLs containing a comment query parameter are excluded.  The
+reason for this is discussed below.
 
 =back
 
-=item 2) Playlists
+=item 2) Comments
 
-This folder contains bookmarked playlist pages.
-These are bookmarks with URLs of the form
+This folder contains bookmarked YouTube comments.  These are bookmarks
+with URLs of the form
+
+	youtube.com/watch?v={VIDEO_ID}&lc={COMMENT_ID}
+
+These URLs are obtained by clicking on a YouTube comment's timestamp,
+which redirects back to the same video but with the selected comment now
+hoisted to the top of the comment section.  (YouTube short comments
+redirect to a page having the Short as a full video.)
+
+While the content folder is reserved for standalone playable content, it
+is understood that if a video contains a comment as part of its link,
+then that link was saved with the express purpose of saving the comment
+rather than the video, which is why these links get their own folder.
+
+The comments are organized into the following file structure, where they
+are grouped according to the video to which they belong.
+
+	Comments/
+	|-- video1/
+	|   |-- comment1
+	|   |-- comment2
+	|   `-- ...
+	|-- video2/
+	|   |-- comment1
+	|   |-- comment2
+	|   `-- ...
+	`-- ...
+
+Each video folder is named with that video's title, and the bookmarked
+comments in each video folder retain their original names.  The video
+folders are sorted case insensitively by name, as one would expect.  By
+contrast, the bookmarked comments in each folder are sorted by their
+comment IDs.
+
+The reason for this sorting order is because each bookmarked comment
+under a given video is given the same name--the name of its parent
+video--by the web browser.  Therefore, sorting lexicographically would
+accomplish nothing unless the user manually names each bookmarked
+comment.
+
+=item 3) Playlists
+
+This folder contains bookmarked playlist pages.  These are bookmarks
+with URLs of the form
 
 	youtube.com/playlist?list=PLAYLIST_ID
 
@@ -260,17 +367,17 @@ does not play content but rather comprises a collection of content.  It
 should not be confused with the playlist interface that often
 accompanies videos.
 
-=item 3) Channels
+=item 4) Channels
 
-This folder contains bookmarked channel pages.
-These are bookmarks with URLs of the form
+This folder contains bookmarked channel pages.  These are bookmarks with
+URLs of the form
 
 	youtube.com/user/USERNAME
 	youtube.com/channel/CHANNEL_ID
 	youtube.com/c/CUSTOM_NAME
 	youtube.com/@HANDLE
 
-=item 4) Subpages
+=item 5) Subpages
 
 This folder contains sub pages belonging to specific channels.  These
 are bookmarks with URLs of the form
@@ -278,8 +385,8 @@ are bookmarks with URLs of the form
 	youtube.com/@HANDLE/SUBPAGE
 
 Possible sub pages follow: featured, videos, shorts, streams, podcasts,
-releases, playlists, posts, and store. These correspond to the tabs on a
-YouTube channel page.
+releases, playlists, posts, and store.  These correspond to the tabs on
+a YouTube channel page.
 
 These bookmarks are placed into this folder as a flat list with the
 following naming scheme.
@@ -297,14 +404,14 @@ following naming scheme.
 	`-- ...
 
 This folder is like the C<Channels> folder; it contains the same set of
-permissible URLs. Thereon, if one of the aforementioned URLs has a sub
+permissible URLs.  Thereon, if one of the aforementioned URLs has a sub
 path beyond the channel specifier, it is placed here instead of in the
 C<Channels> folder.
 
-=item 5) Searches
+=item 6) Searches
 
-This folder contains bookmarked search queries.
-These are bookmarks with URLs of the form
+This folder contains bookmarked search queries.  These are bookmarks
+with URLs of the form
 
 	youtube.com/results?search_query=WHAT_YOU_SEARCHED
 
@@ -312,7 +419,7 @@ Often it is the case that pages like these are bookmarked accidentally.
 You may want to bookmark a search query if you are frequently returning
 to it, e.g., in the case of an ongoing event in the news.
 
-=item 6) Misc
+=item 7) Misc
 
 This folder contains YouTube bookmarks that do not fall into any of the
 previous categories.
@@ -349,6 +456,7 @@ Bookmarks using other domains, like those listed below, are not matched.
 
 	https://youtu.be/...
 	https://m.youtube.com/...
+	https://music.youtube.com/...
 	etc.
 
 =head1 SEE ALSO
