@@ -5,7 +5,7 @@
 ; DATE: Friday, March 8th, 2024
 ; ABOUT: Vim motions for bookmark management
 ; ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-; UPDATED: Thursday, October 2nd, 2025 at 1:41 AM
+; UPDATED: Thursday, October 2nd, 2025 at 1:55 AM
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -102,19 +102,19 @@ bookmarking mode, the behavior of the mouse and the keyboard is changed to make
 it less difficult to interact with bookmarks and their drop-down menus.  Focus
 is redirected to the bookmark bar where special navigation commands can be used.
 
-	.-------------.
-	| Work        |
-	| Personal  >-|---------------.
-	.-------------.  | Reading    |
-	                 | Leisure    |
-	                 | Social     |
-	                 | Finance    |
-	                 | Shopping   |
-	                 | Recipes  >-|--------------------------.
-	                 | News       |  | Chocolate Chip Cookie |
-	                 .------------.  | Angel food cake       |
-	                                 | Tiramisu              |
-	                                 .-----------------------.
+        .-------------.
+        | Work        |
+        | Personal  >-|---------------.
+        .-------------.  | Reading    |
+                         | Leisure    |
+                         | Social     |
+                         | Finance    |
+                         | Shopping   |
+                         | Recipes  >-|--------------------------.
+                         | News       |  | Chocolate Chip Cookie |
+                         .------------.  | Angel food cake       |
+                                         | Tiramisu              |
+                                         .-----------------------.
 
 To toggle between the two modes, press backslash twice in quick succession.  An
 audible beep will sound to indicate that the key press was registered.  You can
@@ -132,9 +132,9 @@ The following keyboard shortcuts are available when bookmarking mode is active.
 These keybindings are largely Vim-inspired, meaning that you will use hjkl
 instead of the arrow keys.
 
-	  k
-	h   l
-	  j
+          k
+        h   l
+          j
 
 Some keybindings are not supported on all web browsers.  Refer to the section
 titled COMPATIBILITY for more details.
