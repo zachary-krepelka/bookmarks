@@ -5,7 +5,7 @@
 ; DATE: Friday, March 8th, 2024
 ; ABOUT: Vim motions for bookmark management
 ; ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-; UPDATED: Friday, September 26th, 2025 at 6:10 PM
+; UPDATED: Thursday, October 2nd, 2025 at 1:41 AM
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -24,13 +24,38 @@ bookmark-motions.ahk - Vim motions for bookmark management
 
 Using the Windows Command Prompt:
 
- Invocation:  start bookmark-motions.exe
- Termination: taskkill /IM bookmark-motions.exe
- Compilation: Ahk2Exe.exe /in bookmark-motions.ahk /out bookmark-motions.exe /base AutoHotkey64.exe
+=over
 
-The compiler can be obtained at L<https://github.com/AutoHotkey/Ahk2Exe>
+=item Invocation
 
-Download the base image from L<https://github.com/AutoHotkey/AutoHotkey>
+ start bookmark-motions.exe [OPTIONS]
+
+=item Termination
+
+ taskkill /im bookmark-motions.exe
+
+=item Customization
+
+ bookmark-motions.exe /?
+
+=item Compilation
+
+ Ahk2Exe.exe /base AutoHotkey64.exe
+             /in bookmark-motions.ahk
+             /out bookmark-motions.exe
+             /icon bookmark-motions.ico
+
+See the COMPILATION section for detailed instructions.
+
+=over
+
+=item Get C<Ahk2Exe.exe> from L<github.com/AutoHotkey/Ahk2Exe>.
+
+=item Get C<AutoHotkey64.exe> from L<github.com/AutoHotkey/AutoHotkey>.
+
+=back
+
+=back
 
 =head1 DESCRIPTION
 
@@ -554,6 +579,108 @@ change.
 
 =back
 
+=head1 COMPILATION
+
+This section contains instructions on how to compile this program.
+
+=over
+
+=item 1) Download the AutoHotkey compiler from GitHub.
+
+=over
+
+=item a) Go to L<https://github.com/AutoHotkey/Ahk2Exe>.
+
+=item b) Click on the releases link.
+
+=item c) Download the first zip file under the asset section.
+
+=item d) Uzip it and take note of the C<Ahk2Exe.exe> file.
+
+=back
+
+=item 2) Download the AutoHotkey base image from GitHub.
+
+=over
+
+=item a) Go to L<https://github.com/AutoHotkey/AutoHotkey>.
+
+=item b) Click on the releases link.
+
+=item c) Download the first zip file under the asset section.
+
+=item d) Unzip it and take note of the C<AutoHotkey64.exe> file.
+You can delete the other files as they are not needed.
+
+=back
+
+=item 3) Download the source code for this script.
+
+=over
+
+=item a) Go to L<https://github.com/zachary-krepelka/bookmarks>.
+
+=item b) Open the C<user-interface> folder.
+
+=item c) Click on the file named C<bookmark-motions.ahk>.
+
+=item d) Click the download button.
+It's on the right side amid a row of other buttons.
+
+=back
+
+=item 4) Optionally, download an icon for this program.
+
+It must have the C<.ico> extension.  Try googling "free icons".  Use an online
+icon converter to obtain the C<.ico> filetype if you chose a PNG, SVG, or
+something else.  For the sake of this tutorial, let's assume that you named the
+file C<bookmark-motions.ico>.
+
+My personal solution involves running a shell script on WSL.
+
+ 1 #!/bin/sh
+ 2 wget https://raw.githubusercontent.com/microsoft/fluentui-system-icons/main/assets/Bookmark/SVG/ic_fluent_bookmark_32_filled.svg
+ 3 convert -background none ic_fluent_bookmark_32_filled.svg bookmark-motions.ico
+ 4 rm ic_fluent_bookmark_32_filled.svg
+
+=item 5) Assembly all relevant files into a common folder.  You will need
+
+=over
+
+=item a) Ahk2Exe.exe
+
+=item b) AutoHotkey64.exe
+
+=item c) bookmark-motions.ahk
+
+=item d) optionally an icon file
+
+=back
+
+=item 6) Compile the program.
+
+Open the Windows Command Prompt and change to the directory where the files
+where assembled in the previous step.  Now it only suffices to run the following
+command.  You can exclude the C</icon> flag and its argument if you chose not to
+use an icon.
+
+ Ahk2Exe.exe /base AutoHotkey64.exe
+             /in bookmark-motions.ahk
+             /out bookmark-motions.exe
+             /icon bookmark-motions.ico
+
+=item 7) Clean up. You can delete all of the intermediate files.
+
+=back
+
+That's all! Try C<bookmark-motions.exe /?> to get started.
+
+As an aside, AutoHotkey is an interpreted programming language.  In the
+AutoHotkey world, compiling a program means to package that program with the
+AutoHotkey interpreter into a standalone executable.  You could run this script
+on your computer without compiling it, but that would require the user to
+install the interpreter.
+
 =head1 TODO
 
 =over
@@ -576,29 +703,14 @@ Document how to make the script run at startup.
 
 =item *
 
-Reimplement this script in a language that runs on Linux, possibly AutoKey.
-Maintain both versions.  See here: L<https://github.com/autokey/autokey>
+Port this program to Linux.  Maintain both versions.  I have decided to use the
+AHK_X11 project.  This means that the port will only run on Linux machines using
+the X window system.  I have already implemented the core functionality for
+Google Chrome.
+
+L<https://github.com/phil294/AHK_X11>
 
 =back
-
-=head1 NOTES
-
-You can compile this script so that the resulting executable has an icon by
-using the following command.
-
-	ahk2exe.exe /in bookmark-motions.ahk /out bookmark-motions.exe /icon bookmarks.ico
-
-You can acquire a suitable icon using this bash script.
-
-	1  #!/bin/bash
-	2
-	3  head=https://raw.githubusercontent.com/microsoft/fluentui-system-icons
-	4  tail=/main/assets/Bookmark/SVG/ic_fluent_bookmark_32_filled.svg
-	5  url=$head$tail
-	6
-	7  wget -q -O bookmarks.svg $url
-	8  convert -background none bookmarks.svg bookmarks.ico
-	9  rm bookmarks.svg
 
 =head1 SEE ALSO
 
