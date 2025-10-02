@@ -5,7 +5,7 @@
 ; DATE: Friday, March 8th, 2024
 ; ABOUT: Vim motions for bookmark management
 ; ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-; UPDATED: Thursday, October 2nd, 2025 at 1:55 AM
+; UPDATED: Thursday, October 2nd, 2025 at 6:34 AM
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -90,9 +90,8 @@ Opera & Opera GX
 
 =back
 
-Because this script is written with AutoHotkey, it will only run on Windows
-operating systems (so Safari is a no-go), but one day I intend to write a port
-for Linux.
+Because this script is written in AutoHotkey, it will only run on Windows.  I am
+in the process of writing a port for Linux using the AHK_X11 project.
 
 =head2 Usage
 
@@ -118,13 +117,87 @@ is redirected to the bookmark bar where special navigation commands can be used.
 
 To toggle between the two modes, press backslash twice in quick succession.  An
 audible beep will sound to indicate that the key press was registered.  You can
-also do this with the mouse by pressing both side buttons at the same time.
+also do this with the mouse by holding the side button until a beep is heard.
+The full range of commands are documented in a later section.
 
-While in bookmarking mode, the bookmark bar is visible.  Otherwise, it is
-hidden.  This keeps your workspace looking clean and uncluttered.  Maximize
-screen real estate, reduce digital overload.
+=head1 OPTIONS
+
+The options to this program facilitate user preference configuration.  This
+program implements a command-line interface in the style of the Windows command
+interpreter C<cmd.exe> and its family of built-ins.  To be brief, the Unix-style
+option syntax C<-f filename> would be translated as C</F:FILENAME>.
+
+=over
+
+=item B</BAR:DYNAMIC>
+
+Passing this option causes the visibility of the bookmarks bar to toggle on and
+off when changing modes.  The intention is to show the bookmarks bar when
+entering bookmark mode and to hide the bookmarks bar when exiting bookmark mode.
+B<This assumes that bookmark mode is entered with the bar initially hidden.>
+
+It is possible for this process to fall out of sync.  The bookmarks bar might
+appear when *exiting* bookmark mode and disappear when *entering* bookmark mode.
+This is undesirable.  It can be fixed by manually toggling the bookmarks bar,
+usually with C<CTRL + SHIRT + B>, but it depends on the browser.
+
+Hiding the bookmarks bar when it is not in use keeps your workspace looking
+clean by reducing visual clutter.  It's a means of maximizing screen real estate
+and reducing digital overload.
+
+=item B</BAR:STATIC>
+
+Do not toggle the bookmarks bar when changing modes.  This has the opposite
+effect of B</BAR:DYNAMIC> and is the default behavior.  B<This assumes that the
+bookmarks bar is always visible.>
+
+This flag is mutually exclusive with B</BAR:DYNAMIC>. The last one to be
+specified on the command-line will take priority.
+
+=item B</SCROLL:>I<ORI>
+
+This option's argument determines the initial scroll orientation of the mouse
+wheel when entering bookmark mode. To understand what this means, the user
+should read the section titled MOUSE ACTIONS.  Here ORI can be either HORIZ or
+VERT.
+
+In essence, bookmarking mode enables the bookmarks bar to be navigated using a
+mouse.  Two scrolling orientations exist, horizontal and vertical, which are
+toggled between during a typical mouse-driven workflow.
+
+When the user enters bookmark mode, the mouse refreshes to an initial scrolling
+orientation. The default initial scrolling orientation is horizontal, i.e., the
+mouse wheel scrolls the focus ring horizontally across the bookmarks bar.
+
+The user can change the default initial scrolling orientation using this option.
+A vertical scrolling orientation is useful when the first item on the bookmarks
+bar--where focus is initially placed when entering bookmark mode--is a folder
+that can be dropped into.
+
+The two viable arguments to this option--HORIZ and VERT--are mutually exclusive.
+The last one to be specified on the command-line takes priority.
+
+=item B</MUTE>
+
+When entering or exiting bookmark mode, an audible beep plays.  This option
+disables that behavior.  Beeps will still be heard for errors. (This will be
+subject to change in the future).
+
+The B</MUTE> option is relevant when used in conjunction with the
+B</BAR:DYNAMIC> flag. The toggling of the bar visually indicates the mode
+change, so beeps are not needed.
+
+=item B</?>
+
+Display a short help message and exit.
+
+=back
 
 =head1 KEYBINDINGS
+
+This section documents the keybindings available in each mode.  The majority of
+them are concentrated in bookmark mode.  Standard mode contains some odds and
+ends but otherwise aims to be unintrusive.
 
 =head2 Bookmarking Mode
 
@@ -162,6 +235,37 @@ times.
 Move to the right.  When on a folder, descend into that folder.  When
 prefixed with a number, move right [count] times.
 
+=item B<Esc>
+
+If there is a pending count, cancel that; otherwise, escape out of all
+drop-down menus.  Unlike in Vim, the escape key does not exit a mode.
+
+=item B<Caps Lock>
+
+Performs the same function as the escape key.
+
+I've already taken the liberty to remap Caps Lock to escape for you.
+In the Vim community, it is a common practice to remap the Caps Lock
+key to the escape key and vice versa.  This is because
+
+=over
+
+=item 1)
+
+the escape key is used more frequently than the Caps Lock key,
+
+=item 2)
+
+but the Caps Locks key is in a more accessible position,
+
+=item 3)
+
+not to mention that the Caps Lock key is rendered obsolete by Vim's
+many, more ergonomic operators for manipulating letter case, e.g.,
+C<~>, C<gu>, and C<gU>.
+
+=back
+
 =item B<gg>
 
 Move to the top of a drop-down menu.
@@ -183,7 +287,11 @@ Move to the beginning of the bookmark bar, provided that a count is not pending.
 =back
 
 There is no actual distinction in functionality; all three can be used
-interchangeably.
+interchangeably.  An exception to this rule follows.
+
+When C<gg> is prefixed with a [count], the focus ring will be moved to the
+[count]th item on the bookmarks bar, counting from zero.  Any drop-down menus
+are escaped.
 
 =item B<G>
 
@@ -200,7 +308,10 @@ natural to Vim users on the bookmark bar.
 =back
 
 There is no actual distinction in functionality; G and $ can be used
-interchangeably.
+interchangeably.  An exception to this rule follows.
+
+When C<G> is prefixed with a [count], it will have the same effect as prefixing
+C<gg> with a count. See above.
 
 =item B<f{char}>
 
@@ -210,7 +321,8 @@ selection.  Does not work on the bookmark bar.
 
 =item B<;>
 
-Repeat the find command B<f{char}> with its most recent character.
+Repeat the find command B<f{char}> with its most recent character.  The count is
+not carried over, but this motion accepts its own [count].
 
 =item B<x>
 
@@ -232,6 +344,16 @@ you don't unintentionally delete a bookmark.
 =item B<m>
 
 Open the context menu on the selected bookmark or folder.
+
+=item B<o>
+
+Open the currently selected bookmark and exit bookmarking mode.  Not
+intended to be used on a folder.
+
+=item B<O>
+
+Open the currently selected bookmark in a new tab.  If over a folder,
+open all items in that folder.  Does *NOT* leave bookmarking mode.
 
 =item B<e>
 
@@ -256,6 +378,41 @@ Edit the currently selected bookmark or folder.
  | New Folder    Save  Cancel |
  +----------------------------+
 
+To allow the user to type freely, bookmark-mode keybindings are temporarily
+bypassed until the user presses enter (as in save) or escape (as in cancel).
+
+=item B<a>
+
+Add a new bookmark near the currently selected bookmark or folder.  This command
+is similar to the edit command. A pop-up dialog opens where the user can type
+freely until either enter or escape is pressed.  The difference is that this
+command adds a new bookmark instead of editing an existing one.
+
+The exact behavior of this command depends on the web browser in use.  The
+desired behavior is that the bookmark will be created
+
+=over
+
+=item * to the immediate left of the currently selected item if that item is a
+bookmark on the bookmarks bar.
+
+=item * directly under the currently selected item if that item is a bookmark in
+a drop-down menu.
+
+=item * inside of the currently selected item if that item is a folder.
+
+=back
+
+Unfortunately, this is not the behavior on all web browsers.  See the
+COMPATIBILITY section for more information. Also, the dialog may or may not be
+autofilled with the current page title and URL, again depending on the browser.
+
+=item B<A>
+
+Add a new folder near the currently selected bookmark or folder.  This is like
+the lowercase B<a> command, but it adds a new folder instead of a new bookmark.
+It is also subject to the same issues as the lowercase B<a> command.
+
 =item B<*>
 
 Leave bookmarking mode and open the bookmark manager.  If your web browser
@@ -264,37 +421,6 @@ bookmark or folder.
 
 Think of this as a fallback.  What cannot be done in bookmarking mode can be
 done in the bookmark manager with the mouse.
-
-=item B<Caps Lock>
-
-Escape / Cancel.  If there is a pending count, cancel that; otherwise,
-escape out of all drop-down menus.
-
-I've already taken the liberty to remap Caps Lock to escape for you.
-In the Vim community, it is a common practice to remap the Caps Lock
-key to the escape key and vice versa.  This is because
-
-=over
-
-=item 1)
-
-the escape key is used more frequently than the Caps Lock key,
-
-=item 2)
-
-but the Caps Locks key is in a more accessible position,
-
-=item 3)
-
-not to mention that the Caps Lock key is rendered obsolete by Vim's
-many, more ergonomic operators for manipulating letter case, e.g.,
-C<~>, C<gu>, and C<gU>.
-
-=back
-
-As noted before, these changes only take effect in bookmarking mode.  The Caps
-Lock Key behaves normally in standard mode.  Unlike in Vim, the Escape (Caps
-Lock) key does not exit a mode.
 
 =back
 
@@ -387,6 +513,10 @@ the two side buttons
 
 =back
 
+To enter and exit bookmarking mode with the mouse, hold down the first side
+button until a beep is heard.  (If you are unsure which side button is which,
+try them both. A typical mouse has two.)
+
 Before getting into the particulars, let's address some preliminary knowledge.
 There are two environments that you will be working from when managing your
 bookmarks.
@@ -449,6 +579,12 @@ from within the drop-down menus, then focus will be returned to the bookmark bar
 where horizontal scrolling is renewed.  All of the drop-down menus will
 consequently close.
 
+The initial scroll orientation can be changed with the C</SCROLL> command-line
+option. When the user enters bookmarking mode, the scroll orientation is
+initially horizontal by default. Having an initially vertical scrolling
+orientation is useful if the first item on the bookmarks bar is a
+(deeply-nested) folder.
+
 =item * Left Mouse Button
 
 When in a nested drop-down menu, move into the parent drop-down menu.  That is,
@@ -466,6 +602,8 @@ Opens the context menu for the focused element.  If pressed again while the
 context menu is still open, this will close the context menu as a means of
 canceling.  This button functions as a toggle.
 
+If held down until a beep is heard, toggle bookmarking mode.
+
 =item * Second Side Button
 
 Select a bookmark or context menu item.  All of the drop-down menus will
@@ -482,33 +620,54 @@ toggle bookmarking mode on and off.
 
 =item * Mouse Wheel Up
 
-Moves B<right> in horizontal scrolling mode, up otherwise.
+Moves B<left> in horizontal scrolling mode, up otherwise.
 
 =item * Mouse Wheel down
 
-Moves B<left> in horizontal scrolling mode, down otherwise.
+Moves B<right> in horizontal scrolling mode, down otherwise.
 
 =back
 
 =head1 COMPATIBILITY
 
-Some keybindings are not supported on all web browsers.
-Firefox and Opera don't have great support.
-I might work on this later.
+Some keybindings are not supported on all web browsers.  The following table
+shows the commands which are not fully supported.  Firefox and Opera don't have
+great support.  I might work on this later.
 
- +--------+--------+------+---------+-------+
- | Cmds   | Chrome | Edge | Firefox | Opera |
- +--------+--------+------+---------+-------+
- | gg ^ 0 | yes    | yes  | kinda   | yes   |
- | G $    | yes    | yes  | kinda   | yes   |
- | x      | yes    | yes  | yes     | no    |
- | y      | yes    | yes  | yes     | no    |
- | p      | yes    | yes  | kinda   | no    |
- | dd     | yes    | yes  | yes     | yes   |
- | *      | yes    | yes  | no      | yes   |
- +--------+--------+------+---------+-------+
+ +--------+--------+-------+---------+-------+
+ | Cmds   | Chrome | Edge  | Firefox | Opera |
+ +--------+--------+-------+---------+-------+
+ | gg ^ 0 | yes    | yes   | kinda   | yes   |
+ | G $    | yes    | yes   | kinda   | yes   |
+ | x      | yes    | yes   | yes     | no    |
+ | y      | yes    | yes   | yes     | no    |
+ | p      | yes    | yes   | kinda   | no    |
+ | dd     | yes    | yes   | yes     | yes   |
+ | o      | yes    | yes   | no      | no    |
+ | O      | yes    | yes   | no      | no    |
+ | e      | yes    | no    | no      | no    |
+ | a      | yes    | kinda | no      | no    |
+ | A      | yes    | yes   | no      | no    |
+ | *      | yes    | yes   | no      | yes   |
+ +--------+--------+-------+---------+-------+
 
-Regarding Firefox:
+The commands C<o>, C<O>, C<e>, C<a>, and C<A> are fairly new, and I'm still
+working on them. They *could be* supported for Firefox and Opera in the future.
+
+=head2 Regarding Google Chrome
+
+Google Chrome is the browser used by the developer of this program (me), so it
+has the best support.
+
+=head2 Regarding Microsoft Edge
+
+The lowercase add command violates the desired behavior that was outlined for it
+in its documentation. Instead of adding a bookmark near the currently selected
+item, it adds the bookmark at the end of the current folder.
+
+=head2 Regarding Mozilla Firefox
+
+Support is not ideal, but there are some workarounds.
 
 =over
 
@@ -539,6 +698,12 @@ convenient to type.
 =back
 
 =back
+
+=head2 Regarding Opera and Opera GX
+
+Unlike other web browsers, the standard cut, copy, and paste items do not appear
+in Opera's bookmark bar context menus, which has made it impossible to implement
+the C<x>, C<y>, and C<p> commands.
 
 =head1 CAVEATS
 
@@ -643,7 +808,7 @@ My personal solution involves running a shell script on WSL.
  3 convert -background none ic_fluent_bookmark_32_filled.svg bookmark-motions.ico
  4 rm ic_fluent_bookmark_32_filled.svg
 
-=item 5) Assembly all relevant files into a common folder.  You will need
+=item 5) Assemble all relevant files into a common folder.  You will need
 
 =over
 
