@@ -1,61 +1,301 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;@Ahk2Exe-ConsoleApp
 
 ; FILENAME: bookmark-motions.ahk
 ; AUTHOR: Zachary Krepelka
 ; DATE: Friday, March 8th, 2024
+; DOCS: perldoc bookmark-motions.ahk
 ; ABOUT: Vim motions for bookmark management
 ; ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-; UPDATED: Thursday, October 2nd, 2025 at 6:44 AM
+; UPDATED: Thursday, October 2nd, 2025 at 8:56 AM
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Classes ----------------------------------------------------------------- {{{1
 
-;  _
-; / | _. _ _ _  _
-; \_|(_|_>_>(/__>
+class Mode {
+
+	State := false
+
+	Enter() {
+		this.State := true
+	}
+
+	Exit() {
+		this.State := false
+	}
+
+	IsEnabled() {
+		return this.State
+	}
+
+	Toggle() {
+		if this.IsEnabled() {
+			this.Exit()
+		} else {
+			this.Enter()
+		}
+	}
+}
+
+class AudibleMode extends Mode {
+
+	EnterVolume := 1500
+	ExitVolume  := 1000
+	IsAudible   := true
+
+	Mute() {
+		this.IsAudible := false
+	}
+
+	Unmute() {
+		this.IsAudible := true
+	}
+
+	Enter() {
+		super.Enter()
+		if this.IsAudible
+			SoundBeep(this.EnterVolume)
+	}
+
+	Exit() {
+		super.Exit()
+		if this.IsAudible
+			SoundBeep(this.ExitVolume)
+	}
+}
+
+class BypassableHotkeyMode extends AudibleMode {
+
+	BypassMode := Mode()
+
+	Halt() {
+		this.BypassMode.Enter()
+	}
+
+	Resume() {
+		this.BypassMode.Exit()
+	}
+
+	PermitsHotkeys() {
+
+		; To be used in conjunction with the #HotIf directive.
+
+		return this.IsEnabled() && !this.BypassMode.IsEnabled()
+	}
+
+	BypassUntil(Keys) {
+
+		this.Halt()
+
+		OnKeyDown(Hook, VirtualKey, ScanKey) {
+			for Candidate in Keys {
+				if Candidate = VirtualKey {
+					Hook.Stop()
+					this.Resume()
+					return
+				}
+			}
+		}
+
+		Hook := InputHook("V")
+		Hook.KeyOpt("{All}", "+N")
+		Hook.OnKeyDown := OnKeyDown
+		Hook.Start()
+	}
+}
+
+class BookmarkMode extends BypassableHotkeyMode {
+
+	IsDynamic := false
+
+	Enter() {
+		super.Enter()
+		Mouse.Pointer.Disable()
+		if this.IsDynamic
+			BookmarksBar.Toggle() ; On
+		BookmarksBar.Focus()
+		MouseBehavior.Reset()
+	}
+
+	Exit() {
+		super.Exit()
+		BookmarksBar.EscapeDropDownMenus()
+		if this.IsDynamic
+			BookmarksBar.Toggle() ; Off
+		WebPage.Focus()
+		Mouse.Pointer.Enable()
+	}
+
+	PermitsHotkeys() {
+		return super.PermitsHotkeys() && Browser.IsActive()
+	}
+}
+
+class Browser {
+
+	static UNKNOWN := 0
+	static CHROME  := 1
+	static EDGE    := 2
+	static FIREFOX := 3
+	static OPERA   := 4
+
+	static EXECUTABLES := Map(
+		this.CHROME,  "chrome",
+		this.EDGE,    "msedge",
+		this.FIREFOX, "firefox",
+		this.OPERA,   "opera"
+	)
+
+	static Identity() {
+
+		for Id, Executable in this.EXECUTABLES {
+
+			if WinActive("ahk_exe " Executable ".exe") {
+
+				return Id
+			}
+		}
+		return this.UNKNOWN
+	}
+
+	static IsActive() {
+
+		return !!this.Identity()
+	}
+}
+
+class WebPage {
+
+	static Focus() {
+
+		switch Browser.Identity() {
+
+			case Browser.CHROME, Browser.EDGE:
+
+				Send("^{F6}")
+
+			case Browser.FIREFOX:
+
+				Send("{F6}")
+
+			case Browser.OPERA:
+
+				Send("{F9}")
+		}
+	}
+}
+
+class BookmarksBar {
+
+	static Toggle() {
+
+		switch Browser.Identity() {
+
+			case Browser.CHROME, Browser.EDGE, Browser.FIREFOX:
+
+				Send("^+b")
+
+			case Browser.OPERA:
+
+				Send("{Esc}")
+				Send("{F10}")
+				Send("{Enter}")
+				Send("b")
+				Send("s")
+		}
+	}
+
+	static Focus() {
+
+		switch Browser.Identity() {
+
+			case Browser.CHROME, Browser.EDGE:
+
+				Send("!+b")
+
+			case Browser.FIREFOX:
+
+				Delay := 100
+
+				Send("{Esc 2}"),     Sleep(Delay)
+				Send("^l"),          Sleep(Delay)
+				Send("{Backspace}"), Sleep(Delay)
+				Send("{Tab 2}")
+
+			case Browser.OPERA:
+
+				Send("{F10}{F6 3}")
+		}
+	}
+
+	static EscapeDropDownMenus() {
+
+		/* I couldn't find documentation on this anywhere, but
+		 * I've discovered that pressing the alt key not as a
+		 * modifier but by itself will escape out of all
+		 * drop-down menus in some web broswers.
+		 */
+
+		Send("{Alt}")
+
+		if Browser.Identity() = Browser.FIREFOX
+
+			Send("{Esc}")
+	}
+}
 
 class Mouse {
 
-	static horizontal_scroll  := true
-	static context_menu       := false
-	static pending_transition := false
+	class Pointer {
 
-	static Save() {
+		static Save() {
 
-		MouseGetPos(&x, &y)
-		this.x := x
-		this.y := y
+			MouseGetPos(&x, &y)
+			this.x := x
+			this.y := y
+		}
+
+		static Disable() {
+
+			this.Save()
+			MouseMove(0, 0)
+			BlockInput("MouseMove")
+		}
+
+		static Enable() {
+
+			MouseMove(this.x, this.y)
+			BlockInput("MouseMoveOff")
+		}
 	}
+}
 
-	static Hide() {
+class MouseBehavior {
 
-		this.Save()
-		MouseMove(0, 0)            ; move mouse out of way
-		BlockInput("MouseMove")    ; disable mouse movement
-	}
+	static DefaultScrollOrientation := true
 
-	static Show() {
+	static Reset() {
 
-		MouseMove(this.x, this.y)  ; restore mouse position
-		BlockInput("MouseMoveOff") ; re-enable mouse movement
+		this.horizontal_scroll  := this.DefaultScrollOrientation
+		this.context_menu       := false
+		this.pending_transition := false
 	}
 
 	static ToggleScrollDirection() {
 
 		; FIXME shouldn't be used when context menu is active
 
-		EscapeAllDropDownMenus()
+		BookmarksBar.EscapeDropDownMenus()
 
 		this.horizontal_scroll ^= 1
 	}
 
 	static OnWheelUp() {
 
-		Send(this.horizontal_scroll ? "{right}" : "{up}")
+		Send(this.horizontal_scroll ? "{left}" : "{up}")
 	}
 
 	static OnWheelDown() {
 
-		Send(this.horizontal_scroll ? "{left}" : "{down}")
+		Send(this.horizontal_scroll ? "{right}" : "{down}")
 	}
 
 	static OnLeftClick() {
@@ -97,689 +337,679 @@ class Mouse {
 
 		this.context_menu ^= 1
 	}
-
-	; DIFFICULT EDGE CASE
-
-	; Regarding Mouse.Select() and associated logic:
-
-	; When selecting items in context menus from within drop-down
-	; lists, the browser will drop you back to the bookmark bar and
-	; escape out of all those drop down menus once the selection has
-	; been made.
-
-	; An exception is the `delete` item, which leaves the drop-down
-	; menus open.  This one-off case will throw the script out of
-	; sync, since we work under the assumption that the drop-down
-	; lists are in fact closed.  To the user, the mouse-driven
-	; selector will appear to freeze in place.  A provisional
-	; solution is to follow up with the button bound to
-	; ToggleScrollDirection()
-
-	static Select() {
-
-		this.horizontal_scroll := true
-		this.context_menu := false
-		TabChangeMoniter.Execute(() => Send("{Enter}"))
-	}
-}
-
-class Browser {
-
-	static UNKNOWN := 0
-	static CHROME  := 1
-	static EDGE    := 2
-	static FIREFOX := 3
-	static OPERA   := 4
-
-	static EXECUTABLES := Map(
-		this.CHROME,  "chrome",
-		this.EDGE,    "msedge",
-		this.FIREFOX, "firefox",
-		this.OPERA,   "opera"
-	)
-
-	static Identity() {
-
-		For Id, Executable in this.EXECUTABLES {
-
-			If WinActive("ahk_exe " Executable ".exe") {
-
-				return Id
-			}
-		}
-		return this.UNKNOWN
-	}
-
-	static IsActive() {
-
-		return !!this.Identity()
-	}
-}
-
-class BookmarkBar {
-
-	static Activate() {
-
-		 ; assumes that the bookmark bar is hidden
-
-		this.Toggle()
-
-		Sleep(100)
-
-		this.Focus()
-	}
-
-	static Deactivate() {
-
-		 ; assumes that the bookmark bar is shown
-
-		EscapeAllDropDownMenus()
-
-		Sleep(100)
-
-		this.Toggle()
-
-		Sleep(100)
-
-		FocusWebPage()
-	}
-
-	static Toggle() {
-
-		Switch Browser.Identity() {
-
-			Case Browser.CHROME, Browser.EDGE, Browser.FIREFOX:
-
-				Send("^+b")
-
-			Case Browser.OPERA:
-
-				Send("{Esc}")
-				Send("{F10}")
-				Send("{Enter}")
-				Send("b")
-				Send("s")
-		}
-	}
-
-	static Focus() {
-
-		Switch Browser.Identity() {
-
-			Case Browser.CHROME, Browser.EDGE:
-
-				Send("!+b")
-
-			Case Browser.FIREFOX:
-
-				delay := 100
-
-				Send("{Esc 2}")     , Sleep(delay)
-				Send("^l")          , Sleep(delay)
-				Send("{Backspace}") , Sleep(delay)
-				Send("{Tab 2}")
-
-			Case Browser.OPERA:
-
-				Send("{F10}{F6 3}")
-		}
-	}
-}
-
-; Ideally, this should be a page reload monitor, not a
-; tab change monitor.  If the same page is reloaded, the
-; desired effect will not be realized.  The problem is
-; that I'm not sure how to detect page reloads with
-; AutoHotkey.
-
-class TabChangeMoniter {
-
-	static timeout := 1000 ; milliseconds
-
-	static previousTab := ""
-	static currentTab  := ""
-
-	static Execute(functionReference) {
-
-		this.previousTab := WinGetTitle("A")
-
-		functionReference.Call()
-
-		SetTimer ObjBindMethod(this, "FollowUp"), -this.timeout
-	}
-
-	static FollowUp() {
-
-		this.currentTab := WinGetTitle("A")
-
-		If (this.currentTab != this.previousTab) {
-
-			; TODO abstract this with a user-supplied callback
-
-			BookmarkBar.Focus() ; <----
-
-			this.previousTab := this.currentTab
-		}
-	}
-}
-
-class BookmarkingMode {
-
-	static status      := false
-	static enterVolume := 1500
-	static exitVolume  := 1000
-
-	static IsEnabled() {
-
-		return this.status
-	}
-
-	static Toggle() {
-
-		this.status ^= 1
-	}
-
-	static Enter() {
-
-		SoundBeep(this.enterVolume)
-		Mouse.Hide(), Sleep(100)
-		BookmarkBar.Activate()
-	}
-
-	static Exit() {
-
-		SoundBeep(this.exitVolume)
-		BookmarkBar.Deactivate()
-		Mouse.Show()
-	}
-
-	static PermitsHotkeys() {
-
-		return (
-			 this.IsEnabled() &&
-			 Browser.IsActive() &&
-			!OperatorPendingMode.IsEnabled()
-		)
-	}
-
-	static BypassUntil(Keys) {
-
-		OperatorPendingMode.Enter()
-
-		OnKeyDown(Hook, VirtualKey, ScanKey) {
-			For CandidateKey in Keys {
-				If CandidateKey = VirtualKey {
-					Hook.Stop()
-					OperatorPendingMode.Exit()
-					return
-				}
-			}
-		}
-
-		Hook := InputHook("V")
-		Hook.OnKeyDown := OnKeyDown
-		Hook.KeyOpt("{All}", "+N")
-		Hook.Start()
-	}
-
-	static Monitor() {
-
-		toggleFlag := 0
-
-		Loop {
-			If this.IsEnabled() {
-				If !toggleFlag { ; then entering mode
-					toggleFlag := 1
-					this.Enter()
-				} ; otherwise the mode is already enabled
-			} Else {
-				If toggleFlag { ; then exiting mode
-					toggleFlag := 0
-					this.Exit()
-				} ; otherwise the mode is already disabled
-			}
-			Sleep(25)
-		}
-	}
-}
-
-class OperatorPendingMode {
-
-	static status := false
-
-	static IsEnabled() {
-
-		return this.status
-	}
-
-	static Enter() {
-
-		this.status := true
-	}
-
-	static Exit() {
-
-		this.status := false
-	}
 }
 
 class Counter {
 
-	static count := 0
-
 	static SAFETY_LIMIT := 100
 
-	static Reset() {
+	Count := 0
 
-		this.count := 0
+	Get() {
+		return this.Count || 1
 	}
 
-	static Guard() {
-
-		If this.count > this.SAFETY_LIMIT
-
-			this.Reset()
+	Reset() {
+		this.Count := 0
 	}
 
-	static Get() {
+	Update(NewDigit) {
 
-		this.Guard()
+		ExistingDigits := this.Count
 
-		return this.count || 1
-	}
+		CandidateCount := 10 * ExistingDigits + NewDigit
 
-	static Update(new_digit) {
+		if CandidateCount > Counter.SAFETY_LIMIT {
 
-		existing_digits := this.count
+			NotifyMisuse()
 
-		this.count := 10 * existing_digits + new_digit
-	}
-
-	static IsPending() {
-
-		return this.count != 0
-	}
-}
-
-class Locator {
-
-	static latestKey := ""
-
-	static Locate() {
-
-		OperatorPendingMode.Enter()
-
-		this.latestKey := GetNextKeyPress()
-
-		Loop Counter.Get() {
-
-			SendText(this.latestKey)
+			return
 		}
 
-		Counter.Reset()
-
-		OperatorPendingMode.Exit()
+		this.Count := CandidateCount
 	}
 
-	static Repeat() {
+	IsPending() {
 
-		If !this.latestKey
-			return
-
-		OperatorPendingMode.Enter()
-		SendText(this.latestKey)
-		OperatorPendingMode.Exit()
+		return this.Count
 	}
 }
+
+class ThisHotkey {
+
+	__New(TimeoutDuration) {
+		this.TimeoutDuration := TimeoutDuration
+	}
+
+	WasPrefixedBy(Key) {
+
+		if !A_PriorHotkey
+			return false
+
+		Prefixed := Key == A_PriorHotkey
+		PrefixedQuickly := A_TimeSincePriorHotkey < this.TimeoutDuration
+
+		return Prefixed && PrefixedQuickly
+	}
+
+	WasDoublePressed() {
+		return this.WasPrefixedBy(A_ThisHotkey)
+	}
+
+	DispatchByPressType(SinglePressEvent, DoublePressEvent) {
+
+		if this.WasDoublePressed() {
+			SetTimer SinglePressEvent, 0
+			DoublePressEvent.Call()
+		} else {
+			SetTimer SinglePressEvent, -this.TimeoutDuration
+		}
+	}
+
+	HookDoubleKeypress(Event) {
+		this.DispatchByPressType(() => SendText(A_ThisHotkey), Event)
+	}
+}
+
 
 class ContextMenuSelector {
 
-	static delay := 500
-
-	static SelectByNumber(number, direction := true) {
-
-		Send("{AppsKey}")
-		Sleep(this.delay)
-		Send("{" (direction ? "Down" : "Up") " " number "}")
-		Sleep(this.delay)
-		Send("{Enter}")
-	}
+	/**
+	 * Select an item in a context menu by its access key
+	 *
+	 * Note that calling with count = 1 requires the user to
+	 * send enter after the call if the letter is not unique
+	 * in the dropdown menu.
+	 */
 
 	static SelectByLetter(letter, count := 1) {
 
-		OperatorPendingMode.Enter()
-
 		Send("{AppsKey}")
-
-		Sleep(this.delay)
 
 		Loop count
 			SendText(letter)
 
-		If count > 1
+		if count > 1
 			Send("{Enter}")
+	}
 
-		OperatorPendingMode.Exit()
+	static SelectByNumber(number, direction) {
+
+		Send("{AppsKey}")
+
+		if Browser.Identity() = Browser.FIREFOX
+			Send("{Down}")
+
+		Send("{" direction " " number "}")
+
+		Send("{Enter}")
+	}
+
+	static SelectNthFromTop(Nth) {
+
+		this.SelectByNumber(Nth - 1, "Down")
+	}
+
+	static SelectNthFromBottom(Nth) {
+
+		this.SelectByNumber(Nth, "Up")
 	}
 }
 
-class Motions { ; and operators too. I'll worry about semantics later.
+class ChangeMonitor {
 
-	static Move(direction) {
+	__New(aTimeout) {
 
-		Send("{" direction " " Counter.Get() "}")
-
-		Counter.Reset()
+		this.TimeToChange := aTimeout
 	}
 
-	static GotoBeginning() {
+	Probe() {
 
-		Send("{Home}")
+		return A_TickCount
 	}
 
-	static GotoEnd() {
+	HasChanged() {
 
-		Send("{End}")
+		return this.Before != this.After
 	}
 
-	static Find() {
+	Catalyze(Antecedent, Consequent) {
 
-		TabChangeMoniter.Execute(() => Locator.Locate())
+		Callback := ObjBindMethod(this, "Consummate", Consequent)
+
+		this.Before := this.Probe()
+
+		Antecedent.Call()
+
+		SetTimer Callback, -this.TimeToChange
 	}
 
-	static FindAgain() {
+	Consummate(Consequent) {
 
-		Locator.Repeat()
-	}
+		this.After := this.Probe()
 
-	static Escape() {
-
-		If (Counter.isPending())
-			Counter.Reset()
-		Else
-			EscapeAllDropDownMenus()
-	}
-
-	static Confirm() {
-
-		TabChangeMoniter.Execute(() => Send("{Enter}"))
-	}
-
-	static Edit() {
-
-		Switch Browser.Identity() {
-
-			Case Browser.CHROME:
-
-				ContextMenuSelector.SelectByNumber(11, false)
-
-				BookmarkingMode.BypassUntil([0x0D, 0x1B])
-
-			; TODO other browsers
-		}
-	}
-
-	static Cut() {
-
-		Switch Browser.Identity() {
-
-			Case Browser.CHROME:
-
-				ContextMenuSelector.SelectByNumber(10, false)
-
-			Case Browser.EDGE:
-
-				ContextMenuSelector.SelectByNumber(5)
-
-			Case Browser.FIREFOX:
-
-				ContextMenuSelector.SelectByLetter("t")
-
-			Case Browser.OPERA:
-
-				; Sadly, the standard cut, copy, and paste items
-				; do not appear in Opera's bookmark bar context
-				; menus.  Not sure what to do here.
-		}
-	}
-
-	static Yank() {
-
-		Switch Browser.Identity() {
-
-			Case Browser.CHROME:
-
-				ContextMenuSelector.SelectByNumber(9, false)
-
-			Case Browser.EDGE:
-
-				ContextMenuSelector.SelectByNumber(6)
-
-			Case Browser.FIREFOX:
-
-				ContextMenuSelector.SelectByLetter("c")
-
-			Case Browser.OPERA:
-
-				; ditto
-		}
-	}
-
-	static Put() {
-
-		Switch Browser.Identity() {
-
-			Case Browser.CHROME:
-
-				ContextMenuSelector.SelectByNumber(8, false)
-
-			Case Browser.EDGE:
-
-				ContextMenuSelector.SelectByNumber(7)
-
-			Case Browser.FIREFOX:
-
-			; TODO requires context awareness
-
-			; PSEUDO CODE
-			; If Context = Bookmark
-			;     ContextMenuSelector.SelectByLetter('p', 1)
-			; Else If Context = Folder
-			;     ContextMenuSelector.SelectByLetter('p', 2)
-
-			Case Browser.OPERA:
-
-				; ditto
-		}
-	}
-
-	static Delete() {
-
-		Switch Browser.Identity() {
-
-			Case Browser.CHROME:
-
-				ContextMenuSelector.SelectByNumber(7, false)
-
-			Case Browser.EDGE:
-
-				ContextMenuSelector.SelectByNumber(8)
-
-			Case Browser.FIREFOX:
-
-				ContextMenuSelector.SelectByLetter("d")
-
-				BookmarkBar.Focus()
-
-			Case Browser.OPERA:
-
-				ContextMenuSelector.SelectByLetter("m")
-		}
-	}
-
-	static OpenBookmarkManager() {
-
-		Switch Browser.Identity() {
-
-			Case Browser.CHROME:
-
-				ContextMenuSelector.SelectByNumber(4, false)
-
-				BookmarkingMode.Toggle()
-
-			Case Browser.EDGE:
-
-				ContextMenuSelector.SelectByNumber(1, false)
-
-				BookmarkingMode.Toggle()
-
-			Case Browser.FIREFOX:
-
-				; I need to think about this.  The bookmark
-				; manager opens in its own window.  Because
-				; focus is redirected to the new window, we
-				; cannot exit bookmarking mode.
-
-			Case Browser.OPERA:
-
-				ContextMenuSelector.SelectByNumber(2, false)
-
-				BookmarkingMode.Toggle()
-		}
+		if this.HasChanged()
+			Consequent.Call()
 	}
 }
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+class TabChangeMonitor extends ChangeMonitor {
 
-;  _
-; |_  ._  __|_o _ ._  _
-; ||_|| |(_ |_|(_)| |_>
-
-DoubleKeyPress() {
-
-	If !A_PriorHotkey
-		return false
-
-	timeout_duration := 300 ; milliseconds
-	pressed_twice    := A_ThisHotkey = A_PriorHotkey
-	pressed_quickly  := A_TimeSincePriorHotkey < timeout_duration
-
-	return pressed_twice && pressed_quickly
-}
-
-; Accept a single keypress from the user
-
-; Credit for this function goes to a post on the AutoHotkey forums.
-; https://www.autohotkey.com/boards/viewtopic.php?t=122234#p542806
-
-GetNextKeyPress() {
-
-
-	hook := InputHook("L1") ; L1 denotes a string of length 1
-
-	hook.Start()
-	hook.Wait()
-
-	return hook.Input
-}
-
-FocusWebPage() {
-
-	Switch Browser.Identity() {
-
-		Case Browser.CHROME, Browser.EDGE:
-
-			Send("^{F6}")
-
-		Case Browser.FIREFOX:
-
-			Send("{F6}")
-
-		Case Browser.OPERA:
-
-			Send("{F9}")
+	Probe() {
+		return WinGetTitle("A")
 	}
 }
 
-EscapeAllDropDownMenus() {
+; Monkey patch a contains method to the array prototype
 
-	/* I couldn't find documentation on this anywhere, but I've discovered
-	 * that pressing the alt key--not as a modifier but by itself--will
-	 * escape out of all drop-down menus in some web broswers.
+ArrayContains(this, Target, CaseSensitive := true) {
+
+	for _, Item in this {
+
+		if CaseSensitive && Item == Target ||
+		  !CaseSensitive && Item =  Target {
+			return true
+		}
+	}
+	return false
+}
+
+Array.Prototype.DefineProp("Contains", {Call: ArrayContains})
+
+class CommandLine {
+
+	Options := Map()
+	Arguments := Array()
+	Invalid := Array()
+
+	__New(IsCaseSensitive) {
+		this.IsCaseSensitive := IsCaseSensitive
+	}
+
+	HasOption(OptionName) {
+
+		if !this.IsCaseSensitive
+			OptionName := StrLower(OptionName)
+
+		return this.Options.Has(OptionName)
+	}
+
+	GetOption(OptionName) {
+
+		if !this.IsCaseSensitive
+			OptionName := StrLower(OptionName)
+
+		return this.Options.Get(OptionName)
+	}
+}
+
+class CommandLineParser {
+
+	__New(IsCaseSensitive) {
+		this.IsCaseSensitive := IsCaseSensitive
+	}
+
+	/**
+	 * Parse tokens according to specification
 	 */
 
-	Send("{Alt}")
+	Parse(Tokens, Specification) {
 
-	If Browser.Identity() = Browser.FIREFOX
+		Command := CommandLine(this.IsCaseSensitive)
 
-		Send("{Esc}")
+		for n, Token in Tokens {
+
+			if (SubStr(Token, 1, 1) = "/") {
+
+				Parts := StrSplit(SubStr(Token, 2), ":", "", 2)
+
+				OptName := Parts[1]
+
+				if !this.IsCaseSensitive
+					OptName := StrLower(OptName)
+
+				OptArg := Parts.Length > 1 ? Parts[2] : ""
+
+				if Specification.Contains(OptName, this.IsCaseSensitive)
+					Command.Options[OptName] := OptArg
+				else
+					Command.Invalid.Push(OptName)
+
+			} else Command.Arguments.Push(Token)
+		}
+		return Command
+	}
+}
+
+; Functions --------------------------------------------------------------- {{{1
+
+Usage() {
+
+	StdOut := FileOpen("*", 0x1)
+
+	StdOut.Write(
+	"Interpret Vim Motions for Bookmark Management"                                    . "`n"
+	""                                                                                 . "`n"
+	"BOOKMARK-MOTIONS [/BAR:DYNAMIC | /BAR:STATIC] [/SCROLL:HORIZ | /SCROLL:VERT]"     . "`n"
+	"                 [/MUTE] [/?]"                                                    . "`n"
+	""                                                                                 . "`n"
+	"  /BAR:DYNAMIC Toggle the bookmarks bar when changing modes.  Show the bookmarks" . "`n"
+	"               bar when entering bookmark mode.  Hide the bookmarks bar when"     . "`n"
+	"               exiting bookmark mode.  Assumes that bookmark mode is entered"     . "`n"
+	"               with the bar initially hidden.  Can possibly fall out of sync."    . "`n"
+	"  /BAR:STATIC  Do not toggle the bookmarks bar when changing modes.  This is the" . "`n"
+	"               default behavior.  Assumes that the bookmarks bar is always"       . "`n"
+	"               visible."                                                          . "`n"
+	"  /SCROLL:ORI  Determines the mouse wheel's initial scrolling orientation when"   . "`n"
+	"               entering bookmark mode.  ORI is either HORIZ or VERT.  The"        . "`n"
+	"               default initial scrolling orientation is horizontal."              . "`n"
+	"  /MUTE        Do not beep when changing modes."                                  . "`n"
+	""                                                                                 . "`n"
+	"This program intercepts keyboard input to a web browser to interpret those"       . "`n"
+	"keystrokes as Vim motions.  There are two modes."                                 . "`n"
+	""                                                                                 . "`n"
+	"    1.  In standard mode, the web browser behaves normally."                      . "`n"
+	""                                                                                 . "`n"
+	"    2.  In bookmark mode, focus is redirected to the bookmarks bar where Vim"     . "`n"
+	"        motions can be used to navigate one's bookmarks and folders."             . "`n"
+	""                                                                                 . "`n"
+	"Bookmark mode is toggled by pressing backslash twice in quick succession."        . "`n"
+	"Read the full documentation at https://github.com/zachary-krepelka/bookmarks."    . "`n"
+	)
+
+	StdOut.Close()
+
+	ExitApp
 }
 
 Main() {
-	BookmarkingMode.Monitor()
+
+	global BookmarkModeInstance
+	global CommandQuantifier
+	global ActiveHotkey
+
+	; parse command-line arguments
+
+	ValidOptions := ["BAR", "SCROLL", "MUTE", "?"]
+
+	Cmd := CommandLineParser(false).Parse(A_Args, ValidOptions)
+
+		; TODO notify invalid options, exit prematurely
+
+	if Cmd.HasOption("?")
+		Usage()
+
+	; initialize global variables
+
+	BookmarkModeInstance := BookmarkMode()
+	CommandQuantifier    := Counter()
+	ActiveHotkey         := ThisHotkey(300)
+
+	; user preference configuration
+
+	if Cmd.HasOption("BAR") {
+
+		OptArg := Cmd.GetOption("BAR")
+
+		if OptArg = "DYNAMIC"
+			BookmarkModeInstance.IsDynamic := true
+
+		if OptArg = "STATIC"
+			BookmarkModeInstance.IsDynamic := false
+	}
+
+	if Cmd.HasOption("SCROLL") {
+
+		OptArg := Cmd.GetOption("SCROLL")
+
+		if OptArg = "HORIZ"
+			MouseBehavior.DefaultScrollOrientation := true
+
+		if OptArg = "VERT"
+			MouseBehavior.DefaultScrollOrientation := false
+	}
+
+	if Cmd.HasOption("MUTE")
+		BookmarkModeInstance.Mute()
 }
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+/**
+ * Accept a single keypress from the user
+ *
+ * Credit for this function goes to a post on the AutoHotkey forums.
+ * https://www.autohotkey.com/boards/viewtopic.php?t=122234#p542806
+ */
 
-;
-; |_| __|_|  _    _
-; | |(_)|_|<(/_\/_>
-;              /
+GetNextKeyPress() {
 
-A_HotkeyInterval := 0
+	Hook := InputHook("L1") ; L1 denotes a string of length one
+	Hook.Start()
+	Hook.Wait()
+	return Hook.Input
+}
+
+NotifyMisuse() {
+	SoundPlay("*16")
+}
+
+Move(direction) {
+	Send("{" direction " " CommandQuantifier.Get() "}")
+	CommandQuantifier.Reset()
+}
+
+Escape() {
+	if CommandQuantifier.isPending()
+		CommandQuantifier.Reset()
+	else
+		BookmarksBar.EscapeDropDownMenus()
+}
+
+Find() {
+	global Target
+
+	BookmarkModeInstance.Halt()
+
+	Target := GetNextKeyPress()
+
+	Loop CommandQuantifier.Get()
+		SendText(Target)
+
+	CommandQuantifier.Reset()
+
+	BookmarkModeInstance.Resume()
+}
+
+Repeat() {
+	if !IsSet(Target) {
+		NotifyMisuse()
+		return
+	}
+
+	BookmarkModeInstance.Halt()
+
+	Loop CommandQuantifier.Get()
+		SendText(Target)
+
+	CommandQuantifier.Reset()
+
+	BookmarkModeInstance.Resume()
+}
+
+; Hotkeys ----------------------------------------------------------------- {{{1
+
+Main()
 
 #HotIf Browser.IsActive()
+\::ActiveHotkey.HookDoubleKeypress(() => BookmarkModeInstance.Toggle())
+XButton1::{
 
-\::{
-	If DoubleKeyPress()
-		BookmarkingMode.Toggle()
-	Else
-		SendText("\")
+	Held := false
+	Timeout := 1000
+	Start := A_TickCount
+
+	Loop {
+		IsDown := GetKeyState("XButton1", "P")
+		HowLong := A_TickCount - Start
+
+		if !IsDown
+			Break
+
+		if HowLong > Timeout {
+			Held := true
+			Break
+		}
+	}
+	if Held
+		BookmarkModeInstance.Toggle()
+	else if BookmarkModeInstance.PermitsHotkeys()
+		MouseBehavior.ToggleContextMenu()
 }
-
-XButton1 & XButton2::BookmarkingMode.Toggle()
-
 #HotIf
 
-#HotIf BookmarkingMode.PermitsHotkeys()
+#HotIf BookmarkModeInstance.PermitsHotkeys()
+ 0::{
+	if CommandQuantifier.IsPending()
+		CommandQuantifier.Update(0)
+	else
+		Send("{Home}")
+ }
+ 1::CommandQuantifier.Update(1)
+ 2::CommandQuantifier.Update(2)
+ 3::CommandQuantifier.Update(3)
+ 4::CommandQuantifier.Update(4)
+ 5::CommandQuantifier.Update(5)
+ 6::CommandQuantifier.Update(6)
+ 7::CommandQuantifier.Update(7)
+ 8::CommandQuantifier.Update(8)
+ 9::CommandQuantifier.Update(9)
+ a::{
+	switch Browser.Identity() {
 
- a::return
-+a::return
+		case Browser.CHROME:
+
+			ContextMenuSelector.SelectNthFromBottom(6)
+			BookmarkModeInstance.BypassUntil([0x0D, 0x1B])
+
+		case Browser.EDGE:
+
+			; Only partially adds the bookmark at the location
+			; correspondent to where the action was performed.  The
+			; bookmark appears in the correct folder but not near
+			; the bookmark that the context menu was spawned from.
+			; Instead, it is placed at the bottom of the folder /
+			; end of the bookmarks bar.
+
+			ContextMenuSelector.SelectNthFromBottom(5)
+			BookmarkModeInstance.BypassUntil([0x0D, 0x1B])
+
+		case Browser.FIREFOX:
+
+			; requires refocus
+			; does not autofill with the current page
+
+			; ContextMenuSelector.SelectByLetter("b")
+			; Send("{Enter}")
+			; BookmarkModeInstance.BypassUntil([0x0D, 0x1B])
+			; BookmarksBar.Focus() ; FIXME
+
+		case Browser.OPERA:
+
+			; n/a
+			; requires context awareness
+			; cannot be determined programmatically
+	}
+}
++a::{
+	switch Browser.Identity() {
+
+		case Browser.CHROME:
+
+			ContextMenuSelector.SelectNthFromBottom(5)
+			BookmarkModeInstance.BypassUntil([0x0D, 0x1B])
+
+		case Browser.EDGE:
+
+			ContextMenuSelector.SelectNthFromBottom(4)
+			BookmarkModeInstance.BypassUntil([0x0D, 0x1B])
+
+		case Browser.FIREFOX:
+
+			; requires refocus
+
+			; ContextMenuSelector.SelectByLetter("f")
+			; BookmarkModeInstance.BypassUntil([0x0D, 0x1B])
+			; BookmarksBar.Focus() ; FIXME
+
+		case Browser.OPERA:
+
+			; n/a
+			; requires context awareness
+			; cannot be determined programmatically
+	}
+}
  b::return
 +b::return
  c::return
 +c::return
  d::{
- 	If DoubleKeyPress()
- 		Motions.Delete()
+ 	if !ActiveHotkey.WasDoublePressed()
+		return
+
+	switch Browser.Identity() {
+
+		case Browser.CHROME:
+
+			ContextMenuSelector.SelectNthFromBottom(7)
+
+		case Browser.EDGE:
+
+			ContextMenuSelector.SelectNthFromTop(9)
+
+		case Browser.FIREFOX:
+
+			ContextMenuSelector.SelectByLetter("d")
+
+			; BookmarksBar.Focus()
+
+		case Browser.OPERA:
+
+			ContextMenuSelector.SelectByLetter("m")
+	}
  }
 +d::return
- e::Motions.Edit()
+ e::{
+	switch Browser.Identity() {
+
+		case Browser.CHROME:
+
+			ContextMenuSelector.SelectNthFromBottom(11)
+			BookmarkModeInstance.BypassUntil([0x0D, 0x1B])
+
+		case Browser.EDGE:
+
+			; n/a
+			; requires context awareness
+			; cannot be determined programmatically
+
+			; PSEUDO CODE
+			;
+			; If Context = Bookmark
+			;     ContextMenuSelector.SelectNthFromTop(4)
+			;
+			; If Context = Folder
+			;     ContextMenuSelector.SelectNthFromTop(5)
+
+
+		case Browser.FIREFOX:
+
+			; TODO
+
+		case Browser.OPERA:
+
+			; n/a
+			; requires context awareness
+			; cannot be determined programmatically
+
+			; PSEUDO CODE
+			;
+			; If Context = Bookmark
+			;     ContextMenuSelector.SelectByLetter("e")
+			;
+			; If Context = Folder
+			;     ContextMenuSelector.SelectByLetter("r")
+
+	}
+ }
 +e::return
- f::Motions.Find()
+ f::TabChangeMonitor(1000).Catalyze(() => Find(), () => BookmarksBar.Focus())
 +f::return
  g::{
- 	If DoubleKeyPress()
- 		Motions.GotoBeginning()
+	if !ActiveHotkey.WasDoublePressed()
+		return
+
+	if CommandQuantifier.IsPending()
+		BookmarksBar.EscapeDropDownMenus()
+
+	Send("{Home}")
+
+	if CommandQuantifier.IsPending()
+		Move("Right")
  }
-+g::Motions.GotoEnd()
- h::Motions.Move("Left")
++g::{
+	if CommandQuantifier.IsPending() {
+		BookmarksBar.EscapeDropDownMenus()
+		Send("{Home}")
+		Move("Right")
+	} else {
+		Send("{End}")
+	}
+}
+ h::Move("Left")
 +h::return
  i::return
 +i::return
- j::Motions.Move("Down")
+ j::Move("Down")
 +j::return
- k::Motions.Move("Up")
+ k::Move("Up")
 +k::return
- l::Motions.Move("Right")
+ l::Move("Right")
 +l::return
  m::AppsKey
 +m::return
  n::return
 +n::return
- o::return
-+o::return
- p::Motions.Put()
+ o::{
+	if Browser.Identity() = Browser.FIREFOX
+		return
+
+	if Browser.Identity() = Browser.OPERA
+		return
+
+	Send("{Enter}")
+
+	BookmarkModeInstance.Toggle()
+ }
++o::{
+	if Browser.Identity() = Browser.FIREFOX
+		return
+
+	if Browser.Identity() = Browser.OPERA
+		return
+
+	ContextMenuSelector.SelectNthFromTop(1)
+ }
+ p::{
+	switch Browser.Identity() {
+
+		case Browser.CHROME:
+
+			ContextMenuSelector.SelectNthFromBottom(8)
+
+		case Browser.EDGE:
+
+			ContextMenuSelector.SelectNthFromTop(8)
+
+		case Browser.FIREFOX:
+
+			; n/a
+			; requires context awareness
+			; cannot be determined programmatically
+
+			; PSEUDO CODE
+			;
+			; If Context = Bookmark
+			;     ContextMenuSelector.SelectByLetter("p", 1)
+			;
+			; If Context = Folder
+			;     ContextMenuSelector.SelectByLetter("p", 2)
+
+		case Browser.OPERA:
+
+			; Sadly, the standard cut, copy, and paste items
+			; do not appear in Opera's bookmark bar context
+			; menus.  Not sure what to do here.
+	}
+}
 +p::return
  q::return
 +q::return
@@ -795,58 +1025,101 @@ XButton1 & XButton2::BookmarkingMode.Toggle()
 +v::return
  w::return
 +w::return
- x::Motions.Cut()
+ x::{
+	switch Browser.Identity() {
+
+		case Browser.CHROME:
+
+			ContextMenuSelector.SelectNthFromBottom(10)
+
+		case Browser.EDGE:
+
+			ContextMenuSelector.SelectNthFromTop(6)
+
+		case Browser.FIREFOX:
+
+			ContextMenuSelector.SelectByLetter("t")
+
+		case Browser.OPERA:
+
+			; n/a
+	}
+}
 +x::return
- y::Motions.Yank()
+ y::{
+	switch Browser.Identity() {
+
+		case Browser.CHROME:
+
+			ContextMenuSelector.SelectNthFromBottom(9)
+
+		case Browser.EDGE:
+
+			ContextMenuSelector.SelectNthFromTop(7)
+
+		case Browser.FIREFOX:
+
+			ContextMenuSelector.SelectByLetter("c")
+
+		case Browser.OPERA:
+
+			; n/a
+	}
+ }
 +y::return
  z::return
 +z::return
+$::Send("{End}")
+*::{
+	switch Browser.Identity() {
 
-1::Counter.Update(1)
-2::Counter.Update(2)
-3::Counter.Update(3)
-4::Counter.Update(4)
-5::Counter.Update(5)
-6::Counter.Update(6)
-7::Counter.Update(7)
-8::Counter.Update(8)
-9::Counter.Update(9)
-0::{
-	If Counter.IsPending()
-		Counter.Update(0)
-	Else
-		Motions.GotoBeginning()
+		case Browser.CHROME:
+
+			ContextMenuSelector.SelectNthFromBottom(4)
+			BookmarkModeInstance.Toggle()
+
+		case Browser.EDGE:
+
+			ContextMenuSelector.SelectNthFromBottom(1)
+			BookmarkModeInstance.Toggle()
+
+		case Browser.FIREFOX:
+
+			; I need to think about this.  The bookmark
+			; manager opens in its own window.  Because
+			; focus is redirected to the new window, we
+			; cannot exit bookmarking mode.
+
+		case Browser.OPERA:
+
+			; does not open to the location correspondent to
+			; where it was selected from
+
+			ContextMenuSelector.SelectNthFromBottom(2)
+			BookmarkModeInstance.Toggle()
+	}
 }
-
-CapsLock::Motions.Escape()
-Enter::Motions.Confirm()
-
-$::Motions.GotoEnd()
-*::Motions.OpenBookmarkManager()
-^::Motions.GotoBeginning()
-`;::Motions.FindAgain()
-
-WheelUp::   Mouse.OnWheelUp()
-WheelDown:: Mouse.OnWheelDown()
-LButton::   Mouse.OnLeftClick()
-RButton::   Mouse.OnRightClick()
-MButton::   Mouse.ToggleScrollDirection() ; should only use in certain contexts
-XButton1::  Mouse.ToggleContextMenu()
-XButton2::  Mouse.Select()
-
+^::Send("{Home}")
+`;::TabChangeMonitor(1000).Catalyze(() => Repeat(), () => BookmarksBar.Focus())
+Escape::Escape()
+CapsLock::Escape()
+Enter::TabChangeMonitor(1000).Catalyze(() => Send("{Enter}"), () => BookmarksBar.Focus())
+WheelUp::MouseBehavior.OnWheelUp()
+WheelDown::MouseBehavior.OnWheelDown()
+LButton::MouseBehavior.OnLeftClick()
+RButton::MouseBehavior.OnRightClick()
+MButton::MouseBehavior.ToggleScrollDirection() ; should only use in certain contexts
+XButton2::{
+	Send("{Enter}")
+	BookmarkModeInstance.Toggle()
+}
 #HotIf
 
-Main() ; kick everything off
+; Miscellaneous ----------------------------------------------------------- {{{1
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; The remaining code is Chrome-specfic and needs refactored.
 
-;
-; |\/|o _ _ _ || _.._  _  _     _
-; |  ||_>(_(/_||(_|| |(/_(_)|_|_>
-
-; The remaining code is Chrome specfic and needs refactored.
-
-#HotIf WinActive("ahk_exe chrome.exe") && !BookmarkingMode.IsEnabled()
+#HotIf WinActive("ahk_exe chrome.exe") && !BookmarkModeInstance.IsEnabled()
 
 ; IMPORT/EXPORT BOOKMAKRS
 
@@ -995,11 +1268,7 @@ F1::
 
 #HotIf
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;  _
-; | \ _  _   ._ _  _ .__|_ _._|_o _ ._
-; |_/(_)(_|_|| | |(/_| ||_(_| |_|(_)| |
+; Documentation ----------------------------------------------------------- {{{1
 
 /*
 =pod
@@ -1016,7 +1285,7 @@ Using the Windows Command Prompt:
 
 =item Invocation
 
- start bookmark-motions.exe [OPTIONS]
+ start /min bookmark-motions.exe [OPTIONS]
 
 =item Termination
 
@@ -1601,11 +1870,6 @@ continued navigation.
 The user should avoid using this button to descend into a folder, as it will
 induce unwanted behavior.  Use the right mouse button instead.
 
-=item * Both Side Buttons
-
-Pressing both side buttons at the same time will
-toggle bookmarking mode on and off.
-
 =item * Mouse Wheel Up
 
 Moves B<left> in horizontal scrolling mode, up otherwise.
@@ -1953,10 +2217,24 @@ Zachary Krepelka L<https://github.com/zachary-krepelka>
 
 =back
 
+=item Thursday, October 2nd, 2025
+
+=over
+
+=item yet another refactor; re-write entirely from the ground up
+
+=item implement CLI to facilitate user preference configuration
+
+=item fix some long-standing bugs
+
+=item add a few more commands
+
+=back
+
 =back
 
 =cut
 
 */
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; vim: tw=80 ts=8 sw=8 noet fdm=marker
