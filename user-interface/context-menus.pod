@@ -10,7 +10,7 @@ This documentation features ASCII art diagrams of web browser context menus.  It
 attempts to characterize context menus in various web browsers, specifically
 those for bookmarks and folders.  Strategies are discussed for programmatically
 accessing common items in context menus when the running program has no
-knowledge about the item from which the context menu was spawned.
+knowledge about the element from which the context menu was spawned.
 
 =head1 DESCRIPTION
 
@@ -41,16 +41,17 @@ The ASCII art diagrams have the following significations.
 
 =over
 
-=item A pound denotes the presence of an icon.
+=item - A pound denotes the presence of an icon.
 
-=item A closing angle bracket denotes a sub-menu indicator.
+=item - A closing angle bracket denotes a sub-menu indicator.
 
-=item A letter to the right of a menu item is that item's access key.
+=item - A letter to the right of a menu item is that item's access key.
 
-=item The letter I<n> in parentheses denotes a number.
+=item - Opening and closing square bracket pairs denote checkable items.
 
-=item An opening and closing pair of square brackets denotes that the menu item
-is checkable.
+=item - The letter I<n> in parentheses denotes a number.
+
+=item - Tildes enforce correct rendering on GitHub.
 
 =back
 
@@ -59,7 +60,7 @@ is checkable.
 On the left is the context menu for a bookmark.  On the right is the context
 menu for a folder.
 
-                                .----------------------------------.
+ ~                              .----------------------------------.
  .--------------------------.   | Open all (n)                     |
  | Open in new tab          |   | Open all (n) in new window       |
  | Open in new window       |   | Open all (n) in Incognito window |
@@ -123,8 +124,8 @@ Observe that the menus have an equal number of items.  Common elements are in
 near perfect alignment.  They can be indexed from the top or from the bottom.
 Programmatic access is fairly easy and flexible in this circumstance.
 
-An exception is the C<edit> and C<rename> items.  In other browsers, these are
-named "Edit bookmark" and "Edit folder".  Thereon, they encompass the same basic
+An exception is the edit and rename items.  In other browsers, these are named
+"Edit bookmark" and "Edit folder".  Thereon, they encompass the same basic
 operation.  However, programmatically accessing these items requires context
 awareness, since they are in different positions and have different access keys.
 
@@ -200,8 +201,8 @@ On the left is the context menu for a bookmark.  On the right is the context
 menu for a folder.  Note that the workspace menu item will not appear when there
 is only one active workspace.
 
-                                  .--------------------------------.
-                                  | Open all                       |
+ ~                                .--------------------------------.
+ ~                                | Open all                       |
  .----------------------------.   | Open all in new window         |
  | Open                       |   | Open all in new private window |
  | Open in new tab            |   | Open all in workspace >        |
@@ -236,6 +237,6 @@ Zachary Krepelka L<https://github.com/zachary-krepelka>
 
 Initially created on Monday, June 2nd, 2025.
 
-Last updated on Saturday, October 4th, 2025 at 3:14 PM.
+Last updated on Saturday, October 4th, 2025 at 3:43 PM.
 
-=cut
+cut
