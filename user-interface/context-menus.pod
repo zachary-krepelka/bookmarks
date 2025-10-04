@@ -1,0 +1,241 @@
+=pod
+
+=head1 NAME
+
+context-menus.pod - documentation on web browser context menus
+
+=head1 SYNOPSIS
+
+This documentation features ASCII art diagrams of web browser context menus.  It
+attempts to characterize context menus in various web browsers, specifically
+those for bookmarks and folders.  Strategies are discussed for programmatically
+accessing common items in context menus when the running program has no
+knowledge about the item from which the context menu was spawned.
+
+=head1 DESCRIPTION
+
+Imagine that we are writing a user-interface automation program that accesses
+bookmark context menus.  A further stipulation is that we want to support
+multiple web browsers.
+
+=head2 Problem Statement
+
+It is difficult to programmatically select items in context menus because--big
+surprise--they can vary depending on context.  To complicate matters, context
+menus differ across browsers, requiring us to employ different methods on a
+case-by-case basis.
+
+There are common operations that can be performed on both bookmarks and folders,
+like cut, copy, and paste.  If we can predictably access the menu items for
+these common operations, then there is no trouble.
+
+But if a common operation has to be accessed in differing ways depending on
+whether the context menu is for a bookmark or for a folder, then we have to be
+aware of that context, which is difficult to do programmatically.  To help work
+out all of the oddities and quirks, I have charted out the context menus in
+various browsers.
+
+=head2 Legend
+
+The ASCII art diagrams have the following significations.
+
+=over
+
+=item A pound denotes the presence of an icon.
+
+=item A closing angle bracket denotes a sub-menu indicator.
+
+=item A letter to the right of a menu item is that item's access key.
+
+=item The letter I<n> in parentheses denotes a number.
+
+=item An opening and closing pair of square brackets denotes that the menu item
+is checkable.
+
+=back
+
+=head1 GOOGLE CHROME
+
+On the left is the context menu for a bookmark.  On the right is the context
+menu for a folder.
+
+                                .----------------------------------.
+ .--------------------------.   | Open all (n)                     |
+ | Open in new tab          |   | Open all (n) in new window       |
+ | Open in new window       |   | Open all (n) in Incognito window |
+ | Open in Incognito window |   | Open all (n) in new tab group    |
+ |--------------------------|   |----------------------------------|
+ | Edit...                  |   | Rename...                        |
+ |--------------------------|   |----------------------------------|
+ | Cut                      |   | Cut                              |
+ | Copy                     |   | Copy                             |
+ | Paste                    |   | Paste                            |
+ |--------------------------|   |----------------------------------|
+ | Delete                   |   | Delete                           |
+ |--------------------------|   |----------------------------------|
+ | Add page...              |   | Add page...                      |
+ | Add folder...            |   | Add folder...                    |
+ |--------------------------|   |----------------------------------|
+ | Bookmark manager         |   | Bookmark manager                 |
+ | Show apps shortcut  [ ]  |   | Show apps shortcut  [ ]          |
+ | Show tab groups     [ ]  |   | Show tab groups     [ ]          |
+ | Show bookmarks bar  [ ]  |   | Show bookmarks bar  [ ]          |
+ .--------------------------.   .----------------------------------.
+
+=head2 Strategy
+
+Observe that the menus have an unequal number of items.  Common items are
+indexed parallelly from the bottom upwards.  The first eleven items from the
+bottom are common to both menus.  Programmatic access of these items could be
+achieved by moving up the menu from the bottom.  One could define a function
+called C<SelectNthFromBottom(Index)>.
+
+=head1 MICROSOFT EDGE
+
+On the left is the context menu for a bookmark.  On the right is the context
+menu for a folder.
+
+ .--------------------------------------.     .--------------------------------------.
+ | # Open in new tab                    | o   | # Open all (n)                       | o
+ | # Open in new window                 | n   | # Open all (n) in new window         | n
+ | # Open in InPrivate window           | i   | # Open all (n) in InPrivate window   | i
+ |--------------------------------------|     |   Open all (n) in new tab group      | n
+ | # Edit                               | e   |--------------------------------------|
+ |   Show icon only                     | h   |   Rename                             | r
+ |--------------------------------------|     |--------------------------------------|
+ | # Cut                                | t   | # Cut                                | t
+ | # Copy                               | c   | # Copy                               | c
+ | # Paste                              | p   | # Paste                              | p
+ |--------------------------------------|     |--------------------------------------|
+ | # Delete                             | d   | # Delete                             | d
+ |--------------------------------------|     |--------------------------------------|
+ | # Add this page to favorites  Ctrl+D | a   | # Add this page to favorites  Ctrl+D | a
+ | # Add folder                         | f   | # Add folder                         | f
+ |--------------------------------------|     |--------------------------------------|
+ |   Show tab groups                    | b   |   Show tab groups                    | b
+ |   Show favorites bar  Ctrl+Shift+B > | s   |   Show favorites bar  Ctrl+Shift+B > | s
+ | # Manage favorites                   | m   | # Manage favorites                   | m
+ .--------------------------------------.     .--------------------------------------.
+
+=head2 Strategy
+
+Observe that the menus have an equal number of items.  Common elements are in
+near perfect alignment.  They can be indexed from the top or from the bottom.
+Programmatic access is fairly easy and flexible in this circumstance.
+
+An exception is the C<edit> and C<rename> items.  In other browsers, these are
+named "Edit bookmark" and "Edit folder".  Thereon, they encompass the same basic
+operation.  However, programmatically accessing these items requires context
+awareness, since they are in different positions and have different access keys.
+
+=head1 MOZILLA FIREFOX
+
+On the upper left is the context menu spawned from a bookmark on the bookmarks
+bar.  On the upper right is the context menu spawned from a folder on the
+bookmarks bar.  On the lower left is the context menu spawned from a bookmark in
+a drop-down menu.  On the lower right is the context menu spawned from a folder
+in a drop-down menu.
+
+ .----------------------------.
+ | Open in New Tab            | w   .--------------------------.
+ | Open in New Window         | n   | Open All Bookmarks       | o
+ | Open in New Private Window | p   | -------------------------|
+ | ---------------------------|     | Edit Folder...           | e
+ | Edit Bookmark...           | e   | Delete Folder            | d
+ | Delete Bookmark            | d   | Sort By Name             | r
+ |----------------------------|     |--------------------------|
+ | Cut                        | t   | Cut                      | t
+ | Copy                       | c   | Copy                     | c
+ | Paste                      | p   | Paste                    | p
+ |----------------------------|     |--------------------------|
+ | Add Bookmark...            | b   | Add Bookmark...          | b
+ | Add Folder...              | f   | Add Folder...            | f
+ | Add Separator              | s   | Add Separator            | s
+ |----------------------------|     |--------------------------|
+ | Bookmark Toolbar >         | b   | Bookmark Toolbar >       | b
+ | Show Other Bookmarks [ ]   | h   | Show Other Bookmarks [ ] | h
+ | Manage Bookmarks           | m   | Manage Bookmarks         | m
+ .----------------------------.     .--------------------------.
+
+ .----------------------------.
+ | Open in New Tab            | w   .--------------------.
+ | Open in New Window         | n   | Open All Bookmarks | o
+ | Open in New Private Window | p   | -------------------|
+ | ---------------------------|     | Edit Folder...     | e
+ | Edit Bookmark...           | e   | Delete Folder      | d
+ | Delete Bookmark            | d   | Sort By Name       | r
+ |----------------------------|     |--------------------|
+ | Cut                        | t   | Cut                | t
+ | Copy                       | c   | Copy               | c
+ | Paste                      | p   | Paste              | p
+ |----------------------------|     |--------------------|
+ | Add Bookmark...            | b   | Add Bookmark...    | b
+ | Add Folder...              | f   | Add Folder...      | f
+ | Add Separator              | s   | Add Separator      | s
+ |----------------------------|     |--------------------|
+ | Bookmark Toolbar >         | b   | Bookmark Toolbar > | b
+ | Manage Bookmarks           | m   | Manage Bookmarks   | m
+ .----------------------------.     .--------------------.
+
+=head2 Strategy
+
+Programmatic access requires more thought here.  Collectively, both the tops and
+bottoms of these menus vary depending on context, and the menus are of differing
+lengths.  Common elements appear near the centers of each menu.  Indexing from
+the top or bottom is not helpful.
+
+In this circumstance, we have to rely on the access keys to select common items.
+Another strategy is to index relative to a common item initially reached with an
+access key.  That item would have to be one for which there are duplicate access
+keys; if the access key is unique, the menu item will immediately activate upon
+pressing the key, which is undesirable.
+
+The "Add Bookmark" menu item is the only one that meets this criteria.  It is
+among the common items at the center of each menu, and its access key is not
+unique.
+
+=head1 OPERA
+
+On the left is the context menu for a bookmark.  On the right is the context
+menu for a folder.  Note that the workspace menu item will not appear when there
+is only one active workspace.
+
+                                  .--------------------------------.
+                                  | Open all                       |
+ .----------------------------.   | Open all in new window         |
+ | Open                       |   | Open all in new private window |
+ | Open in new tab            |   | Open all in workspace >        |
+ | Open in new window         |   | -------------------------------|
+ | Open in new private window |   | Rename...                      |
+ | Open in workspace >        |   | Move to Trash                  |
+ |----------------------------|   | -------------------------------|
+ | Edit...                    |   | Add site...                    |
+ | Move to Trash              |   | Add folder...                  |
+ |----------------------------|   | -------------------------------|
+ | Bookmarks...               |   | Bookmarks...                   |
+ | Hide bookmarks bar         |   | Hide bookmarks bar             |
+ .----------------------------.   .--------------------------------.
+
+=head2 Strategy
+
+To be determined
+
+=head1 SEE ALSO
+
+This documentation is part of my GitHub repository.
+
+	https://github.com/zachary-krepelka/bookmarks.git
+
+This repository contains various scripts for bookmark management.
+
+=head1 AUTHOR
+
+Zachary Krepelka L<https://github.com/zachary-krepelka>
+
+=head1 HISTORY
+
+Initially created on Monday, June 2nd, 2025.
+
+Last updated on Saturday, October 4th, 2025 at 3:14 PM.
+
+=cut
