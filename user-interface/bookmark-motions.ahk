@@ -1,12 +1,18 @@
-;@Ahk2Exe-ConsoleApp
-
 ; FILENAME: bookmark-motions.ahk
 ; AUTHOR: Zachary Krepelka
 ; DATE: Friday, March 8th, 2024
 ; DOCS: perldoc bookmark-motions.ahk
 ; ABOUT: Vim motions for bookmark management
 ; ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-; UPDATED: Thursday, October 2nd, 2025 at 8:56 AM
+; UPDATED: Saturday, October 4th, 2025 at 1:18 AM
+
+; Directives -------------------------------------------------------------- {{{1
+
+#Requires AutoHotkey v2
+
+;@Ahk2Exe-ConsoleApp
+
+#Include UIA.ahk
 
 ; Classes ----------------------------------------------------------------- {{{1
 
@@ -81,7 +87,7 @@ class BypassableHotkeyMode extends AudibleMode {
 		return this.IsEnabled() && !this.BypassMode.IsEnabled()
 	}
 
-	BypassUntil(Keys) {
+	BypassUntil(Keys, Callback := false) {
 
 		this.Halt()
 
@@ -89,6 +95,8 @@ class BypassableHotkeyMode extends AudibleMode {
 			for Candidate in Keys {
 				if Candidate = VirtualKey {
 					Hook.Stop()
+					if Callback
+						Callback.Call()
 					this.Resume()
 					return
 				}
@@ -221,6 +229,11 @@ class BookmarksBar {
 				Send("{Tab 2}")
 
 			case Browser.OPERA:
+
+				; assumes that Opera's sidebar is visible
+
+				; TODO use the UIA library to determine if the
+				; sidebar is visible and adapt accordingly
 
 				Send("{F10}{F6 3}")
 		}
@@ -411,6 +424,55 @@ class ThisHotkey {
 	}
 }
 
+class Context {
+
+	__New() {
+		this.Elem := UIA.GetFocusedElement()
+	}
+
+	IsBookmark() {
+		return !this.IsFolder()
+	}
+
+	IsFolder() {
+
+		if Browser.Identity() = Browser.FIREFOX {
+
+			if this.IsInDropDown()
+				return this.Elem.IsExpandCollapsePatternAvailable
+
+			Send("{AppsKey}")
+			Send("{Down}")
+			Sleep(200)
+
+			FirstContextMenuItem := UIA.GetFocusedElement()
+
+			Result := (
+				FirstContextMenuItem.AutomationId =
+				"placesContext_openBookmarkContainer\:tabs"
+			)
+
+			Send("{Alt}")
+			Sleep(200)
+
+			return Result
+		}
+
+		return this.Elem.IsExpandCollapsePatternAvailable
+	}
+
+	IsOnBar() {
+		return this.Elem.Type = 50000 || (
+			Browser.Identity() = Browser.OPERA &&
+			this.Elem.LocalizedType =
+			"Bookmark folder button"
+		)
+	}
+
+	IsInDropDown() {
+		return !this.IsOnBar()
+	}
+}
 
 class ContextMenuSelector {
 
@@ -735,9 +797,67 @@ Repeat() {
 	BookmarkModeInstance.Resume()
 }
 
+/**
+ * A function to send the home key with a workaround for Firefox
+ */
+
+Home() {
+	if Browser.Identity() = Browser.FIREFOX && Context().IsOnBar() {
+
+		EnoughToReachLeftSide := 60
+
+		Send("{Left " EnoughToReachLeftSide "}")
+
+	} else Send("{Home}")
+}
+
+/**
+ * A function to send the end key with a workaround for Firefox
+ */
+
+End() {
+	if Browser.Identity() = Browser.FIREFOX && Context().IsOnBar() {
+
+		EnoughToReachRightSide := 60
+
+		Send("{Right " EnoughToReachRightSide "}")
+
+	} else Send("{End}")
+}
+
+GotoAbsolute() {
+
+	BookmarksBar.EscapeDropDownMenus()
+
+	if Browser.Identity() = Browser.FIREFOX
+		Sleep(100)
+
+	Home()
+
+	if Browser.Identity() = Browser.FIREFOX
+		Sleep(100)
+
+	Move("Right")
+}
+
+FirefoxRefocusElement() {
+
+	Send("{Down}{Up}")
+}
+
 ; Hotkeys ----------------------------------------------------------------- {{{1
 
 Main()
+
+/* debugging only
+
+F12::{
+	C := Context()
+	Part1 := C.IsBookmark() ? "bookmark" : "folder"
+	Part2 := C.IsOnBar()    ? "on bar"   : "in drop-down"
+	MsgBox(Part1 " " Part2)
+}
+*/
 
 #HotIf Browser.IsActive()
 \::ActiveHotkey.HookDoubleKeypress(() => BookmarkModeInstance.Toggle())
@@ -771,7 +891,7 @@ XButton1::{
 	if CommandQuantifier.IsPending()
 		CommandQuantifier.Update(0)
 	else
-		Send("{Home}")
+		Home()
  }
  1::CommandQuantifier.Update(1)
  2::CommandQuantifier.Update(2)
@@ -804,19 +924,35 @@ XButton1::{
 
 		case Browser.FIREFOX:
 
-			; requires refocus
 			; does not autofill with the current page
 
-			; ContextMenuSelector.SelectByLetter("b")
-			; Send("{Enter}")
-			; BookmarkModeInstance.BypassUntil([0x0D, 0x1B])
-			; BookmarksBar.Focus() ; FIXME
+			ContextMenuSelector.SelectByLetter("b")
+
+			Send("{Enter}")
+
+			BookmarkModeInstance.BypassUntil([0x0D, 0x1B],
+
+				() => BookmarksBar.Focus()
+			)
 
 		case Browser.OPERA:
 
-			; n/a
-			; requires context awareness
-			; cannot be determined programmatically
+			; Unlike other web browsers, Opera does not have items
+			; in its *bookmark* context menu to add a new bookmark
+			; or folder. However, these items do appear in its
+			; *folder* context menu.
+
+			if Context().IsBookmark()
+				NotifyMisuse()
+			else {
+
+				; Must be selected from the bottom.  Selecting
+				; from the top requires knowlege of how many
+				; Opera Workspaces are visible on the sidebar.
+
+				ContextMenuSelector.SelectNthFromBottom(4)
+				BookmarkModeInstance.BypassUntil([0x0D, 0x1B])
+			}
 	}
 }
 +a::{
@@ -834,17 +970,23 @@ XButton1::{
 
 		case Browser.FIREFOX:
 
-			; requires refocus
+			ContextMenuSelector.SelectByLetter("f")
 
-			; ContextMenuSelector.SelectByLetter("f")
-			; BookmarkModeInstance.BypassUntil([0x0D, 0x1B])
-			; BookmarksBar.Focus() ; FIXME
+			BookmarkModeInstance.BypassUntil([0x0D, 0x1B],
+
+				() => BookmarksBar.Focus()
+			)
 
 		case Browser.OPERA:
 
-			; n/a
-			; requires context awareness
-			; cannot be determined programmatically
+			; see notes in previous switch statement
+
+			if Context().IsBookmark()
+				NotifyMisuse()
+			else {
+				ContextMenuSelector.SelectNthFromBottom(3)
+				BookmarkModeInstance.BypassUntil([0x0D, 0x1B])
+			}
 	}
 }
  b::return
@@ -869,7 +1011,10 @@ XButton1::{
 
 			ContextMenuSelector.SelectByLetter("d")
 
-			; BookmarksBar.Focus()
+			if Browser.Identity() = Browser.FIREFOX &&
+			   Context().IsOnBar() {
+				BookmarksBar.Focus()
+			}
 
 		case Browser.OPERA:
 
@@ -887,37 +1032,37 @@ XButton1::{
 
 		case Browser.EDGE:
 
-			; n/a
-			; requires context awareness
-			; cannot be determined programmatically
+			if Context().IsBookmark()
+				ContextMenuSelector.SelectNthFromTop(4)
+			else
+				ContextMenuSelector.SelectNthFromTop(5)
 
-			; PSEUDO CODE
-			;
-			; If Context = Bookmark
-			;     ContextMenuSelector.SelectNthFromTop(4)
-			;
-			; If Context = Folder
-			;     ContextMenuSelector.SelectNthFromTop(5)
-
+			BookmarkModeInstance.BypassUntil([0x0D, 0x1B])
 
 		case Browser.FIREFOX:
 
-			; TODO
+			if Context().IsBookmark()
+				ContextMenuSelector.SelectNthFromTop(4)
+			else
+				ContextMenuSelector.SelectNthFromTop(2)
+
+			BookmarkModeInstance.BypassUntil([0x0D, 0x1B],
+
+				() => BookmarksBar.Focus()
+			)
 
 		case Browser.OPERA:
 
-			; n/a
-			; requires context awareness
-			; cannot be determined programmatically
+			; Must be selected from the bottom.  Selecting from the
+			; top requires knowlege of how many Opera Workspaces are
+			; visible on the sidebar.
 
-			; PSEUDO CODE
-			;
-			; If Context = Bookmark
-			;     ContextMenuSelector.SelectByLetter("e")
-			;
-			; If Context = Folder
-			;     ContextMenuSelector.SelectByLetter("r")
+			if Context().IsBookmark()
+				ContextMenuSelector.SelectNthFromBottom(4)
+			else
+				ContextMenuSelector.SelectNthFromBottom(6)
 
+			BookmarkModeInstance.BypassUntil([0x0D, 0x1B])
 	}
  }
 +e::return
@@ -928,21 +1073,15 @@ XButton1::{
 		return
 
 	if CommandQuantifier.IsPending()
-		BookmarksBar.EscapeDropDownMenus()
-
-	Send("{Home}")
-
-	if CommandQuantifier.IsPending()
-		Move("Right")
+		GotoAbsolute()
+	else
+		Home()
  }
 +g::{
-	if CommandQuantifier.IsPending() {
-		BookmarksBar.EscapeDropDownMenus()
-		Send("{Home}")
-		Move("Right")
-	} else {
-		Send("{End}")
-	}
+	if CommandQuantifier.IsPending()
+		GotoAbsolute()
+	else
+		End()
 }
  h::Move("Left")
 +h::return
@@ -959,24 +1098,35 @@ XButton1::{
  n::return
 +n::return
  o::{
-	if Browser.Identity() = Browser.FIREFOX
-		return
-
-	if Browser.Identity() = Browser.OPERA
-		return
-
 	Send("{Enter}")
 
 	BookmarkModeInstance.Toggle()
- }
-+o::{
-	if Browser.Identity() = Browser.FIREFOX
-		return
+
+	if Browser.Identity() = Browser.FIREFOX {
+		Sleep(300)
+		WebPage.Focus()
+	}
 
 	if Browser.Identity() = Browser.OPERA
+		Send("{Esc}")
+ }
++o::{
+	if Browser.Identity() = Browser.OPERA {
+
+		if Context().IsBookmark()
+			ContextMenuSelector.SelectNthFromTop(2)
+		else
+			ContextMenuSelector.SelectNthFromTop(1)
+
 		return
+	}
 
 	ContextMenuSelector.SelectNthFromTop(1)
+
+	if Browser.Identity() = Browser.FIREFOX {
+		Sleep(300)
+		BookmarksBar.Focus()
+	}
  }
  p::{
 	switch Browser.Identity() {
@@ -991,17 +1141,15 @@ XButton1::{
 
 		case Browser.FIREFOX:
 
-			; n/a
-			; requires context awareness
-			; cannot be determined programmatically
+			WasInDropDownPriorOperation := Context().IsInDropDown()
 
-			; PSEUDO CODE
-			;
-			; If Context = Bookmark
-			;     ContextMenuSelector.SelectByLetter("p", 1)
-			;
-			; If Context = Folder
-			;     ContextMenuSelector.SelectByLetter("p", 2)
+			if Context().IsBookmark()
+				ContextMenuSelector.SelectNthFromTop(8)
+			else
+				ContextMenuSelector.SelectNthFromTop(7)
+
+			if  WasInDropDownPriorOperation
+				FirefoxRefocusElement()
 
 		case Browser.OPERA:
 
@@ -1038,7 +1186,12 @@ XButton1::{
 
 		case Browser.FIREFOX:
 
+			WasInDropDownPriorOperation := Context().IsInDropDown()
+
 			ContextMenuSelector.SelectByLetter("t")
+
+			if  WasInDropDownPriorOperation
+				FirefoxRefocusElement()
 
 		case Browser.OPERA:
 
@@ -1059,7 +1212,12 @@ XButton1::{
 
 		case Browser.FIREFOX:
 
+			WasInDropDownPriorOperation := Context().IsInDropDown()
+
 			ContextMenuSelector.SelectByLetter("c")
+
+			if  WasInDropDownPriorOperation
+				FirefoxRefocusElement()
 
 		case Browser.OPERA:
 
@@ -1069,7 +1227,7 @@ XButton1::{
 +y::return
  z::return
 +z::return
-$::Send("{End}")
+$::End()
 *::{
 	switch Browser.Identity() {
 
@@ -1099,7 +1257,7 @@ $::Send("{End}")
 			BookmarkModeInstance.Toggle()
 	}
 }
-^::Send("{Home}")
+^::Home()
 `;::TabChangeMonitor(1000).Catalyze(() => Repeat(), () => BookmarksBar.Focus())
 Escape::Escape()
 CapsLock::Escape()
@@ -1302,13 +1460,15 @@ Using the Windows Command Prompt:
              /out bookmark-motions.exe
              /icon bookmark-motions.ico
 
-See the COMPILATION section for detailed instructions.
+See the COMPILATION section for detailed instructions. In short:
 
 =over
 
 =item Get C<Ahk2Exe.exe> from L<github.com/AutoHotkey/Ahk2Exe>.
 
 =item Get C<AutoHotkey64.exe> from L<github.com/AutoHotkey/AutoHotkey>.
+
+=item You also need C<UIA.ahk> from L<github.com/Descolada/UIA-v2>.
 
 =back
 
@@ -1396,7 +1556,7 @@ B<This assumes that bookmark mode is entered with the bar initially hidden.>
 It is possible for this process to fall out of sync.  The bookmarks bar might
 appear when *exiting* bookmark mode and disappear when *entering* bookmark mode.
 This is undesirable.  It can be fixed by manually toggling the bookmarks bar,
-usually with C<CTRL + SHIRT + B>, but it depends on the browser.
+usually with C<CTRL + SHIFT + B>, but it depends on the browser.
 
 Hiding the bookmarks bar when it is not in use keeps your workspace looking
 clean by reducing visual clutter.  It's a means of maximizing screen real estate
@@ -1405,16 +1565,16 @@ and reducing digital overload.
 =item B</BAR:STATIC>
 
 Do not toggle the bookmarks bar when changing modes.  This has the opposite
-effect of B</BAR:DYNAMIC> and is the default behavior.  B<This assumes that the
+effect of C</BAR:DYNAMIC> and is the default behavior.  B<This assumes that the
 bookmarks bar is always visible.>
 
-This flag is mutually exclusive with B</BAR:DYNAMIC>. The last one to be
+This flag is mutually exclusive with C</BAR:DYNAMIC>.  The last one to be
 specified on the command-line will take priority.
 
 =item B</SCROLL:>I<ORI>
 
 This option's argument determines the initial scroll orientation of the mouse
-wheel when entering bookmark mode. To understand what this means, the user
+wheel when entering bookmark mode.  To understand what this means, the user
 should read the section titled MOUSE ACTIONS.  Here ORI can be either HORIZ or
 VERT.
 
@@ -1423,7 +1583,7 @@ mouse.  Two scrolling orientations exist, horizontal and vertical, which are
 toggled between during a typical mouse-driven workflow.
 
 When the user enters bookmark mode, the mouse refreshes to an initial scrolling
-orientation. The default initial scrolling orientation is horizontal, i.e., the
+orientation.  The default initial scrolling orientation is horizontal, i.e., the
 mouse wheel scrolls the focus ring horizontally across the bookmarks bar.
 
 The user can change the default initial scrolling orientation using this option.
@@ -1432,16 +1592,16 @@ bar--where focus is initially placed when entering bookmark mode--is a folder
 that can be dropped into.
 
 The two viable arguments to this option--HORIZ and VERT--are mutually exclusive.
-The last one to be specified on the command-line takes priority.
+The last one to be specified on the command line takes priority.
 
 =item B</MUTE>
 
 When entering or exiting bookmark mode, an audible beep plays.  This option
-disables that behavior.  Beeps will still be heard for errors. (This will be
+disables that behavior.  Beeps will still be heard for errors.  (This may be
 subject to change in the future).
 
-The B</MUTE> option is relevant when used in conjunction with the
-B</BAR:DYNAMIC> flag. The toggling of the bar visually indicates the mode
+The C</MUTE> option is relevant when used in conjunction with the
+C</BAR:DYNAMIC> flag.  The toggling of the bar visually indicates the mode
 change, so beeps are not needed.
 
 =item B</?>
@@ -1494,7 +1654,7 @@ prefixed with a number, move right [count] times.
 
 =item B<Esc>
 
-If there is a pending count, cancel that; otherwise, escape out of all
+If there is a pending [count], cancel that; otherwise, escape out of all
 drop-down menus.  Unlike in Vim, the escape key does not exit a mode.
 
 =item B<Caps Lock>
@@ -1525,11 +1685,11 @@ C<~>, C<gu>, and C<gU>.
 
 =item B<gg>
 
-Move to the top of a drop-down menu.
+Move to the top of a drop-down menu (or to the beginning of the bookmarks bar).
 
-Noting that the bookmark bar lays out bookmarks horizontally instead of the
+Noting that the bookmarks bar lays out bookmarks horizontally instead of the
 vertical arrangement seen in drop down menus, these aliases will feel more
-natural to Vim users on the bookmark bar.
+natural to Vim users on the bookmarks bar.
 
 =over
 
@@ -1546,17 +1706,16 @@ Move to the beginning of the bookmark bar, provided that a count is not pending.
 There is no actual distinction in functionality; all three can be used
 interchangeably.  An exception to this rule follows.
 
-When C<gg> is prefixed with a [count], the focus ring will be moved to the
-[count]th item on the bookmarks bar, counting from zero.  Any drop-down menus
-are escaped.
+When C<gg> is prefixed with a [count], focus will be put on the [count]th item
+on the bookmarks bar, counting from zero.  Any drop-down menus are escaped.
 
 =item B<G>
 
-Move to the bottom of a drop-down menu.
+Move to the bottom of a drop-down menu (or to the end of the bookmarks bar).
 
 Again noting that the bookmark bar lays out bookmarks horizontally instead of
 the vertical arrangement seen in drop down menus, this alias will feel more
-natural to Vim users on the bookmark bar.
+natural to Vim users on the bookmarks bar.
 
 =over
 
@@ -1568,13 +1727,13 @@ There is no actual distinction in functionality; G and $ can be used
 interchangeably.  An exception to this rule follows.
 
 When C<G> is prefixed with a [count], it will have the same effect as prefixing
-C<gg> with a count. See above.
+C<gg> with a count.  See above.
 
 =item B<f{char}>
 
 Jump to the next entry in the drop-down menu whose name begins with {char}.
 When prefixed with a number, jump to the [count]th occurrence after the current
-selection.  Does not work on the bookmark bar.
+selection.  Does not work on the bookmarks bar.
 
 =item B<;>
 
@@ -1614,7 +1773,7 @@ open all items in that folder.  Does *NOT* leave bookmarking mode.
 
 =item B<e>
 
-Edit the currently selected bookmark or folder.
+Edit the currently selected bookmark or folder.  Causes a dialog to appear.
 
  edit bookmark dialog             edit folder dialog
  +----------------------------+   +----------------------------+
@@ -1641,7 +1800,7 @@ bypassed until the user presses enter (as in save) or escape (as in cancel).
 =item B<a>
 
 Add a new bookmark near the currently selected bookmark or folder.  This command
-is similar to the edit command. A pop-up dialog opens where the user can type
+is similar to the edit command.  A pop-up dialog opens where the user can type
 freely until either enter or escape is pressed.  The difference is that this
 command adds a new bookmark instead of editing an existing one.
 
@@ -1660,8 +1819,8 @@ a drop-down menu.
 
 =back
 
-Unfortunately, this is not the behavior on all web browsers.  See the
-COMPATIBILITY section for more information. Also, the dialog may or may not be
+This is not the behavior on all web browsers.  Differences will be documented in
+the COMPATIBILITY section at a later time.  Also, the dialog may or may not be
 autofilled with the current page title and URL, again depending on the browser.
 
 =item B<A>
@@ -1670,7 +1829,7 @@ Add a new folder near the currently selected bookmark or folder.  This is like
 the lowercase B<a> command, but it adds a new folder instead of a new bookmark.
 It is also subject to the same issues as the lowercase B<a> command.
 
-=item B<*>
+=item B<*> (asterisk)
 
 Leave bookmarking mode and open the bookmark manager.  If your web browser
 supports it, the bookmark manager will be opened to the currently selected
@@ -1722,7 +1881,7 @@ used.
 =item B<F1>
 
 A hotkey to apply a bookmarklet over multiple tabs.  Put the bookmarklet that
-you want to run in the far left position of your bookmark bar.  Call this
+you want to run in the far left position of your bookmarks bar.  Call this
 command and enter a number, say N.  The bookmarklet will be applied to the next
 N tabs.  This works well with simple bookmarklets that alter the state of a
 webpage.
@@ -1745,7 +1904,7 @@ won't work.
 
 =head1 MOUSE ACTIONS
 
-This script makes it possible to navigate the bookmark bar and the drop-down
+This script makes it possible to navigate the bookmarks bar and the drop-down
 menus off of it using only a mouse.  You can also access context menus on these
 items, thereby enabling a full range of operations.  Here's how it works.
 
@@ -1772,7 +1931,7 @@ the two side buttons
 
 To enter and exit bookmarking mode with the mouse, hold down the first side
 button until a beep is heard.  (If you are unsure which side button is which,
-try them both. A typical mouse has two.)
+try them both.  A typical mouse has two.)
 
 Before getting into the particulars, let's address some preliminary knowledge.
 There are two environments that you will be working from when managing your
@@ -1780,7 +1939,7 @@ bookmarks.
 
 =over
 
-=item 1 The Bookmark Bar
+=item 1 The Bookmarks Bar
 
 Here bookmarks and folders are laid out horizontally across the top of the
 screen.
@@ -1837,8 +1996,8 @@ where horizontal scrolling is renewed.  All of the drop-down menus will
 consequently close.
 
 The initial scroll orientation can be changed with the C</SCROLL> command-line
-option. When the user enters bookmarking mode, the scroll orientation is
-initially horizontal by default. Having an initially vertical scrolling
+option.  When the user enters bookmarking mode, the scroll orientation is
+initially horizontal by default.  Having an initially vertical scrolling
 orientation is useful if the first item on the bookmarks bar is a
 (deeply-nested) folder.
 
@@ -1864,7 +2023,7 @@ If held down until a beep is heard, toggle bookmarking mode.
 =item * Second Side Button
 
 Select a bookmark or context menu item.  All of the drop-down menus will
-subsequently close, and focus will be redirected back to the bookmark bar for
+subsequently close, and focus will be redirected back to the bookmarks bar for
 continued navigation.
 
 The user should avoid using this button to descend into a folder, as it will
@@ -1883,79 +2042,64 @@ Moves B<right> in horizontal scrolling mode, down otherwise.
 =head1 COMPATIBILITY
 
 Some keybindings are not supported on all web browsers.  The following table
-shows the commands which are not fully supported.  Firefox and Opera don't have
-great support.  I might work on this later.
+shows the commands which are not fully supported.  An asterisk indicates that
+the command is partially supported with some limitation.
 
  +--------+--------+-------+---------+-------+
  | Cmds   | Chrome | Edge  | Firefox | Opera |
  +--------+--------+-------+---------+-------+
- | gg ^ 0 | yes    | yes   | kinda   | yes   |
- | G $    | yes    | yes   | kinda   | yes   |
  | x      | yes    | yes   | yes     | no    |
  | y      | yes    | yes   | yes     | no    |
- | p      | yes    | yes   | kinda   | no    |
- | dd     | yes    | yes   | yes     | yes   |
- | o      | yes    | yes   | no      | no    |
- | O      | yes    | yes   | no      | no    |
- | e      | yes    | no    | no      | no    |
- | a      | yes    | kinda | no      | no    |
- | A      | yes    | yes   | no      | no    |
- | *      | yes    | yes   | no      | yes   |
+ | p      | yes    | yes   | yes     | no    |
+ | a      | yes    | yes*  | yes     | yes*  |
+ | A      | yes    | yes   | yes     | yes*  |
+ | *      | yes    | yes   | no      | yes*  |
  +--------+--------+-------+---------+-------+
 
-The commands C<o>, C<O>, C<e>, C<a>, and C<A> are fairly new, and I'm still
-working on them. They *could be* supported for Firefox and Opera in the future.
+The remaining subsections discuss specific browsers.
 
-=head2 Regarding Google Chrome
+=head2 Google Chrome
 
-Google Chrome is the browser used by the developer of this program (me), so it
-has the best support.
+It's the browser used by the developer of this program (me), so it has the best
+support.
 
-=head2 Regarding Microsoft Edge
+=head2 Microsoft Edge
+
+Microsoft Edge also works well with this program.
+
+=head3 Command Limitations
 
 The lowercase add command violates the desired behavior that was outlined for it
-in its documentation. Instead of adding a bookmark near the currently selected
+in its documentation.  Instead of adding a bookmark near the currently selected
 item, it adds the bookmark at the end of the current folder.
 
-=head2 Regarding Mozilla Firefox
+=head2 Mozilla Firefox
 
-Support is not ideal, but there are some workarounds.
+The behavior of this program is fragile and buggy on Firefox.  You can expect to
+encounter issues.
 
-=over
+=head3 Command Limitations
 
-=item
+The bookmarks bar is "locked down" comparative to other browsers.  On other
+browsers, you can use the down arrow (j) on a folder on the bookmarks bar to
+spawn a drop-down menu.  On Firefox however, you have to initially use the enter
+key.
 
-You can paste with C<m2fp{Enter}> when over a bookmark and with C<mfp> when over
-a folder.
+=head2 Opera and Opera GX
 
-=item
-
-The bookmark bar is "locked down" comparative to other browsers.
-
-=over
-
-=item
-
-On other browsers, you can use the down arrow (j) on a folder on the bookmark
-bar to spawn a drop-down menu.  On Firefox however, you have to initially use
-the enter key.
-
-=item
-
-The beginning and end commands (gg ^ 0 G $) do not work on the bookmark bar, but
-they will work in drop-down menus.  You can use C<33h> and C<33l> in lieu of
-C<gg> and C<G>.  Thirty three is large enough to span the full length, and it is
-convenient to type.
-
-=back
-
-=back
-
-=head2 Regarding Opera and Opera GX
+This program has periodically caused Opera to crash.
 
 Unlike other web browsers, the standard cut, copy, and paste items do not appear
-in Opera's bookmark bar context menus, which has made it impossible to implement
-the C<x>, C<y>, and C<p> commands.
+in Opera's bookmark context menus, which has made it impossible to implement the
+C<x>, C<y>, and C<p> commands.
+
+=head3 Command Limitations
+
+The commands C<a> and C<A> only work when a folder is selected.  An error beep
+will be heard if they are used over a bookmark.
+
+The asterisk command C<*> does not open the bookmark manager to the item on
+which it was used.  Instead, it opens to the root bookmark directory.
 
 =head1 CAVEATS
 
@@ -1973,19 +2117,20 @@ to maximize the window when invoking a hotkey.
 
 =item
 
-The positioning of the mouse can distrust focus and consequently cause the
-script to function improperly.  Make sure the mouse is not near the bookmark bar
-or any pop-up menus when using a keybinding.  In bookmarking mode, the mouse is
+The positioning of the mouse can disrupt focus and consequently cause the script
+to function improperly.  Make sure the mouse is not near the bookmark bar or any
+pop-up menus when using a keybinding.  In bookmarking mode, the mouse is
 outright disabled and even moved out of the way.  (Don't worry, its position is
 later restored.)
 
 =item
 
-Web browsers is constantly changing.  New features are introduced all the time.
+Web browsers are constantly changing.  New features are introduced all the time.
 Context menus sometimes change, and UI components move around.  This requires me
 to periodically update this script to adapt to a change.  Make sure you are
-using the most up-to-date version of your browser.  I use this script daily, so
-I am likely to stay on top of changes.
+using the most up-to-date version of your browser and the most up-to-date
+version of this script.  I use this script daily, so I am likely to stay on top
+of changes, at least for my primary browser.
 
 =item
 
@@ -2031,7 +2176,22 @@ You can delete the other files as they are not needed.
 
 =back
 
-=item 3) Download the source code for this script.
+=item 3) Download the dependency for this script from GitHub.
+
+=over
+
+=item a) Go to L<https://github.com/Descolada/UIA-v2>.
+
+=item b) Clink on the releases link.
+
+=item c) Download the first zip file under the asset section.
+
+=item d) Unzip it and retrieve the file named C<UIA.ahk> in the C<Lib> folder.
+You can delete the other files as they are not needed.
+
+=back
+
+=item 4) Download the source code for this script from GitHub.
 
 =over
 
@@ -2046,7 +2206,7 @@ It's on the right side amid a row of other buttons.
 
 =back
 
-=item 4) Optionally, download an icon for this program.
+=item 5) Optionally, download an icon for this program.
 
 It must have the C<.ico> extension.  Try googling "free icons".  Use an online
 icon converter to obtain the C<.ico> filetype if you chose a PNG, SVG, or
@@ -2060,7 +2220,7 @@ My personal solution involves running a shell script on WSL.
  3 convert -background none ic_fluent_bookmark_32_filled.svg bookmark-motions.ico
  4 rm ic_fluent_bookmark_32_filled.svg
 
-=item 5) Assemble all relevant files into a common folder.  You will need
+=item 6) Assemble all relevant files into a common folder.  You will need
 
 =over
 
@@ -2068,16 +2228,18 @@ My personal solution involves running a shell script on WSL.
 
 =item b) AutoHotkey64.exe
 
-=item c) bookmark-motions.ahk
+=item c) UIA.ahk
 
-=item d) optionally an icon file
+=item d) bookmark-motions.ahk
+
+=item e) optionally an icon file
 
 =back
 
-=item 6) Compile the program.
+=item 7) Compile the program.
 
-Open the Windows Command Prompt and change to the directory where the files
-where assembled in the previous step.  Now it only suffices to run the following
+Open the Windows Command Prompt and change to the directory where the files were
+assembled in the previous step.  Now it only suffices to run the following
 command.  You can exclude the C</icon> flag and its argument if you chose not to
 use an icon.
 
@@ -2086,11 +2248,50 @@ use an icon.
              /out bookmark-motions.exe
              /icon bookmark-motions.ico
 
-=item 7) Clean up. You can delete all of the intermediate files.
+This will produce a file called C<bookmark-motions.exe>.  You can feel free to
+move it to a more permanent location.  It is a standalone executable.
+
+=item 8) Prevent Windows from deleting the executable.
+
+Microsoft Defender will think that the executable is a virus and attempt to
+delete it.  Before running the program, the user will need to prevent this.  To
+do so, follow these steps.
+
+=over
+
+=item a) Open the Windows Security application by searching for it.
+
+=item b) Select "Virus & threat protection".
+
+=item c) Click "Manage settings".
+
+=item d) Scroll to the bottom and click "Add or remove exclusions".
+
+=item e) Click "Yes" when prompted.
+
+=item f) Click the "Add an exclusion" button.
+
+=item g) Select "File" in the drop-down menu.
+
+=item h) Locate C<bookmark-motions.exe> in the file dialog.
+
+=item i) Click the "Open" button.
+
+=item j) Close the Windows Security application.
 
 =back
 
-That's all! Try C<bookmark-motions.exe /?> to get started.
+=item 9) Clean up.  You can delete all of the intermediate files.
+
+=back
+
+That's all!
+
+Try C<bookmark-motions.exe /?> on the command-line to get started.
+
+It is easy to automate the compilation process using a shell script on WSL.  You
+can use a combination of C<wget> to download files, C<unzip> to extract zip
+archives, and C<rm> for cleanup.
 
 As an aside, AutoHotkey is an interpreted programming language.  In the
 AutoHotkey world, compiling a program means to package that program with the
@@ -2126,6 +2327,45 @@ the X window system.  I have already implemented the core functionality for
 Google Chrome.
 
 L<https://github.com/phil294/AHK_X11>
+
+=item *
+
+Use the C<UIA.ahk> library to probe and normalize the bookmarks bar so that this
+program does not rest on assumptions about its initial state.  When the
+bookmarks bar is static (C</BAR:STATIC>), ensure that it's visible before
+entering bookmark mode.  When the bookmarks bar is dynamic (C</BAR:DYNAMIC>),
+ensure that it's hidden before entering bookmark mode.
+
+=item *
+
+The C<UIA.ahk> library should also make it possible to improve the find command
+C<f{char}>.  The following issues stand to be fixed.
+
+=over
+
+=item -
+
+C<f{char}> does not work on the bookmarks bar.
+
+=item -
+
+When there is only one item beginning with C<{char}> in a drop-down menu,
+navigating to that item with C<f{char}> will automatically open the targeted
+item, which is undesirable because the user didn't expressively instruct it to
+be opened.  This could possibly be addressed now that I have discovered this
+library.
+
+=item -
+
+The backwards find command C<F{char}> also stands to be implemented.  It was
+previously unfeasible to do before I discovered this library.
+
+=back
+
+=item *
+
+Opera launched a new browser called Opera Air.
+Test that this program works with it.
 
 =back
 
@@ -2228,6 +2468,18 @@ Zachary Krepelka L<https://github.com/zachary-krepelka>
 =item fix some long-standing bugs
 
 =item add a few more commands
+
+=back
+
+=item Friday, October 3rd, 2025
+
+=over
+
+=item introduce a dependency to address a major limitation
+
+=item improve handling and behavior of commands
+
+=item address some browser-specific issues
 
 =back
 
