@@ -4,7 +4,7 @@
 ; DOCS: perldoc bookmark-motions.ahk
 ; ABOUT: Vim motions for bookmark management
 ; ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-; UPDATED: Saturday, October 4th, 2025 at 1:18 AM
+; UPDATED: Saturday, October 4th, 2025 at 10:38 PM
 
 ; Directives -------------------------------------------------------------- {{{1
 
@@ -1433,7 +1433,7 @@ F1::
 
 =head1 NAME
 
-bookmark-motions.ahk - Vim motions for bookmark management
+bookmark-motions.exe - Vim motions for bookmark management
 
 =head1 SYNOPSIS
 
@@ -1460,17 +1460,7 @@ Using the Windows Command Prompt:
              /out bookmark-motions.exe
              /icon bookmark-motions.ico
 
-See the COMPILATION section for detailed instructions. In short:
-
-=over
-
-=item Get C<Ahk2Exe.exe> from L<github.com/AutoHotkey/Ahk2Exe>.
-
-=item Get C<AutoHotkey64.exe> from L<github.com/AutoHotkey/AutoHotkey>.
-
-=item You also need C<UIA.ahk> from L<github.com/Descolada/UIA-v2>.
-
-=back
+See the COMPILATION section for detailed instructions.
 
 =back
 
@@ -2138,6 +2128,43 @@ I have personally verified this script to work with I<fresh installations> of
 supported web browsers.  If you customize your web browser, e.g., by adding,
 removing, or rearranging toolbar buttons, then you may introduce some breaking
 change.
+
+=back
+
+=head1 TROUBLESHOOTING
+
+Here are some common problems I run into and how to solve them.
+
+=over
+
+=item focus does not return to the bookmarks bar after an operation
+
+Most operations are intended to preserve focus on the bookmarks bar so that the
+user can continue to work from bookmark mode.  However, sometimes focus is lost
+after performing an operation.  What's more, sometimes the focal element ends up
+some place crazy.
+
+Usually exiting and re-entering bookmark mode is enough to fix these kind of
+issues.  You can always click on the web page to re-establish a known point of
+focus.  If your browser has an easy keyboard shortcut to refocus the bookmarks
+bar, use that.  For example, Chrome and Edge have C<CTRL+ALT+B>.
+
+=item accidental deletion
+
+If you accidentally delete something important, C<CTRL+Z> won't work unless
+you're in the bookmark manager.  To recover a deleted item or to otherwise undo
+an action, leave bookmarking mode, open the bookmark manager, and press
+C<CTRL+Z> as many times as required.
+
+=item synchronization
+
+When the C</BAR:DYNAMIC> flag is passed on the command line, the bookmarks bar
+toggles on and off when entering and exiting bookmark mode.  This process can
+fall out of sync, i.e., the bar closes when opening the mode and vice versa. To
+fix this, use a shortcut like C<CTRL+SHIFT+B> to show or hide the bar, bringing
+it back into sync.  If your browser does not have an easy shortcut like this,
+exit bookmark mode and look for the option to toggle visibility in the browser
+settings.
 
 =back
 
