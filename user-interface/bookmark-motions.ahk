@@ -4,13 +4,13 @@
 ; DOCS: perldoc bookmark-motions.ahk
 ; ABOUT: Vim motions for bookmark management
 ; ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-; UPDATED: Monday, October 6th, 2025 at 11:48 PM
+; UPDATED: Saturday, October 4th, 2025 at 10:38 PM
 
 ; Directives -------------------------------------------------------------- {{{1
 
 #Requires AutoHotkey v2
 
-#SingleInstance Force
+;@Ahk2Exe-ConsoleApp
 
 #Include UIA.ahk
 
@@ -647,21 +647,7 @@ class CommandLineParser {
 
 Usage() {
 
-	if !DllCall("AttachConsole", "int", -1) {
-
-		ErrorText := (
-			"The help option was invoked in a non-console "
-			"context.  The application will exit.  Please "
-			"refer to the documentation's troubleshooting "
-			"section for more details."
-		)
-
-		MsgBox(ErrorText,, "Iconx")
-
-		ExitApp
-	}
-
-	StdOut := FileOpen("*", "w")
+	StdOut := FileOpen("*", 0x1)
 
 	StdOut.Write(
 	"Interpret Vim Motions for Bookmark Management"                                    . "`n"
@@ -712,16 +698,14 @@ Main() {
 
 		; TODO notify invalid options, exit prematurely
 
+	if Cmd.HasOption("?")
+		Usage()
+
 	; initialize global variables
 
 	BookmarkModeInstance := BookmarkMode()
 	CommandQuantifier    := Counter()
 	ActiveHotkey         := ThisHotkey(300)
-
-	; must come after initialization of globals
-
-	if Cmd.HasOption("?")
-		Usage()
 
 	; user preference configuration
 
@@ -1459,7 +1443,7 @@ Using the Windows Command Prompt:
 
 =item Invocation
 
- start bookmark-motions.exe [OPTIONS]
+ start /min bookmark-motions.exe [OPTIONS]
 
 =item Termination
 
@@ -1613,9 +1597,6 @@ change, so beeps are not needed.
 =item B</?>
 
 Display a short help message and exit.
-
-When an instance of this program is already running, passing this flag
-terminates that instance.  This is an unintended consequence.
 
 =back
 
@@ -2184,24 +2165,6 @@ fix this, use a shortcut like C<CTRL+SHIFT+B> to show or hide the bar, bringing
 it back into sync.  If your browser does not have an easy shortcut like this,
 exit bookmark mode and look for the option to toggle visibility in the browser
 settings.
-
-=item help option invoked in non-console context
-
-The help option prints a help message to the console.  Therefore, it needs a
-console to print to.  If you invoke the help option in a context where there is
-no console, you will receive this error message.
-
-When running this application on the command-line, do not use the C<start>
-command when passing the help option to the executable.  Otherwise, the use of
-the C<start> command is encouraged as it prevents the command prompt from
-hanging and allows the application to persist after the command prompt has
-closed.  Other options I<can> be used with the C<start> command.
-
- works: bookmark-motions.exe /?
- fails: start bookmark-motions.exe /?
-
-You will also receive this error if you include the help flag as part of a
-shortcut file.
 
 =back
 
