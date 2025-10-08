@@ -4,7 +4,9 @@
 ; DOCS: perldoc bookmark-motions.ahk
 ; ABOUT: Vim motions for bookmark management
 ; ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-; UPDATED: Tuesday, October 7th, 2025 at 8:31 PM
+; UPDATED: Wednesday, October 8th, 2025 at 1:39 AM
+
+VERSION := "v1.0.0"
 
 ; Directives -------------------------------------------------------------- {{{1
 
@@ -658,7 +660,7 @@ Usage() {
 	"Interpret Vim Motions for Bookmark Management"                                    . "`n"
 	""                                                                                 . "`n"
 	"BOOKMARK-MOTIONS [/BAR:DYNAMIC | /BAR:STATIC] [/SCROLL:HORIZ | /SCROLL:VERT]"     . "`n"
-	"                 [/MUTE] [/?]"                                                    . "`n"
+	"                 [/MUTE] [/VER] [/?]"                                             . "`n"
 	""                                                                                 . "`n"
 	"  /BAR:DYNAMIC Toggle the bookmarks bar when changing modes.  Show the bookmarks" . "`n"
 	"               bar when entering bookmark mode.  Hide the bookmarks bar when"     . "`n"
@@ -671,6 +673,7 @@ Usage() {
 	"               entering bookmark mode.  ORI is either HORIZ or VERT.  The"        . "`n"
 	"               default initial scrolling orientation is horizontal."              . "`n"
 	"  /MUTE        Do not beep when changing modes."                                  . "`n"
+	"  /VER         Display the version number and exit."                              . "`n"
 	""                                                                                 . "`n"
 	"This program intercepts keyboard input to a web browser to interpret those"       . "`n"
 	"keystrokes as Vim motions.  There are two modes."                                 . "`n"
@@ -681,7 +684,7 @@ Usage() {
 	"        motions can be used to navigate one's bookmarks and folders."             . "`n"
 	""                                                                                 . "`n"
 	"Bookmark mode is toggled by pressing backslash twice in quick succession."        . "`n"
-	"Read the full documentation at https://github.com/zachary-krepelka/bookmarks."    . "`n"
+	"Check https://github.com/zachary-krepelka/bookmarks/releases for updates."        . "`n"
 	)
 
 	HelpMessage.Show()
@@ -696,7 +699,7 @@ Main() {
 	global CommandQuantifier := Counter()
 	global ActiveHotkey := ThisHotkey(300)
 
-	ValidOptions := ["BAR", "SCROLL", "MUTE", "?"]
+	ValidOptions := ["BAR", "SCROLL", "MUTE", "VER", "?"]
 
 	Cmd := CommandLineParser(false).Parse(A_Args, ValidOptions)
 
@@ -704,6 +707,17 @@ Main() {
 
 	if Cmd.HasOption("?")
 		Usage()
+
+	if Cmd.HasOption("VER") {
+
+		Text    := Format("Version {}", SubStr(VERSION, 2))
+		Title   := "Bookmark Motions"
+		Options := "Iconi"
+
+		MsgBox(Text, Title, Options)
+
+		ExitApp
+	}
 
 	if Cmd.HasOption("BAR") {
 
@@ -842,7 +856,7 @@ FirefoxRefocusElement() {
 
 	Send("{Down}{Up}")
 }
-;}}}
+
 ; Hotkeys ----------------------------------------------------------------- {{{1
 
 Main()
@@ -1154,6 +1168,8 @@ XButton1::{
 			; Sadly, the standard cut, copy, and paste items
 			; do not appear in Opera's bookmark bar context
 			; menus.  Not sure what to do here.
+
+			NotifyMisuse()
 	}
 }
 +p::return
@@ -1193,7 +1209,7 @@ XButton1::{
 
 		case Browser.OPERA:
 
-			; n/a
+			NotifyMisuse()
 	}
 }
 +x::return
@@ -1219,7 +1235,7 @@ XButton1::{
 
 		case Browser.OPERA:
 
-			; n/a
+			NotifyMisuse()
 	}
  }
 +y::return
@@ -1245,6 +1261,8 @@ $::End()
 			; manager opens in its own window.  Because
 			; focus is redirected to the new window, we
 			; cannot exit bookmarking mode.
+
+			NotifyMisuse()
 
 		case Browser.OPERA:
 
@@ -1489,7 +1507,7 @@ Mozilla Firefox
 
 =item
 
-Opera & Opera GX
+Opera, Opera GX, & Opera Air
 
 =back
 
@@ -1590,6 +1608,10 @@ subject to change in the future).
 The C</MUTE> option is relevant when used in conjunction with the
 C</BAR:DYNAMIC> flag.  The toggling of the bar visually indicates the mode
 change, so beeps are not needed.
+
+=item B</VER>
+
+Display the version number and exit.
 
 =item B</?>
 
@@ -2387,11 +2409,6 @@ previously unfeasible to do before I discovered this library.
 
 =back
 
-=item *
-
-Opera launched a new browser called Opera Air.
-Test that this program works with it.
-
 =back
 
 =head1 SEE ALSO
@@ -2410,101 +2427,19 @@ Zachary Krepelka L<https://github.com/zachary-krepelka>
 
 =over
 
-=item Wednesday, March 19th, 2025
+=item v0.1.0 2024-03-08
 
 =over
 
-=item start a change log
-
-=item implement [count] for C<h>, C<j>, C<k>, C<l>, and C<f>
+=item development begins
 
 =back
 
-=item Thursday, March 20th, 2025
+=item v1.0.0 2025-10-08
 
 =over
 
-=item  implement the edit command
-
-=back
-
-=item Friday, March 21st, 2025
-
-=over
-
-=item add username dialog to command for creating new chrome user
-
-=item update to reflect change in chrome context menu
-
-=back
-
-=item Saturday, April 5th, 2025
-
-=over
-
-=item refactor code for importing and exporting bookmarks
-
-=item modularize into functions
-
-=item eliminate magic numbers
-
-=item document caveats
-
-=item disable C<A_MaxHotkeysPerInterval> warning dialog
-
-=back
-
-=item Friday, April 11th, 2025
-
-=over
-
-=item rename file to elucidate purpose
-
-=item rebranding to emphasize Vim motions
-
-=back
-
-=item Monday, April 14th, 2025
-
-=over
-
-=item support other web browsers besides my own
-
-=item overhaul implementation, refactor entirely
-
-=back
-
-=item Tuesday, April 15th, 2025
-
-=over
-
-=item refactor, enhance, and document mouse functionality
-
-=back
-
-=item Thursday, October 2nd, 2025
-
-=over
-
-=item yet another refactor; re-write entirely from the ground up
-
-=item implement CLI to facilitate user preference configuration
-
-=item fix some long-standing bugs
-
-=item add a few more commands
-
-=back
-
-=item Friday, October 3rd, 2025
-
-=over
-
-=item introduce a dependency to address a major limitation
-
-=item improve handling and behavior of commands
-
-=item address some browser-specific issues
+=item initial release
 
 =back
 
