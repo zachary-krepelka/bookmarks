@@ -4,13 +4,13 @@
 ; DOCS: perldoc bookmark-motions.ahk
 ; ABOUT: Vim motions for bookmark management
 ; ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-; UPDATED: Saturday, October 4th, 2025 at 10:38 PM
+; UPDATED: Tuesday, October 7th, 2025 at 8:31 PM
 
 ; Directives -------------------------------------------------------------- {{{1
 
 #Requires AutoHotkey v2
 
-;@Ahk2Exe-ConsoleApp
+#SingleInstance Force
 
 #Include UIA.ahk
 
@@ -647,9 +647,14 @@ class CommandLineParser {
 
 Usage() {
 
-	StdOut := FileOpen("*", 0x1)
+	HelpMessage := Gui("+AlwaysOnTop", "Bookmark Motions Usage")
 
-	StdOut.Write(
+	; in the style of the Windows Command Prompt
+
+	HelpMessage.BackColor := "Black"
+	HelpMessage.SetFont("cWhite", "Consolas")
+
+	HelpMessage.AddText(,
 	"Interpret Vim Motions for Bookmark Management"                                    . "`n"
 	""                                                                                 . "`n"
 	"BOOKMARK-MOTIONS [/BAR:DYNAMIC | /BAR:STATIC] [/SCROLL:HORIZ | /SCROLL:VERT]"     . "`n"
@@ -679,35 +684,26 @@ Usage() {
 	"Read the full documentation at https://github.com/zachary-krepelka/bookmarks."    . "`n"
 	)
 
-	StdOut.Close()
-
+	HelpMessage.Show()
+	WinWaitClose(HelpMessage.Hwnd)
 	ExitApp
 }
 
 Main() {
 
-	global BookmarkModeInstance
-	global CommandQuantifier
-	global ActiveHotkey
-
-	; parse command-line arguments
+	global MainProcessed := false
+	global BookmarkModeInstance := BookmarkMode()
+	global CommandQuantifier := Counter()
+	global ActiveHotkey := ThisHotkey(300)
 
 	ValidOptions := ["BAR", "SCROLL", "MUTE", "?"]
 
 	Cmd := CommandLineParser(false).Parse(A_Args, ValidOptions)
 
-		; TODO notify invalid options, exit prematurely
+	; TODO notify invalid options, exit prematurely
 
 	if Cmd.HasOption("?")
 		Usage()
-
-	; initialize global variables
-
-	BookmarkModeInstance := BookmarkMode()
-	CommandQuantifier    := Counter()
-	ActiveHotkey         := ThisHotkey(300)
-
-	; user preference configuration
 
 	if Cmd.HasOption("BAR") {
 
@@ -733,6 +729,8 @@ Main() {
 
 	if Cmd.HasOption("MUTE")
 		BookmarkModeInstance.Mute()
+
+	MainProcessed := true
 }
 
 /**
@@ -844,7 +842,7 @@ FirefoxRefocusElement() {
 
 	Send("{Down}{Up}")
 }
-
+;}}}
 ; Hotkeys ----------------------------------------------------------------- {{{1
 
 Main()
@@ -859,7 +857,7 @@ F12::{
 }
 */
 
-#HotIf Browser.IsActive()
+#HotIf MainProcessed && Browser.IsActive()
 \::ActiveHotkey.HookDoubleKeypress(() => BookmarkModeInstance.Toggle())
 XButton1::{
 
@@ -1277,7 +1275,7 @@ XButton2::{
 
 ; The remaining code is Chrome-specfic and needs refactored.
 
-#HotIf WinActive("ahk_exe chrome.exe") && !BookmarkModeInstance.IsEnabled()
+#HotIf MainProcessed && WinActive("ahk_exe chrome.exe") && !BookmarkModeInstance.IsEnabled() && MainProcessed
 
 ; IMPORT/EXPORT BOOKMAKRS
 
@@ -1443,15 +1441,13 @@ Using the Windows Command Prompt:
 
 =item Invocation
 
- start /min bookmark-motions.exe [OPTIONS]
+ start bookmark-motions.exe [OPTIONS]
+
+Use option C</?> to see other options.
 
 =item Termination
 
  taskkill /im bookmark-motions.exe
-
-=item Customization
-
- bookmark-motions.exe /?
 
 =item Compilation
 
@@ -1532,7 +1528,8 @@ The full range of commands are documented in a later section.
 The options to this program facilitate user preference configuration.  This
 program implements a command-line interface in the style of the Windows command
 interpreter C<cmd.exe> and its family of built-ins.  To be brief, the Unix-style
-option syntax C<-f filename> would be translated as C</F:FILENAME>.
+option syntax C<-f filename> would be translated as C</F:FILENAME>.  These
+options can be used in a Windows shortcut file.
 
 =over
 
@@ -1596,7 +1593,8 @@ change, so beeps are not needed.
 
 =item B</?>
 
-Display a short help message and exit.
+Display a help message in a pop-up dialog.  Exit the program when the user exits
+the window.
 
 =back
 
