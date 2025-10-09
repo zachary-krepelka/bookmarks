@@ -4,7 +4,7 @@
 ; DOCS: perldoc bookmark-motions.ahk
 ; ABOUT: Vim motions for bookmark management
 ; ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-; UPDATED: Wednesday, October 8th, 2025 at 1:39 AM
+; UPDATED: Thursday, October 9th, 2025 at 4:53 PM
 
 VERSION := "v1.0.0"
 
@@ -1110,6 +1110,11 @@ XButton1::{
  n::return
 +n::return
  o::{
+	if Context().IsFolder() {
+		NotifyMisuse()
+		return
+	}
+
 	Send("{Enter}")
 
 	BookmarkModeInstance.Toggle()
