@@ -4,7 +4,7 @@
 ; DOCS: perldoc bookmark-motions.ahk
 ; ABOUT: Vim motions for bookmark management
 ; ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-; UPDATED: Friday, October 10th, 2025 at 12:07 AM
+; UPDATED: Friday, October 10th, 2025 at 1:38 AM
 
 ; Directives -------------------------------------------------------------- {{{1
 
@@ -647,7 +647,8 @@ class CommandLineParser {
 
 VERSION := "v1.0.0"
 
-HelpMessageText := (
+HelpMessageText :=
+(
 "Interpret Vim Motions for Bookmark Management`n"
 "`n"
 "BOOKMARK-MOTIONS [/BAR:DYNAMIC | /BAR:STATIC] [/SCROLL:HORIZ | /SCROLL:VERT]`n"
@@ -677,6 +678,40 @@ HelpMessageText := (
 "Bookmark mode is toggled by pressing backslash twice in quick succession.`n"
 "Check https://github.com/zachary-krepelka/bookmarks/releases for updates."
 )
+
+QuickReferenceText := ; made using digraphs in Vim
+(
+"╭───────────────────────────────────────┬──────────────────────────────────────╮`n"
+"│ MOTIONS                               │ OPERATORS                            │`n"
+"│                                       │                                      │`n"
+"│  h j k l    left, down, up, right     │  x y p dd   cut, yank, put, delete   │`n"
+"│  gg G       first, last               │  m          spawn context menu       │`n"
+"│  0 ^ $      first, first, last        │  o          open bookmark            │`n"
+"│  f{c}       to item starting with {c} │  O          open in new tab          │`n"
+"│  ;          repeat last f{c}          │  e          edit                     │`n"
+"│  [count]    any of h j k l gg G f ;   │  a          add bookmark             │`n"
+"│  Esc        cancel [count] if pending │  A          add folder               │`n"
+"│             else escape drop-downs    │  *          open bookmark manager    │`n"
+"│  CapsLock   same as Esc               │                                      │`n"
+"│                                       │                                      │`n"
+"├───────────────────────────────────────┴──────────────────────────────────────┤`n"
+"│ DIAGRAM                                                                      │`n"
+"│             1G       2G      3G       4G      5G      6G                     │`n"
+"│   ╭──────────────────────────────────────────────────────────────────────╮   │`n"
+"│   │ ● first ● second ● third ● fourth ● fifth ● sixth ● seventh ● eighth │   │`n"
+"│   ╰──────────────────┬───────────────────────────────────────────────────╯   │`n"
+"│     ↑                ├───────────╮                              ↑            │`n"
+"│     gg               │ ● first > ├─┬───────────╮                G            │`n"
+"│     ^                │ ● second  │ │ ● first   │ gg ^ 0         $            │`n"
+"│     0        k       │ ● third   │ │ ● second  │                             │`n"
+"│              ↑       ╰───────────╯ ( ● third   ) x y p dd m o O e a A *      │`n"
+"│          h ←   → l                 │ ● fourth  │ ff                          │`n"
+"│              ↓                     │ ● fifth   │ ;                           │`n"
+"│              j                     │ ● sixth   │ G $                         │`n"
+"│                                    ╰───────────╯                             │`n"
+"╰──────────────────────────────────────────────────────────────────────────────╯`n"
+" Press any key to continue . . ."
+) ; C:\> PAUSE | CLIP
 
 MainProcessed := false
 BookmarkModeInstance := BookmarkMode()
@@ -1252,6 +1287,21 @@ XButton1::{
 +y::return
  z::return
 +z::return
+ ?::{
+	BlockInput true
+	Suspend true
+
+	QuickReference := Gui("+AlwaysOnTop -Caption +ToolWindow")
+	QuickReference.BackColor := "White"
+	QuickReference.SetFont("cBlack", "Consolas")
+	QuickReference.AddText(, QuickReferenceText)
+	QuickReference.Show("NoActivate")
+	GetNextKeyPress() ; Press any key to continue . . .
+	QuickReference.Destroy()
+
+	BlockInput false
+	Suspend false
+}
 $::End()
 *::{
 	switch Browser.Identity() {
@@ -1651,6 +1701,23 @@ Some keybindings are not supported on all web browsers.  Refer to the section
 titled COMPATIBILITY for more details.
 
 =over
+
+=item B<?>
+
+This is perhaps the most important command for a newcomer to learn, which is why
+it's first on the list.
+
+Typing the question mark in bookmark mode opens a quick-reference pop-up page
+listing all available commands.  The pop-up can be dismissed by pressing any
+key.  Focus remains on the browser, so you can use this command in a nested
+drop-down without fear of loosing your place.  It is meant to be quick and
+accessible.
+
+The quick reference does not replace the documentation.  Some commands have
+nuanced, browser-dependent behaviors that are not accounted for in the quick
+reference.  Be sure to keep reading!
+
+This feature was inspired by Vimium's help page.
 
 =item B<j>
 
