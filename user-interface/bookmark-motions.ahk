@@ -4,9 +4,7 @@
 ; DOCS: perldoc bookmark-motions.ahk
 ; ABOUT: Vim motions for bookmark management
 ; ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-; UPDATED: Thursday, October 9th, 2025 at 4:53 PM
-
-VERSION := "v1.0.0"
+; UPDATED: Friday, October 10th, 2025 at 12:07 AM
 
 ; Directives -------------------------------------------------------------- {{{1
 
@@ -14,7 +12,7 @@ VERSION := "v1.0.0"
 
 #SingleInstance Force
 
-#Include UIA.ahk
+#Include UIA.ahk ; https://github.com/Descolada/UIA-v2/blob/main/Lib/UIA.ahk
 
 ; Classes ----------------------------------------------------------------- {{{1
 
@@ -645,6 +643,46 @@ class CommandLineParser {
 	}
 }
 
+; Variables --------------------------------------------------------------- {{{1
+
+VERSION := "v1.0.0"
+
+HelpMessageText := (
+"Interpret Vim Motions for Bookmark Management`n"
+"`n"
+"BOOKMARK-MOTIONS [/BAR:DYNAMIC | /BAR:STATIC] [/SCROLL:HORIZ | /SCROLL:VERT]`n"
+"                 [/MUTE] [/VER] [/?]`n"
+"`n"
+"  /BAR:DYNAMIC Toggle the bookmarks bar when changing modes.  Show the bookmarks`n"
+"               bar when entering bookmark mode.  Hide the bookmarks bar when`n"
+"               exiting bookmark mode.  Assumes that bookmark mode is entered`n"
+"               with the bar initially hidden.  Can possibly fall out of sync.`n"
+"  /BAR:STATIC  Do not toggle the bookmarks bar when changing modes.  This is the`n"
+"               default behavior.  Assumes that the bookmarks bar is always`n"
+"               visible.`n"
+"  /SCROLL:ORI  Determines the mouse wheel's initial scrolling orientation when`n"
+"               entering bookmark mode.  ORI is either HORIZ or VERT.  The`n"
+"               default initial scrolling orientation is horizontal.`n"
+"  /MUTE        Do not beep when changing modes.`n"
+"  /VER         Display the version number and exit.`n"
+"`n"
+"This program intercepts keyboard input to a web browser to interpret those`n"
+"keystrokes as Vim motions.  There are two modes.`n"
+"`n"
+"    1.  In standard mode, the web browser behaves normally.`n"
+"`n"
+"    2.  In bookmark mode, focus is redirected to the bookmarks bar where Vim`n"
+"        motions can be used to navigate one's bookmarks and folders.`n"
+"`n"
+"Bookmark mode is toggled by pressing backslash twice in quick succession.`n"
+"Check https://github.com/zachary-krepelka/bookmarks/releases for updates."
+)
+
+MainProcessed := false
+BookmarkModeInstance := BookmarkMode()
+CommandQuantifier := Counter()
+ActiveHotkey := ThisHotkey(300)
+
 ; Functions --------------------------------------------------------------- {{{1
 
 Usage() {
@@ -656,36 +694,7 @@ Usage() {
 	HelpMessage.BackColor := "Black"
 	HelpMessage.SetFont("cWhite", "Consolas")
 
-	HelpMessage.AddText(,
-	"Interpret Vim Motions for Bookmark Management"                                    . "`n"
-	""                                                                                 . "`n"
-	"BOOKMARK-MOTIONS [/BAR:DYNAMIC | /BAR:STATIC] [/SCROLL:HORIZ | /SCROLL:VERT]"     . "`n"
-	"                 [/MUTE] [/VER] [/?]"                                             . "`n"
-	""                                                                                 . "`n"
-	"  /BAR:DYNAMIC Toggle the bookmarks bar when changing modes.  Show the bookmarks" . "`n"
-	"               bar when entering bookmark mode.  Hide the bookmarks bar when"     . "`n"
-	"               exiting bookmark mode.  Assumes that bookmark mode is entered"     . "`n"
-	"               with the bar initially hidden.  Can possibly fall out of sync."    . "`n"
-	"  /BAR:STATIC  Do not toggle the bookmarks bar when changing modes.  This is the" . "`n"
-	"               default behavior.  Assumes that the bookmarks bar is always"       . "`n"
-	"               visible."                                                          . "`n"
-	"  /SCROLL:ORI  Determines the mouse wheel's initial scrolling orientation when"   . "`n"
-	"               entering bookmark mode.  ORI is either HORIZ or VERT.  The"        . "`n"
-	"               default initial scrolling orientation is horizontal."              . "`n"
-	"  /MUTE        Do not beep when changing modes."                                  . "`n"
-	"  /VER         Display the version number and exit."                              . "`n"
-	""                                                                                 . "`n"
-	"This program intercepts keyboard input to a web browser to interpret those"       . "`n"
-	"keystrokes as Vim motions.  There are two modes."                                 . "`n"
-	""                                                                                 . "`n"
-	"    1.  In standard mode, the web browser behaves normally."                      . "`n"
-	""                                                                                 . "`n"
-	"    2.  In bookmark mode, focus is redirected to the bookmarks bar where Vim"     . "`n"
-	"        motions can be used to navigate one's bookmarks and folders."             . "`n"
-	""                                                                                 . "`n"
-	"Bookmark mode is toggled by pressing backslash twice in quick succession."        . "`n"
-	"Check https://github.com/zachary-krepelka/bookmarks/releases for updates."        . "`n"
-	)
+	HelpMessage.AddText(, HelpMessageText)
 
 	HelpMessage.Show()
 	WinWaitClose(HelpMessage.Hwnd)
@@ -694,10 +703,7 @@ Usage() {
 
 Main() {
 
-	global MainProcessed := false
-	global BookmarkModeInstance := BookmarkMode()
-	global CommandQuantifier := Counter()
-	global ActiveHotkey := ThisHotkey(300)
+	global BookmarkModeInstance
 
 	ValidOptions := ["BAR", "SCROLL", "MUTE", "VER", "?"]
 
@@ -744,7 +750,7 @@ Main() {
 	if Cmd.HasOption("MUTE")
 		BookmarkModeInstance.Mute()
 
-	MainProcessed := true
+	global MainProcessed := true
 }
 
 /**
