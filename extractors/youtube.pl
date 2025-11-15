@@ -5,7 +5,7 @@
 # DATE: Wednesday, September 17th, 2025
 # ABOUT: extract and organize YouTube bookmarks
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-# UPDATED: Monday, September 29th, 2025 at 3:43 AM
+# UPDATED: Saturday, November 15th, 2025 at 5:51 PM
 
 #
 # |\/| _  _|   | _  _
@@ -360,7 +360,7 @@ comment.
 This folder contains bookmarked playlist pages.  These are bookmarks
 with URLs of the form
 
-	youtube.com/playlist?list=PLAYLIST_ID
+	youtube.com/playlist?list={PLAYLIST_ID}
 
 A dedicated playlist page is a standalone list of YouTube videos; it
 does not play content but rather comprises a collection of content.  It
@@ -372,17 +372,17 @@ accompanies videos.
 This folder contains bookmarked channel pages.  These are bookmarks with
 URLs of the form
 
-	youtube.com/user/USERNAME
-	youtube.com/channel/CHANNEL_ID
-	youtube.com/c/CUSTOM_NAME
-	youtube.com/@HANDLE
+	youtube.com/user/{USERNAME}
+	youtube.com/channel/{CHANNEL_ID}
+	youtube.com/c/{CUSTOM_NAME}
+	youtube.com/@{HANDLE}
 
 =item 5) Subpages
 
 This folder contains sub pages belonging to specific channels.  These
 are bookmarks with URLs of the form
 
-	youtube.com/@HANDLE/SUBPAGE
+	youtube.com/@{HANDLE}/{SUBPAGE}
 
 Possible sub pages follow: featured, videos, shorts, streams, podcasts,
 releases, playlists, posts, and store.  These correspond to the tabs on
@@ -413,7 +413,7 @@ C<Channels> folder.
 This folder contains bookmarked search queries.  These are bookmarks
 with URLs of the form
 
-	youtube.com/results?search_query=WHAT_YOU_SEARCHED
+	youtube.com/results?search_query={WHAT_YOU_SEARCHED}
 
 Often it is the case that pages like these are bookmarked accidentally.
 You may want to bookmark a search query if you are frequently returning
