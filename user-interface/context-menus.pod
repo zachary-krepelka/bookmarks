@@ -85,11 +85,11 @@ menu for a folder.
 
 =head2 Strategy
 
-~~Observe that the menus have an unequal number of items.~~  Common items are
-indexed parallelly from the bottom upwards.  The first eleven items from the
-bottom are common to both menus.  Programmatic access of these items could be
-achieved by moving up the menu from the bottom.  One could define a function
-called C<SelectNthFromBottom(Index)>.
+Observe that the menus have an unequal number of items. (This is no longer true
+after a recent update.) Common items are indexed parallelly from the bottom
+upwards.  The first eleven items from the bottom are common to both menus.
+Programmatic access of these items could be achieved by moving up the menu from
+the bottom.  One could define a function called C<SelectNthFromBottom(Index)>.
 
 =head1 MICROSOFT EDGE
 
