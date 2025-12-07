@@ -60,11 +60,11 @@ The ASCII art diagrams have the following significations.
 On the left is the context menu for a bookmark.  On the right is the context
 menu for a folder.
 
- ~                              .----------------------------------.
- .--------------------------.   | Open all (n)                     |
- | Open in new tab          |   | Open all (n) in new window       |
- | Open in new window       |   | Open all (n) in Incognito window |
- | Open in Incognito window |   | Open all (n) in new tab group    |
+ .--------------------------.   .----------------------------------.
+ | Open in new tab          |   | Open all (n)                     |
+ | Open in new window       |   | Open all (n) in new window       |
+ | Open in Incognito window |   | Open all (n) in Incognito window |
+ | Open in split view       |   | Open all (n) in new tab group    |
  |--------------------------|   |----------------------------------|
  | Edit...                  |   | Rename...                        |
  |--------------------------|   |----------------------------------|
@@ -85,7 +85,7 @@ menu for a folder.
 
 =head2 Strategy
 
-Observe that the menus have an unequal number of items.  Common items are
+~~Observe that the menus have an unequal number of items.~~  Common items are
 indexed parallelly from the bottom upwards.  The first eleven items from the
 bottom are common to both menus.  Programmatic access of these items could be
 achieved by moving up the menu from the bottom.  One could define a function
@@ -237,6 +237,6 @@ Zachary Krepelka L<https://github.com/zachary-krepelka>
 
 Initially created on Monday, June 2nd, 2025.
 
-Last updated on Saturday, October 4th, 2025 at 3:43 PM.
+Last updated on Sunday, December 7th, 2025 at 2:52 AM.
 
 =cut
