@@ -42,16 +42,21 @@ sub usage {
 
 	my $program = basename $0;
 	print STDERR <<~USAGE;
-		Usage: $program {bookmark file} > [html report file]
 		Report misplaced bookmarks using a rule-based system
 
-		Options:
-			-p, --print-rules    print the rules
-			-q, --print-exempt   print folders without rules
-			-h, --help           display this help message
+		Usage:
+		  $program {bookmark file} > [html report file]
 
-		Documentation: perldoc $program
-		Example: $program bookmarks.html > report.html
+		Options:
+		  -p, --print-rules   print the rules
+		  -q, --print-exempt  print folders without rules
+		  -h, --help          display this help message
+
+		Documentation:
+		  perldoc $program
+
+		Example:
+		  $program bookmarks.html > report.html
 		USAGE
 	exit;
 }

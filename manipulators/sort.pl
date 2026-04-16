@@ -42,21 +42,24 @@ sub usage {
 
 	my $program = basename $0;
 	print STDOUT <<~USAGE;
-		Usage: $program [options] <bookmark file>
 		a recursive, command-line bookmark sorter
 
+		Usage:
+		  $program [options] <bookmark file>
+
 		Options:
-		  -h, --help                  display this help message
-		  -i, --ignore-case           ignore case when sorting
-		  -m STR, --method=STR        select sorting method
-		  -s FILE, --skip-list=FILE   list of bookmarks to skip
+		  -h, --help                 display this help message
+		  -i, --ignore-case          ignore case when sorting
+		  -m STR, --method=STR       select sorting method
+		  -s FILE, --skip-list=FILE  list of bookmarks to skip
 
 		Methods:
-		  name   sort bookmarks by name   <-- default
-		  link   sort bookmarks by url
-		  root   sort by root domain, then by name
+		  name  sort bookmarks by name   <-- default
+		  link  sort bookmarks by url
+		  root  sort by root domain, then by name
 
-		Documentation: perldoc $program
+		Documentation:
+		  perldoc $program
 		USAGE
 	exit;
 }

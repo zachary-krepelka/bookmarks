@@ -34,18 +34,23 @@ sub usage {
 
 	my $program = basename($0);
 	print STDERR <<~USAGE;
-		Usage: $program [bookmark file]
 		Command-line Bookmark Searcher
 
-		Options:
-			-n, --name	search by name
-			-u, --url	search by URL
-			-p, --path	search by path
-			-f, --folder	search for a folder
-			-h, --help	display this help message
+		Usage:
+		  $program [bookmark file]
 
-		Documentation: perldoc $program
-		Example:       perl $program -n bookmarks.html
+		Options:
+		  -n, --name    search by name
+		  -u, --url     search by URL
+		  -p, --path    search by path
+		  -f, --folder  search for a folder
+		  -h, --help    display this help message
+
+		Documentation:
+		  perldoc $program
+
+		Example:
+		  perl $program -n bookmarks.html
 		USAGE
 	exit;
 }

@@ -33,12 +33,19 @@ sub usage {
 
 	my $program = basename $0;
 	print STDERR <<~USAGE;
-		Usage: $program {bookmark file} > [organized bookmark file]
 		Bookmark Alphabetizer - sort bookmarks into 26 folders A to Z
 
-		Documentation: perldoc $program
-		Options: -h or --help to display this help message
-		Example: $program bookmarks.html > organized-bookmarks.html
+		Usage:
+		  $program {bookmark file} > [organized bookmark file]
+
+		Options:
+		  -h, --help  display this help message and exiti
+
+		Documentation:
+		  perldoc $program
+
+		Example:
+		  $program bookmarks.html > organized-bookmarks.html
 		USAGE
 	exit;
 

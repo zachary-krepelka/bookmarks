@@ -16,11 +16,16 @@ if ($ARGV[0] eq '-h' || $ARGV[0] eq '--help')
 {
 	my $prog = basename($0);
 	print STDERR <<~USAGE;
-		Usage: $prog [tabgroups file] > [bookmark file]
 		Convert HTML from the Tab Group Extension to a bookmark file
 
-		Documentation: perldoc $prog
-		Options:       -h to display this help message
+		Usage:
+		  $prog {tabgroups file} > [bookmark file]
+
+		Options:
+		  -h, --help  display this help message and exit
+
+		Documentation:
+		  perldoc $prog
 		USAGE
 	exit;
 }

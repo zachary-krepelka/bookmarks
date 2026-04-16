@@ -65,21 +65,21 @@ sub usage {
 
 	my $program = basename($0);
 	print STDERR <<~USAGE;
-		Usage: $program [options] <file>
 		a bookmarklet compiler for the command line
 
-		Example:
-		  perl $program source-code.txt > bookmarklets.html
+		Usage:
+		  perl $program [options] source-code.txt > bookmarklets.html
 
 		    * source-code.txt wraps js code in a custom file format
 		    * bookmarklets.html imports into a web browser
 		    * read documentation for detailed usage
 
 		Options:
-		  -u, --ugly	outsource compression to UglifyJS
-		  -h, --help	display this help message
+		  -u, --ugly  outsource compression to UglifyJS
+		  -h, --help  display this help message and exit
 
-		Documentation: perldoc $program
+		Documentation:
+		  perldoc $program
 		USAGE
 	exit;
 }

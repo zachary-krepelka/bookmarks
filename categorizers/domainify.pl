@@ -3,7 +3,7 @@
 # FILENAME: domainify.pl
 # AUTHOR: Zachary Krepelka
 # DATE: Monday, October 21st, 2024
-# ABOUT: sort bookmarks into folders by domain
+# ABOUT: organize bookmarks into folders by domain
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
 # UPDATED: Tuesday, October 22nd, 2024 at 2:39 PM
 
@@ -37,19 +37,23 @@ sub usage {
 
 	my $program = basename $0;
 	print STDERR <<~USAGE;
-		Usage: $program {bookmark file} > [organized bookmark file]
-		Sort bookmarks into folders by website
+		Organize bookmarks into folders by website
+
+		Usage:
+		  $program {bookmark file} > [organized bookmark file]
 
 		Options:
-			-t NUM, --threshold=NUM   domains with NUM or less
-						  bookmarks do not receive their
-						  own folder; URLs are deposited
-						  into a miscellaneous folder.
+		  -h, --help               display this help message and exit
+		  -t NUM, --threshold=NUM  domains with NUM or less bookmarks
+					   do not receive their own folder; URLs
+					   are deposited into a miscellaneous
+					   folder.
 
-			-h,     --help            display this help message
+		Documentation:
+		  perldoc $program
 
-		Documentation: perldoc $program
-		Example: $program bookmarks.html > organized-bookmarks.html
+		Example:
+		  $program bookmarks.html > organized-bookmarks.html
 		USAGE
 	exit;
 
@@ -154,7 +158,7 @@ __END__
 
 =head1 NAME
 
-domainify.pl - organize bookmarks by website
+domainify.pl - organize bookmarks into folders by website
 
 =head1 SYNOPSIS
 

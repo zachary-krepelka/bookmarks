@@ -35,15 +35,20 @@ sub usage {
 
 	my $program = basename $0;
 	print STDERR <<~USAGE;
-		Usage: $program [options] {bookmark file(s)}
 		Flatten and conjoin nested bookmark files
 
-		Options:
-		  -r STR, --root=STR   use STR as name for [r]oot folder
-		  -h, --help           print this [h]elp message and exit
+		Usage:
+		  $program [options] {bookmark file(s)}
 
-		Documentation: perldoc $program
-		Example: $program bookmarks.html > flattened-bookmarks.html
+		Options:
+		  -r STR, --root=STR  use STR as name for [r]oot folder
+		  -h, --help          print this [h]elp message and exit
+
+		Documentation:
+		  perldoc $program
+
+		Example:
+		  $program bookmarks.html > flattened-bookmarks.html
 		USAGE
 	exit;
 }

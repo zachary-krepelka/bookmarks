@@ -13,12 +13,19 @@ if ($ARGV[0] eq '-h' || $ARGV[0] eq '--help')
 {
 	my $prog = basename($0);
 	print STDERR <<~USAGE;
-		Usage: $prog [options] <file>
 		treeify a bookmark file
 
-		Documentation: perldoc $prog
-		Options:       -h to display this help message
-		Example:       perl $prog bookmarks.html > tree-view.html
+		Usage:
+		  $prog [options] <file>
+
+		Options:
+		  -h, --help  display this help message and exit
+
+		Documentation:
+		  perldoc $prog
+
+		Example:
+		  perl $prog bookmarks.html > tree-view.html
 		USAGE
 	exit;
 }
