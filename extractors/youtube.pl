@@ -5,7 +5,7 @@
 # DATE: Wednesday, September 17th, 2025
 # ABOUT: extract and organize YouTube bookmarks
 # ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-# UPDATED: Saturday, November 15th, 2025 at 6:44 PM
+# UPDATED: Thursday, April 16th, 2026 at 9:58 PM
 
 #
 # |\/| _  _|   | _  _
@@ -25,6 +25,7 @@ use URI;
 
 my @shorts          = ();
 my @longs           = ();
+my @posts           = ();
 my %comments        = ();
 my @hashtags        = ();
 my @playlists       = ();
@@ -146,6 +147,10 @@ while (<>) {
 
 			push @shorts, $anchor;
 
+		} elsif ($page eq 'post') {
+
+			push @posts, $anchor;
+
 		} elsif ($page eq 'playlist') {
 
 			push @playlists, $anchor;
@@ -198,7 +203,6 @@ make_folder 3, "Longs", [sort {compare($a, $b)} @longs] if @longs;
 
 print " " x 8 . "</DL><p>\n";
 
-
 if (%comments) {
 
 	print <<~'EOF';
@@ -224,6 +228,7 @@ if (%comments) {
 	EOF
 }
 
+make_folder 2, "Posts", [sort {compare($a, $b)} @posts] if @posts;
 make_folder 2, "Hashtags", [sort {compare($a, $b)} @hashtags] if @hashtags;
 make_folder 2, "Playlists", [sort {compare($a, $b)} @playlists] if @playlists;
 make_folder 2, "Channels", [sort {compare($a, $b)} @channels] if @channels;
@@ -266,6 +271,8 @@ OUTPUT with the following file structure.
 	|   `-- Longs/
 	|       `-- ...
 	|-- Comments/
+	|   `-- ...
+	|-- Posts/
 	|   `-- ...
 	|-- Hashtags/
 	|   `-- ...
@@ -363,7 +370,14 @@ video--by the web browser.  Therefore, sorting lexicographically would
 accomplish nothing unless the user manually names each bookmarked
 comment.
 
-=item 3) Hashtags
+=item 3) Posts
+
+This folder contains bookmarked YouTube posts.  These are bookmarks with
+URLs of the form
+
+	youtube.com/post/{POST_ID}
+
+=item 4) Hashtags
 
 This folder contains bookmarked hashtag pages.  These are bookmarks with
 URLs of the form
@@ -376,7 +390,7 @@ Be wary of duplicates; it may also include
 
 which gives the same bookmark title.
 
-=item 4) Playlists
+=item 5) Playlists
 
 This folder contains bookmarked playlist pages.  These are bookmarks
 with URLs of the form
@@ -388,7 +402,7 @@ does not play content but rather comprises a collection of content.  It
 should not be confused with the playlist interface that often
 accompanies videos.
 
-=item 5) Channels
+=item 6) Channels
 
 This folder contains bookmarked channel pages.  These are bookmarks with
 URLs of the form
@@ -398,7 +412,7 @@ URLs of the form
 	youtube.com/c/{CUSTOM_NAME}
 	youtube.com/@{HANDLE}
 
-=item 6) Subpages
+=item 7) Subpages
 
 This folder contains sub pages belonging to specific channels.  These
 are bookmarks with URLs of the form
@@ -429,7 +443,7 @@ permissible URLs.  Thereon, if one of the aforementioned URLs has a sub
 path beyond the channel specifier, it is placed here instead of in the
 C<Channels> folder.
 
-=item 7) Searches
+=item 8) Searches
 
 This folder contains bookmarked search queries.  These are bookmarks
 with URLs of the form
@@ -440,7 +454,7 @@ Often it is the case that pages like these are bookmarked accidentally.
 You may want to bookmark a search query if you are frequently returning
 to it, e.g., in the case of an ongoing event in the news.
 
-=item 8) Misc
+=item 9) Misc
 
 This folder contains YouTube bookmarks that do not fall into any of the
 previous categories.
