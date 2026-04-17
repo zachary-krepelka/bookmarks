@@ -1840,6 +1840,11 @@ Yank the selected bookmark or folder.  Yank means to copy.
 
 Put a bookmark or folder.  Put means to paste.
 
+As of April 16th, 2026, this is not working due to an ongoing issue in the
+stable release of Chromium web browsers.  The issue is not present in Chrome
+Canary, so it can be used until the issue is fixed.  See here:
+L<https://issues.chromium.org/issues/502783126>
+
 =item B<dd>
 
 Delete the selected bookmark or folder.  The double key press is a safeguard, so
