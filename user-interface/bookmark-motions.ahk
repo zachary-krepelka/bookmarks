@@ -4,7 +4,7 @@
 ; DOCS: perldoc bookmark-motions.ahk
 ; ABOUT: Vim motions for bookmark management
 ; ORIGIN: https://github.com/zachary-krepelka/bookmarks.git
-; UPDATED: Friday, October 10th, 2025 at 1:38 AM
+; UPDATED: Tuesday, September 22nd, 2026 at 4:46 PM
 
 ; Directives -------------------------------------------------------------- {{{1
 
@@ -960,7 +960,7 @@ XButton1::{
 
 		case Browser.CHROME:
 
-			ContextMenuSelector.SelectNthFromBottom(6)
+			ContextMenuSelector.SelectNthFromBottom(4)
 			BookmarkModeInstance.BypassUntil([0x0D, 0x1B])
 
 		case Browser.EDGE:
@@ -1013,7 +1013,7 @@ XButton1::{
 
 		case Browser.CHROME:
 
-			ContextMenuSelector.SelectNthFromBottom(5)
+			ContextMenuSelector.SelectNthFromBottom(3)
 			BookmarkModeInstance.BypassUntil([0x0D, 0x1B])
 
 		case Browser.EDGE:
@@ -1054,7 +1054,7 @@ XButton1::{
 
 		case Browser.CHROME:
 
-			ContextMenuSelector.SelectNthFromBottom(7)
+			ContextMenuSelector.SelectNthFromBottom(5)
 
 		case Browser.EDGE:
 
@@ -1080,7 +1080,7 @@ XButton1::{
 
 		case Browser.CHROME:
 
-			ContextMenuSelector.SelectNthFromBottom(11)
+			ContextMenuSelector.SelectNthFromBottom(9)
 			BookmarkModeInstance.BypassUntil([0x0D, 0x1B])
 
 		case Browser.EDGE:
@@ -1191,7 +1191,7 @@ XButton1::{
 
 		case Browser.CHROME:
 
-			ContextMenuSelector.SelectNthFromBottom(8)
+			ContextMenuSelector.SelectNthFromBottom(6)
 
 		case Browser.EDGE:
 
@@ -1238,7 +1238,7 @@ XButton1::{
 
 		case Browser.CHROME:
 
-			ContextMenuSelector.SelectNthFromBottom(10)
+			ContextMenuSelector.SelectNthFromBottom(8)
 
 		case Browser.EDGE:
 
@@ -1264,7 +1264,7 @@ XButton1::{
 
 		case Browser.CHROME:
 
-			ContextMenuSelector.SelectNthFromBottom(9)
+			ContextMenuSelector.SelectNthFromBottom(7)
 
 		case Browser.EDGE:
 
@@ -1308,7 +1308,7 @@ $::End()
 
 		case Browser.CHROME:
 
-			ContextMenuSelector.SelectNthFromBottom(4)
+			ContextMenuSelector.SelectNthFromBottom(2)
 			BookmarkModeInstance.Toggle()
 
 		case Browser.EDGE:
@@ -2486,6 +2486,25 @@ The backwards find command C<F{char}> also stands to be implemented.  It was
 previously unfeasible to do before I discovered this library.
 
 =back
+
+=item *
+
+Define constants for context menu item accessors supplied to the methods of
+ContextMenuSelector so that in the event of an upstream change, these values can
+be updated in one place without digging through the code to look for invocations
+of those methods.  This would also eliminate magic numbers.  For example, we
+could do something like this at the top of the file for each browser and for
+each menu item.
+
+        CTX_MENU_ITEM_ACCESSOR[CHROME][PASTE] = 6
+
+Then at the call site, we could do this:
+
+	ContextMenuSelector.SelectNthFromBottom(CTX_MENU_ITEM_ACCESSOR[CHROME][PASTE])
+
+instead of this:
+
+	ContextMenuSelector.SelectNthFromBottom(6)
 
 =back
 
