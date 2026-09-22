@@ -63,8 +63,8 @@ menu for a folder.
  .--------------------------.   .----------------------------------.
  | Open in new tab          |   | Open all (n)                     |
  | Open in new window       |   | Open all (n) in new window       |
- | Open in Incognito window |   | Open all (n) in Incognito window |
- | Open in split view       |   | Open all (n) in new tab group    |
+ | Open in split view       |   | Open all (n) in Incognito window |
+ | Open in Incognito window |   | Open all (n) in new tab group    |
  |--------------------------|   |----------------------------------|
  | Edit...                  |   | Rename...                        |
  |--------------------------|   |----------------------------------|
@@ -77,10 +77,8 @@ menu for a folder.
  | Add page...              |   | Add page...                      |
  | Add folder...            |   | Add folder...                    |
  |--------------------------|   |----------------------------------|
- | Bookmark manager         |   | Bookmark manager                 |
- | Show apps shortcut  [ ]  |   | Show apps shortcut  [ ]          |
- | Show tab groups     [ ]  |   | Show tab groups     [ ]          |
- | Show bookmarks bar  [ ]  |   | Show bookmarks bar  [ ]          |
+ | Open Bookmarks Manager   |   | Open Bookmarks Manager           |
+ | Bookmarks bar >          |   | Bookmarks bar >                  |
  .--------------------------.   .----------------------------------.
 
 =head2 Strategy
@@ -237,6 +235,6 @@ Zachary Krepelka L<https://github.com/zachary-krepelka>
 
 Initially created on Monday, June 2nd, 2025.
 
-Last updated on Sunday, December 7th, 2025 at 2:52 AM.
+Last updated on Tuesday, September 22nd, 2026 at 2:57 PM.
 
 =cut
